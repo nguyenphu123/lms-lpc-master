@@ -17,7 +17,6 @@ const LinkButton = async () => {
         redirect_url: "/pending",
         redirectUrl: "/pending",
       });
-      console.log(user.verification.externalVerificationRedirectURL.href);
       router.push(user.verification.externalVerificationRedirectURL.href);
     } catch (error) {
       console.log(error);
