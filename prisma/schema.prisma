@@ -1,0 +1,272 @@
+datasource db {
+  provider     = "postgresql"
+  url          = env("DATABASE_URL")
+  relationMode = "prisma"
+}
+
+generator client {
+  provider        = "prisma-client-js"
+  output          = "../node_modules/.prisma/client"
+  previewFeatures = ["fullTextSearch", "fullTextIndex"]
+}
+
+model Department {
+  id    String @id @default(uuid())
+  title String @unique
+  User  User[]
+
+  ProgramOnDepartment ProgramOnDepartment[]
+
+  CourseOnDepartment CourseOnDepartment[]
+}
+
+model CourseOnDepartment {
+  id           String      @id @default(uuid())
+  Department   Department? @relation(fields: [departmentId], references: [id], onDelete: Cascade)
+  departmentId String?
+  course       Course?     @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  courseId     String?
+
+  @@index([departmentId])
+  @@index([courseId])
+}
+
+model ProgramOnDepartment {
+  id           String      @id @default(uuid())
+  Department   Department? @relation(fields: [departmentId], references: [id])
+  departmentId String?
+  program      Program     @relation(fields: [programId], references: [id], onDelete: Cascade)
+  programId    String
+
+  @@index([departmentId])
+  @@index([programId])
+}
+
+model User {
+  id                       String                     @id @default(uuid())
+  email                    String
+  Department               Department?                @relation(fields: [departmentId], references: [id])
+  departmentId             String?
+  username                 String
+  role                     String
+  star                     Int?
+  imageUrl                 String?
+  status                   String
+  programParticipantRecord ProgramParticipantRecord[]
+  Program                  Program[]
+  Course                   Course[]
+  ClassSessionRecord       ClassSessionRecord[]
+  Module                   Module[]
+  UserProgress             UserProgress[]
+  HistoryRecord            HistoryRecord[]
+  BookMark                 BookMark[]
+
+  @@index([departmentId])
+}
+
+model Program {
+  id    String @id @default(uuid())
+  title String @db.Text
+
+  description              String?                    @db.Text
+  imageUrl                 String?                    @db.Text
+  user                     User                       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId                   String
+  startDate                DateTime                   @default(now())
+  endDate                  DateTime?
+  isPublished              Boolean                    @default(false)
+  programParticipantRecord ProgramParticipantRecord[]
+
+  courseWithProgram   courseWithProgram[]
+  ProgramOnDepartment ProgramOnDepartment[]
+
+  @@index([userId])
+}
+
+model ProgramParticipantRecord {
+  id        String   @id @default(uuid())
+  program   Program  @relation(fields: [programId], references: [id], onDelete: Cascade)
+  programId String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String
+  progress  String   @db.Text
+  status    String
+  startDate DateTime @default(now())
+  endDate   DateTime
+
+  @@index([programId])
+  @@index([userId])
+}
+
+model Course {
+  id                 String               @id @default(uuid())
+  title              String               @db.Text
+  description        String?              @db.Text
+  imageUrl           String?              @db.Text
+  user               User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId             String
+  startDate          DateTime             @default(now())
+  endDate            DateTime?
+  updateDate         DateTime?
+  intro              String?
+  isPublished        Boolean              @default(false)
+  credit             Int?
+  ClassSessionRecord ClassSessionRecord[]
+  Module             Module[]
+  courseWithProgram  courseWithProgram[]
+  BookMark           BookMark[]
+  CourseOnDepartment CourseOnDepartment[]
+
+  @@index([userId])
+}
+
+model ClassSessionRecord {
+  id        String    @id @default(uuid())
+  course    Course    @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  courseId  String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String
+  progress  String    @db.Text
+  status    String
+  startDate DateTime
+  endDate   DateTime?
+  score     Int?
+
+  @@unique([courseId, userId])
+  @@index([courseId])
+  @@index([userId])
+}
+
+model BookMark {
+  id       String @id @default(uuid())
+  course   Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  courseId String
+  user     User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId   String
+
+  @@unique([courseId, userId])
+  @@index([courseId])
+  @@index([userId])
+}
+
+model Module {
+  id           String         @id @default(uuid())
+  course       Course         @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  courseId     String
+  title        String         @db.Text
+  type         String
+  user         User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId       String
+  position     Int
+  isPublished  Boolean
+  UserProgress UserProgress[]
+  Slide        Slide[]
+  maxAsset     Int?
+  timeLimit    Float?
+  scoreLimit   Int?
+  Category     Category[]
+
+  @@index([courseId])
+  @@index([userId])
+}
+
+model Slide {
+  id          String     @id @default(uuid())
+  module      Module     @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+  moduleId    String
+  title       String?
+  description String?
+  content     String?
+  position    Int
+  contentType String?
+  videoUrl    String?
+  fileUrl     String?
+  Resource    Resource[]
+
+  @@index([moduleId])
+}
+
+model Resource {
+  id             String @id @default(uuid())
+  slide          Slide  @relation(fields: [slideId], references: [id], onDelete: Cascade)
+  slideId        String
+  attachment     String
+  attachmentType String
+
+  @@index([slideId])
+}
+
+model Category {
+  id              String @id @default(uuid())
+  title           String
+  module          Module @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+  moduleId        String
+  numOfAppearance Int
+  Exam            Exam[]
+
+  @@index([moduleId])
+}
+
+model Exam {
+  id         String   @id @default(uuid())
+  category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  categoryId String
+  question   String?  @db.Text
+  score      Int
+  compulsory Boolean
+  anwser     Anwser[]
+  type       String?
+
+  @@index([categoryId])
+}
+
+model Anwser {
+  id        String  @id @default(uuid())
+  exam      Exam    @relation(fields: [examId], references: [id], onDelete: Cascade)
+  examId    String
+  text      String
+  isCorrect Boolean
+
+  @@index([examId])
+}
+
+model UserProgress {
+  id        String    @id @default(uuid())
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String
+  module    Module    @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+  moduleId  String
+  progress  String    @db.Text
+  status    String
+  startDate DateTime
+  endDate   DateTime?
+  score     Int?
+  attempt   Int?
+
+  @@unique([moduleId, userId])
+  @@index([moduleId])
+  @@index([userId])
+}
+
+model HistoryRecord {
+  id     String   @id @default(uuid())
+  title  String   @db.Text
+  note   String   @db.Text
+  date   DateTime
+  user   User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String
+
+  @@index([userId])
+}
+
+model courseWithProgram {
+  id        String   @id @default(uuid())
+  program   Program? @relation(fields: [programId], references: [id], onDelete: Cascade)
+  programId String?
+  course    Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  courseId  String
+
+  @@unique([programId, courseId])
+  @@index([programId])
+  @@index([courseId])
+}
