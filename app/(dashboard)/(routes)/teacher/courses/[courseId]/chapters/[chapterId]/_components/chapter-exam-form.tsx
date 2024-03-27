@@ -15,6 +15,7 @@ export default function Exam({ chapter }: any) {
       id: number;
       title: string;
       numOfAppearance: number;
+      score: number;
       question: Array<{
         id: number;
         question: string;
@@ -138,6 +139,22 @@ export default function Exam({ chapter }: any) {
     newQuizsList[index].question[jindex].question = e.target.value;
     setQuizList([...newQuizsList]);
   }
+  function categoryOnScoreChange(
+    e: React.ChangeEvent<HTMLInputElement>,
+    index: number
+  ) {
+    e.preventDefault();
+    const newQuizsList = [...quizList];
+    if (
+      parseInt(e.target.value) < 0 ||
+      parseInt(e.target.value) > 5 ||
+      isNaN(parseInt(e.target.value))
+    ) {
+      alert("Invalid score");
+    }
+    newQuizsList[index].score = e.target.value;
+    setQuizList([...newQuizsList]);
+  }
   function questionOnChangeType(
     e: React.ChangeEvent<HTMLSelectElement>,
     index: number,
@@ -168,36 +185,27 @@ export default function Exam({ chapter }: any) {
     newQuizsList[index].question[jindex].compulsory = e.target.checked;
     setQuizList([...newQuizsList]);
   }
-  const correctAnswerOnChange = useCallback(
-    (e: any, index: any, jindex: any, kindex: any, id: any) => {
-      setQuizList((items: any[]) => {
-        const newQuizsList = [...items];
-        if (newQuizsList[index].question[jindex].type === "singleChoice") {
-          if (e.target.checked) {
-            const checkExistAnswer = newQuizsList[index].question[jindex].anwser
-              .map((item: any) => item.isCorrect)
-              .indexOf(true);
+  function correctAnswerOnChange(e: any, index: any, jindex: any, kindex: any) {
+    const newQuizsList = [...quizList];
+    if (newQuizsList[index].question[jindex].type === "singleChoice") {
+      if (e.target.checked) {
+        const checkExistAnswer = newQuizsList[index].question[jindex].anwser
+          .map((item: any) => item.isCorrect)
+          .indexOf(true);
 
-            if (checkExistAnswer !== -1) {
-              alert(
-                "Sorry, only one correct answer for single choice question"
-              );
-              return [...newQuizsList];
-            }
-          }
+        if (checkExistAnswer !== -1) {
+          alert("Sorry, only one correct answer for single choice question");
+          return;
         }
+      }
+    }
 
-        const newAnswerList = newQuizsList[index].question[jindex].anwser.map(
-          (item: any) =>
-            item.id === id ? { ...item, isCorrect: e.target.checked } : item
-        );
+    newQuizsList[index].question[jindex].anwser[kindex].isCorrect =
+      e.target.checked;
 
-        newQuizsList[index].question[jindex].anwser = [...newAnswerList];
-        return [...newQuizsList];
-      });
-    },
-    [quizList]
-  );
+    setQuizList([...newQuizsList]);
+  }
+
   async function submit() {
     if (quizList.length === 0) {
       alert("Please add some questions");
@@ -249,7 +257,7 @@ export default function Exam({ chapter }: any) {
       values
     );
     await axios.post(
-      `/api/courses/${chapter?.courseId}/chapters/${chapter?.id}/exam`,
+      `/api/courses/${chapter?.courseId}/chapters/${chapter?.id}/category/exam`,
       quizList
     );
     toast.success("Exam updated");
@@ -285,7 +293,7 @@ export default function Exam({ chapter }: any) {
         const sheet = workbook.Sheets[sheetName];
         const parsedData: any = XLSX.utils.sheet_to_json(sheet, {
           raw: true,
-          header: ["question", "Answer", "Type", "score", "compulsory"],
+          header: ["question", "Answer", "Type", "compulsory"],
         });
         let returnArr: any = [];
         for (let i = 0; i < parsedData.length; i++) {
@@ -297,7 +305,7 @@ export default function Exam({ chapter }: any) {
                 ? "singleChoice"
                 : "multiChoice",
             anwser: customSplit(parsedData[i].Answer),
-            score: parsedData[i].score,
+
             compulsory: parsedData[i].compulsory,
           };
           returnArr = [...returnArr, newQuiz];
@@ -327,10 +335,11 @@ export default function Exam({ chapter }: any) {
           const sheet = workbook.Sheets[sheetName];
           const parsedData: any = XLSX.utils.sheet_to_json(sheet, {
             raw: true,
-            header: ["question", "Answer", "Type", "score", "compulsory"],
+            header: ["question", "Answer", "Type", "compulsory"],
           });
           let category: any = {
-            title: sheetName,
+            title: sheetName.split(".")[0],
+            numOfAppearance: sheetName.split(".")[1],
             question: [],
           };
 
@@ -343,7 +352,7 @@ export default function Exam({ chapter }: any) {
                   ? "singleChoice"
                   : "multiChoice",
               anwser: customSplit(parsedData[i].Answer),
-              score: parsedData[i].score,
+
               compulsory: parsedData[i].compulsory,
             };
             category["question"] = [...category.question, newQuiz];
@@ -575,6 +584,13 @@ export default function Exam({ chapter }: any) {
                   numOfAppearanceOnChange(parseInt(e.target.value), index)
                 }
               />
+              Category score
+              <input
+                type="text"
+                value={category.score}
+                onChange={(e) => categoryOnScoreChange(e, index)}
+                className="mx-2 visually-hidden-checkbox h-6 w-6"
+              />
               <span>
                 <strong>Option 1:</strong>
               </span>
@@ -641,7 +657,6 @@ export default function Exam({ chapter }: any) {
                           }
                         />
                       </div>
-
                       <div className="w-full md:w-1/12 px-2 mb-2">
                         <label
                           className="block text-sm font-medium text-gray-700 mb-1"
@@ -678,13 +693,7 @@ export default function Exam({ chapter }: any) {
                           checked={answer.isCorrect}
                           name={`correct-answer-${jindex}`}
                           onChange={(e) =>
-                            correctAnswerOnChange(
-                              e,
-                              index,
-                              jindex,
-                              kindex,
-                              answer.id
-                            )
+                            correctAnswerOnChange(e, index, jindex, kindex)
                           }
                           className="mx-2 visually-hidden-checkbox h-6 w-6"
                         />
