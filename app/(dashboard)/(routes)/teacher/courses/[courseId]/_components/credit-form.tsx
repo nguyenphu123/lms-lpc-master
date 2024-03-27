@@ -46,7 +46,6 @@ export const CreditForm = ({ initialData, courseId }: CreaditFormProps) => {
   });
 
   const { isSubmitting, isValid } = form.formState;
-  console.log(isValid);
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
       await axios.patch(`/api/courses/${courseId}`, values);

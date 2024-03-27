@@ -1,11 +1,14 @@
 "use client";
 import { PlusCircle, Upload, Trash2, X, Save, ArrowLeft } from "lucide-react";
 import axios from "axios";
-import Link from "next/link";
+
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
 import * as XLSX from "xlsx";
-
+import dynamic from "next/dynamic";
+const Link = dynamic(() => import("next/link"), {
+  ssr: false,
+});
 export default function Exam({ chapter }: any) {
   const [quizList, setQuizList]: any = useState<
     Array<{
@@ -31,10 +34,10 @@ export default function Exam({ chapter }: any) {
   useEffect(() => {
     async function loadQuestion() {
       let questionList = await axios.get(
-        `/api/courses/${chapter.courseId}/chapters/${chapter.id}category/exam`
+        `/api/courses/${chapter.courseId}/chapters/${chapter.id}/category/exam`
       );
-      // console.log(questionList.data);
-      setQuizList(questionList.data);
+
+      setQuizList(questionList.data.Category);
     }
     loadQuestion();
   }, []);
@@ -57,6 +60,12 @@ export default function Exam({ chapter }: any) {
   }
   function numOfAppearanceOnChange(number: number, index: number) {
     const newQuizsList = [...quizList];
+    if (isNaN(number)) {
+      alert("The number of appeared questions must be number.");
+      newQuizsList[index].numOfAppearance = newQuizsList[index].question.length;
+      setQuizList([...newQuizsList]);
+      return;
+    }
     if (newQuizsList[index].question.length < number) {
       alert(
         "The number of appeared questions cannot exceeded the number of questions in the category."
@@ -377,14 +386,17 @@ export default function Exam({ chapter }: any) {
           <label className="block text-lg mt-2">Click</label>
           <Link
             suppressHydrationWarning={true}
-            download="Exam_Format"
-            href={`/Exam_Format.xlsx`}
+            download="Exam_Format_Category"
+            href={`/Exam_Format_Category.xlsx`}
             target="_blank"
             className="text-blue-600 hover:underline cursor-pointer"
+            contextMenu="Here"
           >
             here
           </Link>
-          <label className="block text-lg mt-2">to download the format.</label>
+          <label className="block text-lg mt-2">
+            to download the category format.
+          </label>
         </div>
         <div className="flex flex-row w-full">
           <div className="grow-0 mr-2 w-1/3">
@@ -516,6 +528,19 @@ export default function Exam({ chapter }: any) {
               key={category.id}
               className="my-4 p-4 border rounded  shadow-md relative"
             >
+              <label className="block text-lg mt-2">Click</label>
+              <Link
+                suppressHydrationWarning={true}
+                download="Exam_Format_Question"
+                href={`/Exam_Format_Question.xlsx`}
+                target="_blank"
+                className="text-blue-600 hover:underline cursor-pointer"
+              >
+                here
+              </Link>
+              <label className="block text-lg mt-2">
+                to download the question format.
+              </label>
               <button
                 className="bg-gray-600 text-white p-2 rounded-full absolute top-2 right-2"
                 onClick={() => removeCategory(index)}
@@ -527,7 +552,7 @@ export default function Exam({ chapter }: any) {
                 name={category.id + " name"}
                 value={category.title}
                 className="w-full p-2 border rounded focus:outline-none border-black"
-                placeholder="Question title"
+                placeholder="Category title"
                 onChange={(e: any) => categoryOnChangeText(e, index)}
               />
               <input

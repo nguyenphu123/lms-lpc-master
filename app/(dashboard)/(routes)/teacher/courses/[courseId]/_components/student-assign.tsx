@@ -1,5 +1,5 @@
 "use client";
- 
+
 import * as z from "zod";
 import axios from "axios";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -8,17 +8,11 @@ import { Pencil } from "lucide-react";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
- 
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
+
+import { Form } from "@/components/ui/form";
+
 import { Button } from "@/components/ui/button";
- 
+
 interface StudentFormProps {
   initialData: { Student: any[] };
   courseId: string;
@@ -29,7 +23,7 @@ const Student = z.object({
   username: z.string(),
 });
 const formSchema = z.array(Student);
- 
+
 export const StudentAssignForm = ({
   initialData,
   courseId,
@@ -38,9 +32,9 @@ export const StudentAssignForm = ({
   const [isEditing, setIsEditing] = useState(false);
   const [studentList, setStudentList] = useState(initialData.Student || []);
   const toggleEdit = () => setIsEditing((current) => !current);
-  console.log(Student);
+
   const router = useRouter();
- 
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: initialData.Student,
@@ -56,7 +50,7 @@ export const StudentAssignForm = ({
     }
   };
   // const { isSubmitting, isValid } = form.formState;
- 
+
   const onSubmit = async () => {
     try {
       await axios.patch(`/api/courses/${courseId}/assign`, {
@@ -69,7 +63,7 @@ export const StudentAssignForm = ({
       toast.error("Something went wrong");
     }
   };
- 
+
   return (
     <div className="mt-6 border bg-slate-100 rounded-md p-4 text-black dark:bg-slate-950">
       <div className="font-medium flex items-center justify-between dark:text-slate-50">
@@ -93,7 +87,10 @@ export const StudentAssignForm = ({
           >
             {Student.map((item, i) => {
               return (
-                <div key={item.id} className="flex items-center space-x-2 dark:text-slate-50">
+                <div
+                  key={item.id}
+                  className="flex items-center space-x-2 dark:text-slate-50"
+                >
                   <input
                     onClick={() => onChangeDepartmentList(item)}
                     disabled={isEditing ? false : true}
@@ -111,7 +108,7 @@ export const StudentAssignForm = ({
                 </div>
               );
             })}
- 
+
             <div className="flex items-center gap-x-2">
               <Button type="submit">Save</Button>
             </div>
