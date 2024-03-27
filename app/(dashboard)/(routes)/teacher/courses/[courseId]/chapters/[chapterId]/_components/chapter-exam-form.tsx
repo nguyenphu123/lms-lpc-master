@@ -170,7 +170,6 @@ export default function Exam({ chapter }: any) {
   }
   const correctAnswerOnChange = useCallback(
     (e: any, index: any, jindex: any, kindex: any, id: any) => {
-      const target = e.target;
       setQuizList((items: any[]) => {
         const newQuizsList = [...items];
         if (newQuizsList[index].question[jindex].type === "singleChoice") {
@@ -178,17 +177,19 @@ export default function Exam({ chapter }: any) {
             const checkExistAnswer = newQuizsList[index].question[jindex].anwser
               .map((item: any) => item.isCorrect)
               .indexOf(true);
+
             if (checkExistAnswer !== -1) {
               alert(
                 "Sorry, only one correct answer for single choice question"
               );
-              return;
+              return [...newQuizsList];
             }
           }
         }
+
         const newAnswerList = newQuizsList[index].question[jindex].anwser.map(
           (item: any) =>
-            item.examId === id ? { ...item, isCorrect: e.target.checked } : item
+            item.id === id ? { ...item, isCorrect: e.target.checked } : item
         );
 
         newQuizsList[index].question[jindex].anwser = [...newAnswerList];
@@ -328,7 +329,11 @@ export default function Exam({ chapter }: any) {
             raw: true,
             header: ["question", "Answer", "Type", "score", "compulsory"],
           });
-          let returnArr: any = [];
+          let category: any = {
+            title: sheetName,
+            question: [],
+          };
+
           for (let i = 0; i < parsedData.length; i++) {
             const newQuiz: any = {
               id: getRandomInt(100000),
@@ -341,10 +346,12 @@ export default function Exam({ chapter }: any) {
               score: parsedData[i].score,
               compulsory: parsedData[i].compulsory,
             };
-            returnArr = [...returnArr, newQuiz];
+            category["question"] = [...category.question, newQuiz];
           }
-          readData = [...readData, ...returnArr];
+
+          readData = [...readData, category];
         }
+
         setQuizList([...quizList, ...readData]);
 
         // setData(parsedData);
@@ -485,13 +492,15 @@ export default function Exam({ chapter }: any) {
         <div className="flex items-center w-full">
           <label className="w-64 flex items-center justify-center bg-blue-600 text-white py-2 px-4 rounded-md cursor-pointer">
             <Upload className="h-4 w-4 mr-2" />
-            <span>Choose File</span>
+            <span>Choose File category</span>
             <input
               className="hidden"
               type="file"
               id="formFile"
               accept=".xlsx,.xls"
-              onChange={(e) => handleFileFull(e)}
+              onChange={(e) => {
+                handleFileFull(e);
+              }}
               ref={fileRef}
             />
           </label>
@@ -663,10 +672,7 @@ export default function Exam({ chapter }: any) {
                     </div>
 
                     {quiz.anwser.map((answer: any, kindex: any) => (
-                      <div
-                        key={answer.examId}
-                        className="flex items-center mb-2"
-                      >
+                      <div key={answer.id} className="flex items-center mb-2">
                         <input
                           type="checkbox"
                           checked={answer.isCorrect}
@@ -677,7 +683,7 @@ export default function Exam({ chapter }: any) {
                               index,
                               jindex,
                               kindex,
-                              answer.examId
+                              answer.id
                             )
                           }
                           className="mx-2 visually-hidden-checkbox h-6 w-6"
