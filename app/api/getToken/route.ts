@@ -2,13 +2,13 @@ import { auth } from "@clerk/nextjs";
 import { NextResponse } from "next/server";
 
 import { db } from "@/lib/db";
-import { isTeacher } from "@/lib/teacher";
+
 import axios from "axios";
 export async function GET(req: Request) {
   try {
-    const { userId } = auth();
+    const { userId, sessionClaims }: any = auth();
 
-    if (!userId || !isTeacher(userId)) {
+    if (!userId || sessionClaims.userInfo.role.toUpperCase() == "STAFF") {
       return new NextResponse("Unauthorized", { status: 401 });
     }
 

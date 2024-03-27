@@ -2,14 +2,13 @@ import { auth } from "@clerk/nextjs";
 import { NextResponse } from "next/server";
 
 import { db } from "@/lib/db";
-import { isTeacher } from "@/lib/teacher";
 
 export async function POST(req: Request) {
   try {
-    const { userId } = auth();
+    const { userId, sessionClaims }: any = auth();
     const { title } = await req.json();
 
-    if (!userId || !isTeacher(userId)) {
+    if (!userId || sessionClaims.userInfo.role.toUpperCase() == "STAFF") {
       return new NextResponse("Unauthorized", { status: 401 });
     }
     const date = new Date();

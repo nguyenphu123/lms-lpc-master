@@ -19,7 +19,6 @@ export default async function Dashboard() {
   let userInfo = await db.user.findUnique({
     where: { id: sessionClaims.userId, status: "approved" },
   });
-
   if (userInfo == undefined) {
     return redirect("/pending");
   }
