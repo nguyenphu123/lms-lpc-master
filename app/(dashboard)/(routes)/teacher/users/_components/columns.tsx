@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
+import axios from "axios";
 
 export const columns: ColumnDef<User>[] = [
   {
@@ -22,7 +23,7 @@ export const columns: ColumnDef<User>[] = [
       return <div>Name</div>;
     },
     cell: ({ row }) => {
-      const { username, imageUrl }: any = row.original;
+      const { id, username, imageUrl, status }: any = row.original;
 
       return (
         <div className="flex items-center">
@@ -112,7 +113,15 @@ export const columns: ColumnDef<User>[] = [
     id: "actions",
     accessorKey: "Action",
     cell: ({ row }) => {
-      const { id } = row.original;
+      const { id, status } = row.original;
+
+      async function onChangeStatus(id: string, status: string): Promise<void> {
+        let values = {
+          status: status == "approved" ? "pending" : "approved",
+        };
+
+        await axios.patch(`/api/user/${id}/status`, values);
+      }
 
       return (
         <DropdownMenu>
@@ -129,9 +138,9 @@ export const columns: ColumnDef<User>[] = [
                 Edit
               </DropdownMenuItem>
             </Link>
-            <DropdownMenuItem>
+            <DropdownMenuItem onClick={() => onChangeStatus(id, status)}>
               <BadgeCheck className="h-4 w-4 mr-2" />
-              Approved
+              {status == "approved" ? "Ban" : "Approved"}
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
