@@ -75,10 +75,10 @@ export const ChaptersList = ({
                 {(provided) => (
                   <div
                     className={cn(
-                      `flex items-center gap-x-2 bg-slate-200 border-slate-200 border${
+                      `flex items-center gap-x-2  border-slate-200 border${
                         chapter.type.toLowerCase() == "slide"
-                          ? "text-sky-700"
-                          : "text-orange-700"
+                          ? "text-sky-700 bg-slate-200 dark:bg-slate-200"
+                          : "text-orange-700 bg-orange-100 dark:bg-orange-100"
                       }  rounded-md mb-4 text-sm`,
                       chapter.isPublished &&
                         `bg-sky-100 border-sky-200 ${
@@ -94,7 +94,13 @@ export const ChaptersList = ({
                       className={cn(
                         "px-2 py-3 border-r border-r-slate-200 hover:bg-slate-300 rounded-l-md transition dark:text-black",
                         chapter.isPublished &&
-                          "border-r-sky-200 hover:bg-sky-200 dark:text-blue-800"
+                          `border-r-sky-200 hover:bg-sky-200 
+                          ${
+                            chapter.type.toLowerCase() == "slide"
+                              ? "dark:text-blue-800"
+                              : "dark:text-orange-700"
+                          }
+                          `
                       )}
                       {...provided.dragHandleProps}
                     >
@@ -103,7 +109,12 @@ export const ChaptersList = ({
                     <div
                       className={cn(
                         "dark:text-black",
-                        chapter.isPublished && "dark:text-blue-800"
+                        chapter.isPublished &&
+                          `${
+                            chapter.type.toLowerCase() == "slide"
+                              ? "dark:text-blue-800"
+                              : "dark:text-orange-700"
+                          }`
                       )}
                     >
                       {chapter.title}
@@ -114,7 +125,12 @@ export const ChaptersList = ({
                         className={cn(
                           "",
                           "bg-slate-500",
-                          chapter.isPublished && "bg-sky-700 dark:text-slate-50"
+                          chapter.isPublished &&
+                            `${
+                              chapter.type.toLowerCase() == "slide"
+                                ? "dark:text-blue-800"
+                                : "dark:text-orange-700"
+                            } dark:text-slate-50`
                         )}
                       >
                         {chapter.isPublished ? "Published" : "Draft"}
@@ -124,7 +140,11 @@ export const ChaptersList = ({
                         className={cn(
                           "w-4 h-4 cursor-pointer hover:opacity-75 transition dark:text-black",
                           chapter.isPublished &&
-                            "border-r-sky-200 hover:bg-sky-200 dark:text-blue-800"
+                            `border-r-sky-200 hover:bg-sky-200 ${
+                              chapter.type.toLowerCase() == "slide"
+                                ? "dark:text-blue-800"
+                                : "dark:text-orange-700"
+                            }`
                         )}
                       />
                     </div>

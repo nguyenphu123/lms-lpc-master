@@ -2,6 +2,7 @@ import { auth } from "@clerk/nextjs";
 import { NextResponse } from "next/server";
 
 import { db } from "@/lib/db";
+import shuffleArray from "@/lib/shuffle";
 
 export async function POST(
   req: Request,
@@ -38,21 +39,20 @@ export async function POST(
       values: any
     ) {
       for (let k = 0; k < values.length; k++) {
-        const { categoryId, categoryTitle, numOfAppearance, score }: any =
-          values[k];
+        const { categoryId, title, numOfAppearance, score }: any = values[k];
         const category = await db.category.upsert({
           where: { id: categoryId },
-          update: { title: categoryTitle, numOfAppearance },
+          update: { title: title, numOfAppearance: parseInt(numOfAppearance) },
           create: {
             moduleId: chapter.id.toString(),
-            title: categoryTitle,
-            numOfAppearance,
-            score: score,
+            title: title,
+            numOfAppearance: parseInt(numOfAppearance),
+            score: parseInt(score),
           },
         });
-        for (let i = 0; i < values[k].questionList.length; i++) {
+        for (let i = 0; i < values[k].question.length; i++) {
           const { id, question, type, score, anwser, compulsory }: any =
-            values[k].questionList[i];
+            values[k].question[i];
           let anwserList = [...anwser];
           for (let j = 0; j < anwserList.length; j++) {
             delete anwserList[j]["id"];
@@ -73,7 +73,7 @@ export async function POST(
               },
             },
             create: {
-              categoryId: categoryId,
+              categoryId: category.id,
               compulsory,
               question,
               type,
@@ -103,7 +103,7 @@ export async function GET(
     if (!userId) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
-    const questions = await db.module.findUnique({
+    const questionsList: any = await db.module.findUnique({
       where: {
         id: params.chapterId,
       },
@@ -125,8 +125,11 @@ export async function GET(
         },
       },
     });
+    for (let i = 0; i < questionsList.Category.length; i++) {
+      questionsList.Category[i]["question"] = questionsList.Category[i].Exam;
+    }
     // console.log(questions);
-    return NextResponse.json(questions);
+    return NextResponse.json(questionsList);
   } catch (error) {
     console.log("[CHAPTER_PUBLISH]", error);
     return new NextResponse("Internal Error", { status: 500 });

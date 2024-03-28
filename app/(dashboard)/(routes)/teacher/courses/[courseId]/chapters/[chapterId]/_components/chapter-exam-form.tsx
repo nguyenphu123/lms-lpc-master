@@ -12,7 +12,7 @@ const Link = dynamic(() => import("next/link"), {
 export default function Exam({ chapter }: any) {
   const [quizList, setQuizList]: any = useState<
     Array<{
-      id: number;
+      categoryId: number;
       title: string;
       numOfAppearance: number;
       score: number;
@@ -37,7 +37,7 @@ export default function Exam({ chapter }: any) {
       let questionList = await axios.get(
         `/api/courses/${chapter.courseId}/chapters/${chapter.id}/category/exam`
       );
-
+      console.log(questionList.data.Category)  
       setQuizList(questionList.data.Category);
     }
     loadQuestion();
@@ -47,7 +47,7 @@ export default function Exam({ chapter }: any) {
   }
   function addCategory() {
     const newCategory: any = {
-      id: getRandomInt(100000).toString(),
+      categoryId: getRandomInt(100000).toString(),
       title: "",
       numOfAppearance: 0,
       question: [],
@@ -63,7 +63,9 @@ export default function Exam({ chapter }: any) {
     const newQuizsList = [...quizList];
     if (isNaN(number)) {
       alert("The number of appeared questions must be number.");
-      newQuizsList[index].numOfAppearance = newQuizsList[index].question.length;
+      newQuizsList[index].numOfAppearance = parseInt(
+        newQuizsList[index].question.length
+      );
       setQuizList([...newQuizsList]);
       return;
     }
@@ -71,7 +73,9 @@ export default function Exam({ chapter }: any) {
       alert(
         "The number of appeared questions cannot exceeded the number of questions in the category."
       );
-      newQuizsList[index].numOfAppearance = newQuizsList[index].question.length;
+      newQuizsList[index].numOfAppearance = parseInt(
+        newQuizsList[index].question.length
+      );
       setQuizList([...newQuizsList]);
       return;
     }
@@ -217,23 +221,29 @@ export default function Exam({ chapter }: any) {
       const newQuizsList = [...quizList];
 
       const checkAnswersList = newQuizsList.map((item) =>
-        item.anwser.map((item: any) => item.isCorrect).indexOf(true)
+        item.question.map((item: any) =>
+          item.anwser.map((item: any) => item.isCorrect).indexOf(true)
+        )
       );
-
-      if (checkAnswersList.indexOf(-1) !== -1) {
-        alert("Sorry, all questions must have at least one correct answer");
-        return;
+      for (let i = 0; i < checkAnswersList.length; i++) {
+        if (checkAnswersList[i].indexOf(-1) !== -1) {
+          alert("Sorry, all questions must have at least one correct answer");
+          return;
+        }
       }
+
       for (let i = 0; i < newQuizsList.length; i++) {
-        if (newQuizsList[i].type == "singleChoice") {
-          const checkAnswersListType = newQuizsList[i].anwser.filter(
-            (item: any) => item.isCorrect == true
-          );
-          if (checkAnswersListType.length > 1) {
-            alert(
-              "Sorry, there can only be one correct anwser in single choice question"
-            );
-            return;
+        for (let j = 0; j < newQuizsList[i].question.length; j++) {
+          if (newQuizsList[i].question[j].type == "singleChoice") {
+            const checkAnswersListType = newQuizsList[i].question[
+              j
+            ].anwser.filter((item: any) => item.isCorrect == true);
+            if (checkAnswersListType.length > 1) {
+              alert(
+                "Sorry, there can only be one correct anwser in single choice question"
+              );
+              return;
+            }
           }
         }
       }
@@ -338,6 +348,7 @@ export default function Exam({ chapter }: any) {
             header: ["question", "Answer", "Type", "compulsory"],
           });
           let category: any = {
+            categoryId: getRandomInt(100000).toString(),
             title: sheetName.split(".")[0],
             numOfAppearance: sheetName.split(".")[1],
             question: [],
@@ -387,13 +398,6 @@ export default function Exam({ chapter }: any) {
   return (
     <main className="min-h-full items-center" suppressHydrationWarning={true}>
       <div className="w-full p-8 " suppressHydrationWarning={true}>
-        <Link
-          href="javascript:history.back()"
-          className="flex items-center text-sm hover:opacity-75 transition mb-6"
-        >
-          <ArrowLeft className="h-4 w-4 mr-2" />
-          Back to course setup
-        </Link>
         <div className="pb-3">
           <label className="block text-3xl font-bold mb-2 text-center">
             Create Exam
@@ -543,7 +547,7 @@ export default function Exam({ chapter }: any) {
         {quizList.map((category: any, index: any) => {
           return (
             <div
-              key={category.id}
+              key={category.categoryId}
               className="my-4 p-4 border rounded  shadow-md relative"
             >
               <label className="block text-lg mt-2">Click</label>

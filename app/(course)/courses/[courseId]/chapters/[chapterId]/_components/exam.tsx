@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { redirect, useRouter } from "next/navigation";
 import { useConfettiStore } from "@/hooks/use-confetti-store";
+import shuffleArray from "@/lib/shuffle";
 const Exam = ({
   chapter,
   nextChapterId,
@@ -26,12 +27,13 @@ const Exam = ({
   useEffect(() => {
     const getHistory = async () => {
       let getLatestTestResult: any = await axios.get(
-        `/api/courses/${courseId}/chapters/${chapter.id}/exam`
+        `/api/courses/${courseId}/chapters/${chapter.id}/category/exam`
       );
       setMaxAsset(maxAsset - getLatestTestResult.data.UserProgress[0].attempt);
     };
     getHistory();
   }, [maxAsset]);
+
   const onTimeOut = async () => {
     if (questions.length == 0) {
     } else {
@@ -148,33 +150,22 @@ const Exam = ({
   const accept = async () => {
     if (chapter.status != "finished") {
       let questionList = await axios.get(
-        `/api/courses/${chapter.courseId}/chapters/${chapter.id}/exam`
+        `/api/courses/${chapter.courseId}/chapters/${chapter.id}/category/exam`
+      );
+      console.log(questionList.data);
+      // setQuestions(shuffleArray(questionList.data.ExamList));
+    } else {
+      let getLatestTestResult: any = await axios.get(
+        `/api/courses/${courseId}/chapters${chapter.id}/category/exam`
+      );
+      // setMaxAsset(
+      //   chapter.maxAsset - getLatestTestResult.data.UserProgress[0].attempt
+      // );
+      let questionList = await axios.get(
+        `/api/courses/${chapter.courseId}/chapters/${chapter.id}/category/exam`
       );
       // console.log(questionList.data);
-      setQuestions(questionList.data);
-    } else {
-      if (maxAsset == 0) {
-        let getLatestTestResult: any = await axios.get(
-          `/api/courses/${courseId}/chapters${chapter.id}/exam`
-        );
-        if (getLatestTestResult.data.length > 0) {
-          alert(
-            "Sorry, you have reached your max attempt, please wait for 24 hours to retake the exam"
-          );
-        } else {
-          setMaxAsset(chapter.maxAsset);
-        }
-      } else {
-        let getLatestTestResult: any = await axios.get(
-          `/api/courses/${courseId}/chapters${chapter.id}/exam`
-        );
-        setMaxAsset(chapter.maxAsset - getLatestTestResult.data.length);
-        let questionList = await axios.get(
-          `/api/courses/${chapter.courseId}/chapters/${chapter.id}/exam`
-        );
-        // console.log(questionList.data);
-        setQuestions(questionList.data);
-      }
+      // setQuestions(shuffleArray(questionList.data.ExamList));
     }
   };
   const cancel = () => {
