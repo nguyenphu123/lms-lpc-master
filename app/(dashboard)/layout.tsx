@@ -1,9 +1,14 @@
 import { auth } from "@clerk/nextjs";
 import { Navbar } from "./_components/navbar";
 import { Sidebar } from "./_components/sidebar";
+import { redirect } from "next/navigation";
 
 const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
-  const { userId } = auth();
+  const { userId, sessionClaims }: any = auth();
+
+  if (sessionClaims.userInfo.role.toUpperCase() == "STAFF") {
+    return redirect("/");
+  }
   return (
     <div className="h-full">
       <div className="h-[80px] md:pl-56 fixed inset-y-0 w-full z-50">

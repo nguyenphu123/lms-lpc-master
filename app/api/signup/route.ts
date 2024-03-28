@@ -10,14 +10,14 @@ export async function POST(req: Request) {
 
     let user = await clerkClient.users.updateUserMetadata(createdUserId, {
       publicMetadata: {
-        role: "staff",
+        role: "STAFF",
         department: department,
       },
     });
     let creatUser = await db.user.create({
       data: {
         id: createdUserId,
-        role: "staff",
+        role: "STAFF",
         email: emailAddress,
         status: "pending",
         username: emailAddress,

@@ -10,9 +10,11 @@ const ProgramLayout = async ({
   children: React.ReactNode;
   params: { programId: string };
 }) => {
-  const { userId } = auth();
-
+  const { userId, sessionClaims }: any = auth();
   if (!userId) {
+    return redirect("/");
+  }
+  if (sessionClaims.userInfo.role.toUpperCase() == "STAFF") {
     return redirect("/");
   }
 
