@@ -9,6 +9,7 @@ import { useState } from "react";
 export default function Page() {
   const { isLoaded, signUp, setActive } = useSignUp();
   const [emailAddress, setEmailAddress] = useState("");
+  const [username, setUsername] = useState("");
   const [showPopup, setShowPopup] = useState(false);
   const [confirmCode, setConfirmCode]: any = useState("");
   const confetti = useConfettiStore();
@@ -42,6 +43,7 @@ export default function Page() {
     try {
       await signUp.create({
         emailAddress,
+        username,
       });
       await signUp.prepareEmailAddressVerification({ strategy: "email_code" });
       setPendingVerification(true);
@@ -87,6 +89,19 @@ export default function Page() {
         Please link your Lien Phat account
       </h1>
       <form onSubmit={handleSubmit} className="space-y-4">
+        <div>
+          <label htmlFor="username" className="block mb-1">
+            Name
+          </label>
+          <input
+            type="text"
+            id="username"
+            placeholder="Nguyen Van A"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring focus:ring-blue-400"
+          />
+        </div>
         <div>
           <label htmlFor="email" className="block mb-1">
             Email
