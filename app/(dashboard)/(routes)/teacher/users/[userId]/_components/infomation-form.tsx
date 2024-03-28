@@ -120,7 +120,7 @@ const UserInformation = ({ user }: any) => {
           >
             <option value="STAFF">Staff</option>
             <option value="MANAGER">Manager</option>
-            <option disabled hidden value="admin">
+            <option hidden value="ADMIN">
               Admin
             </option>
           </select>
