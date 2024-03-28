@@ -1,6 +1,6 @@
 "use client";
-import { FormEvent, useState } from "react";
-import { Pencil, Star, X } from "lucide-react";
+import { useState } from "react";
+import { Pencil, X } from "lucide-react";
 import axios from "axios";
 
 const UserInformation = ({ user }: any) => {

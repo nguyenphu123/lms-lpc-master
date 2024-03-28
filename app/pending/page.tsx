@@ -1,4 +1,4 @@
-import { SignOutButton, UserButton, auth, clerkClient } from "@clerk/nextjs";
+import { SignOutButton, auth, clerkClient } from "@clerk/nextjs";
 import { redirect } from "next/navigation";
 import LinkButton from "./_component/Link-Button";
 const StepTwo = async () => {
