@@ -37,8 +37,10 @@ export async function PATCH(
       where: { id: params.userId },
       data: {
         role: values.role,
+        status: values.status,
       },
     });
+    delete values.status;
     const updatedUser = await clerkClient.users.updateUser(params.userId, {
       publicMetadata: values,
     });

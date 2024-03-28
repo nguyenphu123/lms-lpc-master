@@ -9,20 +9,15 @@ const StepTwo = async () => {
   const user = await clerkClient.users.getUser(sessionClaims?.userId);
 
   return (
-    <div className="p-6">
-      {/* <UserButton
-        afterSignOutUrl="/"
-        defaultOpen={user.externalAccounts.length == 0 ? true : false}
-
-        userProfileMode="modal"
-      /> */}
-      {user.externalAccounts.length == 0 ? (
-        <LinkButton></LinkButton>
+    <div className="p-6 flex items-center justify-center">
+      {user.externalAccounts.length === 0 ? (
+        <LinkButton />
       ) : (
-        <>
-          Sorry you are not approved, please send money to admin to get approval
+        <div className="text-center">
+          <p className="mb-4">Sorry, you are not approved.</p>
+          <p className="mb-4">Please contact the administrator for approval.</p>
           <SignOutButton />
-        </>
+        </div>
       )}
     </div>
   );

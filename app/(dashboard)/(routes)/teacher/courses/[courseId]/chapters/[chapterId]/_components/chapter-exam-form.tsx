@@ -37,7 +37,7 @@ export default function Exam({ chapter }: any) {
       let questionList = await axios.get(
         `/api/courses/${chapter.courseId}/chapters/${chapter.id}/category/exam`
       );
-      console.log(questionList.data.Category)  
+
       setQuizList(questionList.data.Category);
     }
     loadQuestion();

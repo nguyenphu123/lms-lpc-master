@@ -24,12 +24,18 @@ const Exam = ({
 }: any) => {
   const [maxAsset, setMaxAsset] = useState(chapter.maxAsset);
   const confetti = useConfettiStore();
+  let [questions, setQuestions]: any = useState([]);
   useEffect(() => {
     const getHistory = async () => {
       let getLatestTestResult: any = await axios.get(
-        `/api/courses/${courseId}/chapters/${chapter.id}/category/exam`
+        `/api/courses/${courseId}/chapters/${chapter.id}/category/exam/shuffle`
       );
-      setMaxAsset(maxAsset - getLatestTestResult.data.UserProgress[0].attempt);
+
+      setMaxAsset(
+        maxAsset - getLatestTestResult.data?.UserProgress[0]?.attempt
+      );
+      setQuestions(shuffleArray(getLatestTestResult.data?.ExamList));
+      console.log(shuffleArray(getLatestTestResult.data?.ExamList));
     };
     getHistory();
   }, [maxAsset]);
@@ -142,7 +148,7 @@ const Exam = ({
   };
   const time = countdown(chapter.timeLimit, onTimeOut);
   // Danh sách câu hỏi và đáp án
-  let [questions, setQuestions]: any = useState([]);
+
   // useEffect(() => {
   //   async function loadQuestion() {}
   //   loadQuestion();
@@ -460,8 +466,8 @@ const Exam = ({
                         selectedAnswers[currentQuestion]?.chooseAnwser.includes(
                           option
                         )
-                          ? "border-blue-600 text-white "
-                          : "border-gray-300 text-black "
+                          ? "border-blue-600 text-white dark:text-black"
+                          : "border-gray-300 text-black dark:text-white"
                       } rounded-md hover:border-blue-600 hover:bg-blue-600 hover:text-white`}
                     >
                       {(index + 10).toString(36).toUpperCase() +
