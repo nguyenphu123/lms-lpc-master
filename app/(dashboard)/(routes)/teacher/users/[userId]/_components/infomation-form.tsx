@@ -6,6 +6,7 @@ import axios from "axios";
 const UserInformation = ({ user }: any) => {
   const [isRoleEditing, setIsRoleEditing] = useState(false);
   const [isDepartmentEditing, setIsDepartmentEditing] = useState(false);
+  const [isUsernameEditing, setIsUsernameEditing] = useState(false);
   const [isStatusEditing, setIsStatusEditing] = useState(false);
 
   const handleRoleEditClick = () => {
@@ -20,14 +21,20 @@ const UserInformation = ({ user }: any) => {
     setIsDepartmentEditing(!isDepartmentEditing);
   };
 
+  const handleUsernameEditClick = () => {
+    setIsUsernameEditing(!isUsernameEditing);
+  };
+
   const submitEdit = async (e: any) => {
     e.preventDefault();
     setIsRoleEditing(false);
     setIsDepartmentEditing(false);
+    setIsUsernameEditing(false);
     setIsStatusEditing(false);
     let values = {
       department: e.target.department.value,
       role: e.target.role.value,
+      username: e.target.username.value,
       status: e.target.status.value,
     };
 
@@ -55,12 +62,28 @@ const UserInformation = ({ user }: any) => {
         <label className="block text-gray-700 text-sm font-bold mb-2">
           Username:
         </label>
-        <input
-          type="text"
-          value={user?.username}
-          readOnly
-          className="w-full bg-gray-100 border border-gray-300 rounded-md p-2 pointer-events-none"
-        />
+        <div className="relative">
+          <input
+            type="text"
+            name="username"
+            autoCapitalize={"characters"}
+            defaultValue={user?.username}
+            readOnly={!isUsernameEditing}
+            className={`w-full bg-gray-100 border border-gray-300 rounded-md p-2 pointer-events-none${
+              isUsernameEditing ? "border-blue-500" : ""
+            }`}
+          />
+          <div
+            className="absolute right-2 top-2 cursor-pointer"
+            onClick={handleUsernameEditClick}
+          >
+            {isUsernameEditing ? (
+              <X className="text-blue-500 w-5 h-5" />
+            ) : (
+              <Pencil className="text-blue-500 w-5 h-5" />
+            )}
+          </div>
+        </div>
       </div>
 
       {/* Right Column */}
@@ -120,7 +143,7 @@ const UserInformation = ({ user }: any) => {
           >
             <option value="STAFF">Staff</option>
             <option value="MANAGER">Manager</option>
-            <option hidden value="ADMIN">
+            <option disabled value="ADMIN">
               Admin
             </option>
           </select>
@@ -180,7 +203,10 @@ const UserInformation = ({ user }: any) => {
         </div>
       </div>
       <div className="col-span-2 text-right">
-        {isDepartmentEditing || isRoleEditing || isStatusEditing ? (
+        {isDepartmentEditing ||
+        isRoleEditing ||
+        isStatusEditing ||
+        isUsernameEditing ? (
           <button
             type="submit"
             className="bg-gradient-to-r from-black to-gray-800 text-white py-2 px-4 rounded-md"
