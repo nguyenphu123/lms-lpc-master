@@ -10,7 +10,7 @@ export default function Page() {
   const { isLoaded, signUp, setActive } = useSignUp();
   const [emailAddress, setEmailAddress] = useState("");
   const [username, setUsername] = useState("");
-  const [showPopup, setShowPopup] = useState(false);
+
   const [confirmCode, setConfirmCode]: any = useState("");
   const confetti = useConfettiStore();
   const [password, setPassword] = useState("");
@@ -201,7 +201,7 @@ export default function Page() {
       </form>
       {pendingVerification && (
         <div className="fixed top-0 left-0 w-full h-full bg-gray-900 bg-opacity-50 flex justify-center items-center">
-          <div className="bg-white p-6 rounded-lg shadow-lg">
+          <div className="bg-white p-6 rounded-lg shadow-lg dark:bg-zinc-950">
             <h2 className="text-xl font-bold mb-4 text-center">Verify Email</h2>
             <form className="flex flex-col space-y-4">
               <input
