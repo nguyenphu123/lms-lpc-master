@@ -1,8 +1,8 @@
 "use client";
 import { useConfettiStore } from "@/hooks/use-confetti-store";
-import { clerkClient, useSignUp } from "@clerk/nextjs";
+import { useSignUp } from "@clerk/nextjs";
 import axios from "axios";
-import { redirect, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 import { useState } from "react";
 
@@ -10,7 +10,6 @@ export default function Page() {
   const { isLoaded, signUp, setActive } = useSignUp();
   const [emailAddress, setEmailAddress] = useState("");
   const [username, setUsername] = useState("");
-
   const [confirmCode, setConfirmCode]: any = useState("");
   const confetti = useConfettiStore();
   const [password, setPassword] = useState("");
