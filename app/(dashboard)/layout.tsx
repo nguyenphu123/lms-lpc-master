@@ -6,7 +6,7 @@ import { redirect } from "next/navigation";
 const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
   const { userId, sessionClaims }: any = auth();
 
-  if (sessionClaims.userInfo.role.toUpperCase() == "STAFF") {
+  if (!userId) {
     return redirect("/");
   }
   return (

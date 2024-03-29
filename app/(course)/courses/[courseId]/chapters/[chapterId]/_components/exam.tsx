@@ -34,7 +34,7 @@ const Exam = ({
       setMaxAsset(
         maxAsset - getLatestTestResult.data?.UserProgress[0]?.attempt
       );
-      setQuestions(shuffleArray(getLatestTestResult.data?.ExamList));
+      // setQuestions(shuffleArray(getLatestTestResult.data?.ExamList));
       console.log(shuffleArray(getLatestTestResult.data?.ExamList));
     };
     getHistory();
