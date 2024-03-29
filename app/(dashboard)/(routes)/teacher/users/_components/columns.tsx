@@ -2,7 +2,13 @@
 
 import { User } from "@prisma/client";
 import { ColumnDef } from "@tanstack/react-table";
-import { ArrowUpDown, MoreHorizontal, Pencil, BadgeCheck } from "lucide-react";
+import {
+  ArrowUpDown,
+  MoreHorizontal,
+  Pencil,
+  BadgeCheck,
+  Ban,
+} from "lucide-react";
 import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
@@ -139,8 +145,17 @@ export const columns: ColumnDef<User>[] = [
               </DropdownMenuItem>
             </Link>
             <DropdownMenuItem onClick={() => onChangeStatus(id, status)}>
-              <BadgeCheck className="h-4 w-4 mr-2" />
-              {status == "approved" ? "Ban" : "Approved"}
+              {status == "approved" ? (
+                <>
+                  <Ban className="h-4 w-4 mr-2" />
+                  Ban
+                </>
+              ) : (
+                <>
+                  <BadgeCheck className="h-4 w-4 mr-2" />
+                  Approved
+                </>
+              )}
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
