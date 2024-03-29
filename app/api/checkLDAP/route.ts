@@ -7,12 +7,13 @@ export async function POST(req: Request) {
 
     var config = {
       url: "ldap://LPCDC001.lp.local",
-      baseDN: "CN=Train Connecting,CN=Services,DC=lp,DC=local",
+      baseDN: "DC=lp,DC=local",
       username: "trainconnect@lp.local",
       password: "Js46~p9@X3$Gu!",
     };
     let ad = new ActiveDirectory.promiseWrapper(config);
     const userCheck = await ad.findUser(emailAddress);
+
     return NextResponse.json(userCheck.mail == emailAddress);
   } catch (error) {
     console.log("[PROGRAMS]", error);
