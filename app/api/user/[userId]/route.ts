@@ -40,7 +40,11 @@ export async function PATCH(
         status: values.status,
       },
     });
+    const updatedUsername = await clerkClient.users.updateUser(params.userId, {
+      username: values.username,
+    });
     delete values.status;
+    delete values.username;
     const updatedUser = await clerkClient.users.updateUser(params.userId, {
       publicMetadata: values,
     });
