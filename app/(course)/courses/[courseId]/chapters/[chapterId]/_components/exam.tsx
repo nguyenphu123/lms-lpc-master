@@ -23,6 +23,7 @@ const Exam = ({
   isCompleted,
 }: any) => {
   const [maxAsset, setMaxAsset] = useState(chapter.maxAsset);
+  const [categoryList, setCategoryList]: any = useState([]);
   const confetti = useConfettiStore();
   let [questions, setQuestions]: any = useState([]);
   useEffect(() => {
@@ -35,7 +36,8 @@ const Exam = ({
         maxAsset - getLatestTestResult.data?.UserProgress[0]?.attempt
       );
       // setQuestions(shuffleArray(getLatestTestResult.data?.ExamList));
-      console.log(shuffleArray(getLatestTestResult.data?.ExamList));
+      setCategoryList(getLatestTestResult.data?.Category);
+      // console.log(shuffleArray(getLatestTestResult.data?.ExamList));
     };
     getHistory();
   }, [maxAsset]);
@@ -44,9 +46,9 @@ const Exam = ({
     if (questions.length == 0) {
     } else {
       const { finalScore }: any = calculateScore();
-      const totalScore = (finalScore / questions.length) * 100;
+      const totalScore = finalScore;
       alert(
-        `Kết thúc bài kiểm tra! Điểm của bạn là ${finalScore}/${questions.length}\n` +
+        `Kết thúc bài kiểm tra! Điểm của bạn là ${finalScore}\n` +
           `${
             totalScore >= chapter.scoreLimit
               ? "Chúc mừng bạn đã pass"
@@ -60,51 +62,51 @@ const Exam = ({
           `/api/courses/${courseId}/chapters/${chapter.id}/progress`,
           {
             status: totalScore >= chapter.scoreLimit ? "finished" : "failed",
-            score: ((finalScore / questions.length) * 100).toString(),
+            score: finalScore.toString(),
             progress: "100%",
             endDate: date,
           }
         );
         if (totalScore >= chapter.scoreLimit) {
           if (totalScore > chapter.scoreLimit) {
-            let currentUser = await axios.get(`/api/user`);
-            switch (chapter.scoreLimit) {
-              case 60:
-                await axios.patch(`/api/user/${currentUser.data.id}/score`, {
-                  star:
-                    parseInt(currentUser.data.star) +
-                    Math.floor(totalScore - chapter.scoreLimit) / 4,
-                });
-                break;
-              case 70:
-                await axios.patch(`/api/user/${currentUser.data.id}/score`, {
-                  star:
-                    parseInt(currentUser.data.star) +
-                    Math.floor(totalScore - chapter.scoreLimit) / 3,
-                });
-                break;
-              case 80:
-                await axios.patch(`/api/user/${currentUser.data.id}/score`, {
-                  star:
-                    parseInt(currentUser.data.star) +
-                    Math.floor(totalScore - chapter.scoreLimit) / 2,
-                });
-                break;
-              case 90:
-                await axios.patch(`/api/user/${currentUser.data.id}/score`, {
-                  star:
-                    parseInt(currentUser.data.star) +
-                    Math.floor(totalScore - chapter.scoreLimit),
-                });
-                break;
-              case 100:
-                await axios.patch(`/api/user/${currentUser.data.id}/score`, {
-                  star: parseInt(currentUser.data.star) + totalScore,
-                });
-                break;
-              default:
-                break;
-            }
+            // let currentUser = await axios.get(`/api/user`);
+            // switch (chapter.scoreLimit) {
+            //   case 60:
+            //     await axios.patch(`/api/user/${currentUser.data.id}/score`, {
+            //       star:
+            //         parseInt(currentUser.data.star) +
+            //         Math.floor(totalScore - chapter.scoreLimit) / 4,
+            //     });
+            //     break;
+            //   case 70:
+            //     await axios.patch(`/api/user/${currentUser.data.id}/score`, {
+            //       star:
+            //         parseInt(currentUser.data.star) +
+            //         Math.floor(totalScore - chapter.scoreLimit) / 3,
+            //     });
+            //     break;
+            //   case 80:
+            //     await axios.patch(`/api/user/${currentUser.data.id}/score`, {
+            //       star:
+            //         parseInt(currentUser.data.star) +
+            //         Math.floor(totalScore - chapter.scoreLimit) / 2,
+            //     });
+            //     break;
+            //   case 90:
+            //     await axios.patch(`/api/user/${currentUser.data.id}/score`, {
+            //       star:
+            //         parseInt(currentUser.data.star) +
+            //         Math.floor(totalScore - chapter.scoreLimit),
+            //     });
+            //     break;
+            //   case 100:
+            //     await axios.patch(`/api/user/${currentUser.data.id}/score`, {
+            //       star: parseInt(currentUser.data.star) + totalScore,
+            //     });
+            //     break;
+            //   default:
+            //     break;
+            // }
           }
 
           if (nextChapterId != null) {
@@ -221,10 +223,9 @@ const Exam = ({
     } else {
       // Nếu đã là câu hỏi cuối cùng, kiểm tra điểm số và hiển thị kết quả
       const { finalScore }: any = calculateScore();
-      const totalScore = (finalScore / questions.length) * 100;
-
+      const totalScore = finalScore;
       alert(
-        `Kết thúc bài kiểm tra! Điểm của bạn là ${finalScore}/${questions.length}\n` +
+        `Kết thúc bài kiểm tra! Điểm của bạn là ${finalScore}\n` +
           `${
             totalScore >= chapter.scoreLimit
               ? "Chúc mừng bạn đã pass"
@@ -238,51 +239,51 @@ const Exam = ({
           `/api/courses/${courseId}/chapters/${chapter.id}/progress`,
           {
             status: totalScore >= chapter.scoreLimit ? "finished" : "failed",
-            score: ((finalScore / questions.length) * 100).toString(),
+            score: finalScore.toString(),
             progress: "100%",
             endDate: date,
           }
         );
         if (totalScore >= chapter.scoreLimit) {
           if (totalScore > chapter.scoreLimit) {
-            let currentUser = await axios.get(`/api/user`);
-            switch (chapter.scoreLimit) {
-              case 60:
-                await axios.patch(`/api/user/${currentUser.data.id}/score`, {
-                  star:
-                    parseInt(currentUser.data.star) +
-                    Math.floor(totalScore - chapter.scoreLimit) / 4,
-                });
-                break;
-              case 70:
-                await axios.patch(`/api/user/${currentUser.data.id}/score`, {
-                  star:
-                    parseInt(currentUser.data.star) +
-                    Math.floor(totalScore - chapter.scoreLimit) / 3,
-                });
-                break;
-              case 80:
-                await axios.patch(`/api/user/${currentUser.data.id}/score`, {
-                  star:
-                    parseInt(currentUser.data.star) +
-                    Math.floor(totalScore - chapter.scoreLimit) / 2,
-                });
-                break;
-              case 90:
-                await axios.patch(`/api/user/${currentUser.data.id}/score`, {
-                  star:
-                    parseInt(currentUser.data.star) +
-                    Math.floor(totalScore - chapter.scoreLimit),
-                });
-                break;
-              case 100:
-                await axios.patch(`/api/user/${currentUser.data.id}/score`, {
-                  star: parseInt(currentUser.data.star) + totalScore,
-                });
-                break;
-              default:
-                break;
-            }
+            // let currentUser = await axios.get(`/api/user`);
+            // switch (chapter.scoreLimit) {
+            //   case 60:
+            //     await axios.patch(`/api/user/${currentUser.data.id}/score`, {
+            //       star:
+            //         parseInt(currentUser.data.star) +
+            //         Math.floor(totalScore - chapter.scoreLimit) / 4,
+            //     });
+            //     break;
+            //   case 70:
+            //     await axios.patch(`/api/user/${currentUser.data.id}/score`, {
+            //       star:
+            //         parseInt(currentUser.data.star) +
+            //         Math.floor(totalScore - chapter.scoreLimit) / 3,
+            //     });
+            //     break;
+            //   case 80:
+            //     await axios.patch(`/api/user/${currentUser.data.id}/score`, {
+            //       star:
+            //         parseInt(currentUser.data.star) +
+            //         Math.floor(totalScore - chapter.scoreLimit) / 2,
+            //     });
+            //     break;
+            //   case 90:
+            //     await axios.patch(`/api/user/${currentUser.data.id}/score`, {
+            //       star:
+            //         parseInt(currentUser.data.star) +
+            //         Math.floor(totalScore - chapter.scoreLimit),
+            //     });
+            //     break;
+            //   case 100:
+            //     await axios.patch(`/api/user/${currentUser.data.id}/score`, {
+            //       star: parseInt(currentUser.data.star) + totalScore,
+            //     });
+            //     break;
+            //   default:
+            //     break;
+            // }
           }
           if (nextChapterId != null) {
             await axios.put(
@@ -349,34 +350,46 @@ const Exam = ({
     }
 
     for (let i = 0; i < selectedAnswers.length; i++) {
-      if (selectedAnswers[i].type == "singleChoice") {
-        if (selectedAnswers[i].chooseAnwser[0].isCorrect == true) {
-          finalScore++;
-        }
-      } else {
-        let correctSelectedAnwser = 0;
-        let numberOfCorrectAnwser = selectedAnswers[i].anwser.filter(
-          (item: any) => item.isCorrect == true
-        ).length;
-        for (let k = 0; k < selectedAnswers[i].anwser.length; k++) {
+      let categoryScore = 0;
+      for (let j = 0; j < categoryList.length; j++) {
+        if (selectedAnswers[i].type == "singleChoice") {
+          if (selectedAnswers[i].chooseAnwser[0].isCorrect == true) {
+            categoryScore = categoryScore + selectedAnswers[i].score;
+          }
+        } else {
+          let correctSelectedAnwser = 0;
+          let numberOfCorrectAnwser = selectedAnswers[i].anwser.filter(
+            (item: any) => item.isCorrect == true
+          ).length;
+          for (let k = 0; k < selectedAnswers[i].anwser.length; k++) {
+            if (
+              selectedAnswers[i].anwser[k].isCorrect == true &&
+              selectedAnswers[i]?.chooseAnwser.includes(
+                selectedAnswers[i].anwser[k]
+              )
+            ) {
+              correctSelectedAnwser++;
+            }
+          }
           if (
-            selectedAnswers[i].anwser[k].isCorrect == true &&
-            selectedAnswers[i]?.chooseAnwser.includes(
-              selectedAnswers[i].anwser[k]
-            )
+            selectedAnswers[i]?.chooseAnwser.length == correctSelectedAnwser &&
+            correctSelectedAnwser == numberOfCorrectAnwser
           ) {
-            correctSelectedAnwser++;
+            categoryScore = categoryScore + selectedAnswers[i].score;
           }
         }
-        if (
-          selectedAnswers[i]?.chooseAnwser.length == correctSelectedAnwser &&
-          correctSelectedAnwser == numberOfCorrectAnwser
-        ) {
-          finalScore++;
-        }
+        categoryList[i]["categoryScore"] = categoryScore;
       }
     }
-
+    let maxScore = categoryList.reduce(
+      (n: number, { categoryMaxScore }: any) => n + categoryMaxScore,
+      0
+    );
+    let yourScore = categoryList.reduce(
+      (n: number, { categoryScore }: any) => n + categoryScore,
+      0
+    );
+    finalScore = (yourScore / maxScore) * 100;
     return { finalScore };
   };
 

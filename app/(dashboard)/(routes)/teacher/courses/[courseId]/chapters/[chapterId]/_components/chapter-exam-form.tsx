@@ -15,11 +15,12 @@ export default function Exam({ chapter }: any) {
       categoryId: number;
       title: string;
       numOfAppearance: number;
-      score: number;
+
       question: Array<{
         id: number;
         question: string;
         type: string;
+        score: number;
         anwser: Array<{
           id: number;
           text: string;
@@ -273,10 +274,6 @@ export default function Exam({ chapter }: any) {
     toast.success("Exam updated");
     // router.refresh();
   }
-  // const [data, setData] = useState([]);
-  // const [fileName, setFileName] = useState("");
-  // const [searchTerm, setSearchTerm] = useState("");
-  // const [searchResults, setSearchResults] = useState([]);
 
   const fileRef: any = useRef();
 
@@ -303,7 +300,7 @@ export default function Exam({ chapter }: any) {
         const sheet = workbook.Sheets[sheetName];
         const parsedData: any = XLSX.utils.sheet_to_json(sheet, {
           raw: true,
-          header: ["question", "Answer", "Type", "compulsory"],
+          header: ["question", "Answer", "Type", "score", "compulsory"],
         });
         let returnArr: any = [];
         for (let i = 0; i < parsedData.length; i++) {
@@ -315,7 +312,7 @@ export default function Exam({ chapter }: any) {
                 ? "singleChoice"
                 : "multiChoice",
             anwser: customSplit(parsedData[i].Answer),
-
+            score: parsedData[i].score,
             compulsory: parsedData[i].compulsory,
           };
           returnArr = [...returnArr, newQuiz];
@@ -345,7 +342,7 @@ export default function Exam({ chapter }: any) {
           const sheet = workbook.Sheets[sheetName];
           const parsedData: any = XLSX.utils.sheet_to_json(sheet, {
             raw: true,
-            header: ["question", "Answer", "Type", "compulsory"],
+            header: ["question", "Answer", "Type", "score", "compulsory"],
           });
           let category: any = {
             categoryId: getRandomInt(100000).toString(),
@@ -363,7 +360,7 @@ export default function Exam({ chapter }: any) {
                   ? "singleChoice"
                   : "multiChoice",
               anwser: customSplit(parsedData[i].Answer),
-
+              score: parsedData[i].score,
               compulsory: parsedData[i].compulsory,
             };
             category["question"] = [...category.question, newQuiz];
@@ -588,13 +585,7 @@ export default function Exam({ chapter }: any) {
                   numOfAppearanceOnChange(parseInt(e.target.value), index)
                 }
               />
-              Category score
-              <input
-                type="text"
-                value={category.score}
-                onChange={(e) => categoryOnScoreChange(e, index)}
-                className="mx-2 visually-hidden-checkbox h-6 w-6"
-              />
+
               <span>
                 <strong>Option 1:</strong>
               </span>
@@ -661,6 +652,13 @@ export default function Exam({ chapter }: any) {
                           }
                         />
                       </div>
+                      Question score
+                      <input
+                        type="text"
+                        value={quiz.score}
+                        onChange={(e) => categoryOnScoreChange(e, index)}
+                        className="mx-2 visually-hidden-checkbox h-6 w-6"
+                      />
                       <div className="w-full md:w-1/12 px-2 mb-2">
                         <label
                           className="block text-sm font-medium text-gray-700 mb-1"

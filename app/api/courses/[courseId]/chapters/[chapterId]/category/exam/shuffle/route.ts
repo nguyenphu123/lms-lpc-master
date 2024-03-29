@@ -4,7 +4,6 @@ import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import shuffleArray from "@/lib/shuffle";
 
-
 export async function GET(
   req: Request,
   { params }: { params: { courseId: string; chapterId: string } }
@@ -37,10 +36,14 @@ export async function GET(
       },
     });
     let questionUnShuffleList: any = [];
+    let examMaxScore = 0;
     for (let i = 0; i < questionsList.Category.length; i++) {
       let listQuestionByCategory: any = [];
       let finalListQuestionByCategory: any = [];
+      let categoryMaxScore = 0;
       for (let j = 0; j < questionsList.Category[i].Exam.length; j++) {
+        categoryMaxScore =
+          categoryMaxScore + parseInt(questionsList.Category[i].Exam[j].score);
         for (let k = 0; k < questionsList.Category[i].Exam[j].length; k++) {
           questionsList.Category[i].Exam[j].anwser = shuffleArray(
             questionsList.Category[i].Exam[j].anwser
@@ -73,13 +76,16 @@ export async function GET(
           ];
         }
       }
+      questionsList.Category[i]["categoryMaxScore"] = categoryMaxScore;
       questionUnShuffleList = [
         ...questionUnShuffleList,
         ...finalListQuestionByCategory,
       ];
+      examMaxScore = examMaxScore + categoryMaxScore;
     }
     const questions = {
       ...questionsList,
+      examMaxScore,
       ExamList: shuffleArray(questionUnShuffleList),
     };
     // console.log(questions);

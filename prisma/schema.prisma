@@ -202,8 +202,8 @@ model Category {
   module          Module @relation(fields: [moduleId], references: [id], onDelete: Cascade)
   moduleId        String
   numOfAppearance Int
-  score           Int
-  Exam            Exam[]
+
+  Exam Exam[]
 
   @@index([moduleId])
 }
@@ -213,7 +213,7 @@ model Exam {
   category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
   categoryId String
   question   String?  @db.Text
-
+  score      Int
   compulsory Boolean
   anwser     Anwser[]
   type       String?

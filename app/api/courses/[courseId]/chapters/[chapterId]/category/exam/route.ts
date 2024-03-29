@@ -39,7 +39,7 @@ export async function POST(
       values: any
     ) {
       for (let k = 0; k < values.length; k++) {
-        const { categoryId, title, numOfAppearance, score }: any = values[k];
+        const { categoryId, title, numOfAppearance }: any = values[k];
         const category = await db.category.upsert({
           where: { id: categoryId },
           update: { title: title, numOfAppearance: parseInt(numOfAppearance) },
@@ -47,7 +47,6 @@ export async function POST(
             moduleId: chapter.id.toString(),
             title: title,
             numOfAppearance: parseInt(numOfAppearance),
-            score: parseInt(score),
           },
         });
         for (let i = 0; i < values[k].question.length; i++) {
@@ -66,7 +65,7 @@ export async function POST(
             update: {
               question,
               type,
-
+              score: parseInt(score),
               anwser: {
                 deleteMany: { examId: id.toString() || "" },
                 createMany: { data: [...anwserList] },
@@ -77,7 +76,7 @@ export async function POST(
               compulsory,
               question,
               type,
-
+              score: parseInt(score),
               anwser: {
                 createMany: { data: [...anwserList] },
               },

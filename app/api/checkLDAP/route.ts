@@ -1,28 +1,20 @@
 import { NextResponse } from "next/server";
-var ActiveDirectory = require("activedirectory2");
+let ActiveDirectory = require("activedirectory2");
 
 export async function POST(req: Request) {
   try {
-    const { emailAddress, password } = await req.json();
+    const { emailAddress } = await req.json();
 
     var config = {
       url: "ldap://LPCDC001.lp.local",
       baseDN: "DC=lp,DC=local",
-      username: emailAddress,
-      password: password,
+      username: "trainconnect",
+      password: "Js46~p9@X3$Gu!",
     };
-    var ad = new ActiveDirectory.promiseWrapper(config);
-    const userCheck = await ad.authenticate(
-      emailAddress,
-      password
-      // function (err: any, auth: any) {
-      //   console.log(err)
-      //   console.log(auth)
-      //   return auth;
-      // }
-    );
+    let ad = new ActiveDirectory.promiseWrapper(config);
+    const userCheck = await ad.findUser(emailAddress);
 
-    return NextResponse.json(userCheck);
+    return NextResponse.json(userCheck.mail == emailAddress);
   } catch (error) {
     console.log("[PROGRAMS]", error);
     return new NextResponse("Internal Error", { status: 500 });
