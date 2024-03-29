@@ -2,8 +2,9 @@
 import { useState } from "react";
 import { Pencil, X } from "lucide-react";
 import axios from "axios";
-
+import { useRouter } from "next/navigation";
 const UserInformation = ({ user }: any) => {
+  const router = useRouter();
   const [isRoleEditing, setIsRoleEditing] = useState(false);
   const [isDepartmentEditing, setIsDepartmentEditing] = useState(false);
   const [isUsernameEditing, setIsUsernameEditing] = useState(false);
@@ -39,6 +40,7 @@ const UserInformation = ({ user }: any) => {
     };
 
     await axios.patch(`/api/user/${user?.id}`, values);
+    router.refresh();
   };
   return (
     <form
