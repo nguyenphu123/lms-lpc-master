@@ -15,6 +15,7 @@ import {
 import { redirect, useRouter } from "next/navigation";
 import { useConfettiStore } from "@/hooks/use-confetti-store";
 import shuffleArray from "@/lib/shuffle";
+import DoughnutChart from "@/components/ui/doughnut-chart";
 const Exam = ({
   chapter,
   nextChapterId,
@@ -24,6 +25,7 @@ const Exam = ({
 }: any) => {
   const [maxAsset, setMaxAsset] = useState(chapter.maxAsset);
   const [categoryList, setCategoryList]: any = useState([]);
+  const [finishedExam, setFinishedExam] = useState(false);
   const confetti = useConfettiStore();
   let [questions, setQuestions]: any = useState([]);
   useEffect(() => {
@@ -35,7 +37,11 @@ const Exam = ({
       setMaxAsset(
         maxAsset - getLatestTestResult.data?.UserProgress[0]?.attempt
       );
-      // setQuestions(shuffleArray(getLatestTestResult.data?.ExamList));
+      setFinishedExam(
+        getLatestTestResult.data?.UserProgress[0]?.status == "finished"
+          ? true
+          : false
+      );
       setCategoryList(getLatestTestResult.data?.Category);
       // console.log(shuffleArray(getLatestTestResult.data?.ExamList));
     };
@@ -145,6 +151,7 @@ const Exam = ({
           }
         }
       }
+      setFinishedExam(true);
       setQuestions([]);
     }
   };
@@ -160,20 +167,19 @@ const Exam = ({
       let questionList = await axios.get(
         `/api/courses/${chapter.courseId}/chapters/${chapter.id}/category/exam`
       );
-      console.log(questionList.data);
-      // setQuestions(shuffleArray(questionList.data.ExamList));
+
+      setQuestions(shuffleArray(questionList.data?.ExamList));
     } else {
       let getLatestTestResult: any = await axios.get(
         `/api/courses/${courseId}/chapters${chapter.id}/category/exam`
       );
-      // setMaxAsset(
-      //   chapter.maxAsset - getLatestTestResult.data.UserProgress[0].attempt
-      // );
+      setMaxAsset(
+        maxAsset - getLatestTestResult.data?.UserProgress[0]?.attempt
+      );
       let questionList = await axios.get(
         `/api/courses/${chapter.courseId}/chapters/${chapter.id}/category/exam`
       );
-      // console.log(questionList.data);
-      // setQuestions(shuffleArray(questionList.data.ExamList));
+      setQuestions(shuffleArray(questionList.data?.ExamList));
     }
   };
   const cancel = () => {
@@ -183,7 +189,7 @@ const Exam = ({
   const [currentQuestion, setCurrentQuestion] = useState(0);
 
   const [selectedAnswers, setSelectedAnswers]: Array<any> = useState([]);
-  const router = useRouter();
+
   // Hàm xử lý khi người dùng chọn một đáp án
   const handleAnswerClick = (question: any, option: any) => {
     if (
@@ -322,6 +328,7 @@ const Exam = ({
           }
         }
       }
+      setFinishedExam(true);
       setQuestions([]);
     }
   };
@@ -397,6 +404,32 @@ const Exam = ({
     <AlertDialog>
       <AlertDialogTrigger>
         <div className="mb-2">Take the exam</div>
+        {finishedExam ? (
+          <>
+            <DoughnutChart
+              score={[
+                categoryList.reduce(
+                  (n: number, { categoryMaxScore }: any) =>
+                    n + categoryMaxScore,
+                  0
+                ),
+                categoryList.reduce(
+                  (n: number, { categoryScore }: any) => n + categoryScore,
+                  0
+                ),
+              ]}
+            ></DoughnutChart>
+            {categoryList.map((item: any, index: any) => {
+              <div key={item.id}>
+                <DoughnutChart
+                  score={[item.categoryMaxScore, item.categoryScore]}
+                ></DoughnutChart>
+              </div>;
+            })}
+          </>
+        ) : (
+          <></>
+        )}
       </AlertDialogTrigger>
 
       <AlertDialogContent className="AlertDialogContent">
