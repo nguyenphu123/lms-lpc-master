@@ -8,7 +8,7 @@ export async function POST(req: Request) {
     var config = {
       url: "ldap://LPCDC001.lp.local",
       baseDN: "DC=lp,DC=local",
-      username: "trainconnect",
+      username: "trainconnect@lp.com.vn",
       password: "Js46~p9@X3$Gu!",
     };
     let ad = new ActiveDirectory.promiseWrapper(config);
