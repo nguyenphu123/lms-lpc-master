@@ -69,6 +69,7 @@ export default function Page() {
       }
       if (completeSignUp.status === "complete") {
         completeSignUp["department"] = department;
+        completeSignUp["username"] = username;
         await axios.post(`/api/signup`, completeSignUp);
 
         confetti.onOpen();

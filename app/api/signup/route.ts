@@ -6,7 +6,8 @@ import { clerkClient } from "@clerk/nextjs";
 
 export async function POST(req: Request) {
   try {
-    const { createdUserId, department, emailAddress } = await req.json();
+    const { createdUserId, department, emailAddress, username } =
+      await req.json();
 
     let user = await clerkClient.users.updateUserMetadata(createdUserId, {
       publicMetadata: {
@@ -20,7 +21,7 @@ export async function POST(req: Request) {
         role: "STAFF",
         email: emailAddress,
         status: "pending",
-        username: emailAddress,
+        username: username,
         star: 0,
       },
     });

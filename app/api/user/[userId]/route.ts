@@ -38,6 +38,7 @@ export async function PATCH(
       data: {
         role: values.role,
         status: values.status,
+        username: values.username,
       },
     });
     const updatedUsername = await clerkClient.users.updateUser(params.userId, {
