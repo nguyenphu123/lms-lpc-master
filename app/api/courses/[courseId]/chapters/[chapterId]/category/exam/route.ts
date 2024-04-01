@@ -40,48 +40,58 @@ export async function POST(
     ) {
       for (let k = 0; k < values.length; k++) {
         const { categoryId, title, numOfAppearance }: any = values[k];
+
         const category = await db.category.upsert({
           where: { id: categoryId },
-          update: { title: title, numOfAppearance: parseInt(numOfAppearance) },
+          update: {
+            title: title,
+            numOfAppearance: parseInt(numOfAppearance),
+          },
           create: {
             moduleId: chapter.id.toString(),
             title: title,
             numOfAppearance: parseInt(numOfAppearance),
           },
         });
-        for (let i = 0; i < values[k].question.length; i++) {
-          const { id, question, type, score, anwser, compulsory }: any =
-            values[k].question[i];
-          let anwserList = [...anwser];
-          for (let j = 0; j < anwserList.length; j++) {
-            delete anwserList[j]["id"];
-            delete anwserList[j]["examId"];
-          }
+        if (category.id != undefined) {
+          for (let i = 0; i < values[k].question.length; i++) {
+            const { id, question, type, score, anwser, compulsory }: any =
+              values[k].question[i];
+            let anwserList = [...anwser];
+            for (let j = 0; j < anwserList.length; j++) {
+              delete anwserList[j]["id"];
+              delete anwserList[j]["examId"];
+            }
 
-          const createExam = await db.exam.upsert({
-            where: {
-              id: id.toString() || "",
-            },
-            update: {
-              question,
-              type,
-              score: parseInt(score),
-              anwser: {
-                deleteMany: { examId: id.toString() || "" },
-                createMany: { data: [...anwserList] },
+            const createExam = await db.exam.upsert({
+              where: {
+                id: id.toString() || "",
               },
-            },
-            create: {
-              categoryId: category.id,
-              compulsory,
-              question,
-              type,
-              score: parseInt(score),
-              anwser: {
-                createMany: { data: [...anwserList] },
+              update: {
+                question,
+                type,
+                score: parseInt(score) || 0,
+                anwser: {
+                  deleteMany: { examId: id.toString() || "" },
+                  createMany: { data: [...anwserList] },
+                },
               },
-            },
-          });
+              create: {
+                category: {
+                  connect: {
+                    id: category.id,
+                  },
+                },
+                compulsory,
+                question,
+                type,
+                score: parseInt(score),
+                anwser: {
+                  createMany: { data: [...anwserList] },
+                },
+              },
+            });
+          }
         }
       }
     });
