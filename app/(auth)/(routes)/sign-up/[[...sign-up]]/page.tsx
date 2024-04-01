@@ -74,7 +74,7 @@ export default function Page() {
         await setActive({ session: completeSignUp.createdSessionId });
         setTimeout(function () {
           // function code goes here
-        }, 3000);
+        }, 2000);
         router.push("/pending");
       }
     } catch (err: any) {
