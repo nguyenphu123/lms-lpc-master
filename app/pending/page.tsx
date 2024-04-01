@@ -1,25 +1,26 @@
-import { SignOutButton, auth, clerkClient } from "@clerk/nextjs";
+import { auth } from "@clerk/nextjs";
 import { redirect } from "next/navigation";
-import LinkButton from "./_component/Link-Button";
+import { BasicNavbar } from "./_component/course-navbar";
+
 const StepTwo = async () => {
   const { sessionClaims }: any = auth();
   if (!sessionClaims?.userId) {
     return redirect("/");
   }
-  const user = await clerkClient.users.getUser(sessionClaims?.userId);
 
   return (
-    <div className="p-6 flex items-center justify-center">
-      {user.externalAccounts.length === 0 ? (
-        <LinkButton />
-      ) : (
+    <>
+      <div className="h-[80px] md:pl-80 fixed inset-y-0 w-full z-50">
+        <BasicNavbar userId={sessionClaims?.userId} />
+      </div>
+      <div className="p-6 flex items-center justify-center">
         <div className="text-center">
           <p className="mb-4">Sorry, you are not approved.</p>
           <p className="mb-4">Please contact the administrator for approval.</p>
-          <SignOutButton />
+          {/* <SignOutButton /> */}
         </div>
-      )}
-    </div>
+      </div>
+    </>
   );
 };
 
