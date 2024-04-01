@@ -1,5 +1,4 @@
 "use client";
-
 import { User } from "@prisma/client";
 import { ColumnDef } from "@tanstack/react-table";
 import {
@@ -10,7 +9,6 @@ import {
   Ban,
 } from "lucide-react";
 import Link from "next/link";
-
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -18,9 +16,8 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Badge } from "@/components/ui/badge";
-import { cn } from "@/lib/utils";
 import axios from "axios";
+import { useAuth } from "@clerk/nextjs";
 
 export const columns: ColumnDef<User>[] = [
   {
@@ -29,7 +26,7 @@ export const columns: ColumnDef<User>[] = [
       return <div>Name</div>;
     },
     cell: ({ row }) => {
-      const { id, username, imageUrl, status }: any = row.original;
+      const { username, imageUrl }: any = row.original;
 
       return (
         <div className="flex items-center">
@@ -119,8 +116,8 @@ export const columns: ColumnDef<User>[] = [
     id: "actions",
     accessorKey: "Action",
     cell: ({ row }) => {
-      const { id, status } = row.original;
-
+      const { id, status, role } = row.original;
+      const { userId }: any = useAuth();
       async function onChangeStatus(id: string, status: string): Promise<void> {
         let values = {
           status: status == "approved" ? "pending" : "approved",
@@ -128,7 +125,9 @@ export const columns: ColumnDef<User>[] = [
 
         await axios.patch(`/api/user/${id}/status`, values);
       }
-
+      async function onDelete(id: string): Promise<void> {
+        await axios.delete(`/api/user/${id}`);
+      }
       return (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -144,19 +143,29 @@ export const columns: ColumnDef<User>[] = [
                 Edit
               </DropdownMenuItem>
             </Link>
-            <DropdownMenuItem onClick={() => onChangeStatus(id, status)}>
-              {status == "approved" ? (
-                <>
-                  <Ban className="h-4 w-4 mr-2" />
-                  Ban
-                </>
-              ) : (
-                <>
-                  <BadgeCheck className="h-4 w-4 mr-2" />
-                  Approved
-                </>
-              )}
-            </DropdownMenuItem>
+            {userId != id && role != "ADMIN" ? (
+              <DropdownMenuItem>
+                {status == "approved" ? (
+                  <div onClick={() => onChangeStatus(id, status)}>
+                    <Ban className="h-4 w-4 mr-2" />
+                    Ban
+                  </div>
+                ) : (
+                  <div>
+                    <div onClick={() => onChangeStatus(id, status)}>
+                      <BadgeCheck className="h-4 w-4 mr-2" />
+                      Approved
+                    </div>
+                    <div onClick={() => onDelete(id)}>
+                      <BadgeCheck className="h-4 w-4 mr-2" />
+                      Delete
+                    </div>
+                  </div>
+                )}
+              </DropdownMenuItem>
+            ) : (
+              <></>
+            )}
           </DropdownMenuContent>
         </DropdownMenu>
       );

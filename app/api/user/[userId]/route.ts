@@ -49,7 +49,7 @@ export async function PATCH(
     });
     return NextResponse.json(updatedUser);
   } catch (error) {
-    console.log("[PROGRAMS]", error);
+    console.log("[USER]", error);
     return new NextResponse("Internal Error", { status: 500 });
   }
 }
@@ -77,7 +77,28 @@ export async function GET(
 
     return NextResponse.json(user);
   } catch (error) {
-    console.log("[PROGRAMS]", error);
+    console.log("[USER]", error);
+    return new NextResponse("Internal Error", { status: 500 });
+  }
+}
+export async function DELETE(
+  req: Request,
+  { params }: { params: { userId: string } }
+) {
+  try {
+    const { userId }: any = auth();
+
+    if (!userId) {
+      return new NextResponse("Unauthorized", { status: 401 });
+    }
+
+    const user = await db.user.delete({
+      where: { id: params.userId },
+    });
+    const deleteUser = await clerkClient.users.deleteUser(params.userId);
+    return NextResponse.json("success");
+  } catch (error) {
+    console.log("[USER]", error);
     return new NextResponse("Internal Error", { status: 500 });
   }
 }

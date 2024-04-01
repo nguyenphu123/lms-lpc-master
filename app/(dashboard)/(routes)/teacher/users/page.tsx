@@ -24,7 +24,11 @@ const UsersPage = async () => {
   const users: any = await getUser();
   return (
     <div className="p-6">
-      <DataTable columns={columns} data={users} />
+      {userInfo.role == "ADMIN" ? (
+        <DataTable columns={columns} data={users} />
+      ) : (
+        <></>
+      )}
     </div>
   );
 };
