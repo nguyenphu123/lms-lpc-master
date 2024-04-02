@@ -8,11 +8,11 @@ export async function PATCH(
   { params }: { params: { courseId: string } }
 ) {
   try {
-    const { userId } = auth();
+    const { userId }: any = auth();
 
-    if (!userId) {
-      return new NextResponse("Unauthorized", { status: 401 });
-    }
+    // if (!userId) {
+    //   return new NextResponse("Unauthorized", { status: 401 });
+    // }
 
     const course = await db.course.findUnique({
       where: {
@@ -32,12 +32,7 @@ export async function PATCH(
       (module: { isPublished: any }) => module.isPublished
     );
 
-    if (
-      !course.title ||
-      !course.description ||
-      !course.imageUrl ||
-      !hasPublishedChapter
-    ) {
+    if (!course.title || !course.imageUrl || !hasPublishedChapter) {
       return new NextResponse("Missing required fields", { status: 401 });
     }
 
