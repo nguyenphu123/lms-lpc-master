@@ -35,9 +35,13 @@ export const Notification = () => {
 
             {notifications.length > 0 ? (
               notifications.map((notification: any, index: any) => (
-                <Link href={notification.data.link + ""} key={index}>
-                  {notification.data.message}
-                </Link>
+                <Link
+                  dangerouslySetInnerHTML={{
+                    __html: notification.data.message,
+                  }}
+                  href={notification.data.link + ""}
+                  key={index}
+                ></Link>
               ))
             ) : (
               <p>No notification</p>
