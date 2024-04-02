@@ -38,10 +38,10 @@ export async function POST(
       values: any
     ) {
       for (let k = 0; k < values.length; k++) {
-        const { categoryId, title, numOfAppearance }: any = values[k];
+        const { id, title, numOfAppearance }: any = values[k];
 
         const category = await db.category.upsert({
-          where: { id: categoryId },
+          where: { id: id },
           update: {
             title: title,
             numOfAppearance: parseInt(numOfAppearance),

@@ -12,7 +12,7 @@ const Link = dynamic(() => import("next/link"), {
 export default function Exam({ chapter }: any) {
   const [quizList, setQuizList]: any = useState<
     Array<{
-      categoryId: number;
+      id: number;
       title: string;
       numOfAppearance: number;
 
@@ -31,8 +31,8 @@ export default function Exam({ chapter }: any) {
   >([]);
   const [textTitle, setTextTitle] = useState(chapter.title);
   const [timeLimit, setTimeLimit]: any = useState(chapter.timeLimit || 0);
-  const [passPercentage, setPassPercentage] = useState(0);
-  const [maxAsset, setMaxAsset] = useState(9999);
+  const [passPercentage, setPassPercentage] = useState(chapter.scoreLimit || 0);
+  const [maxAsset, setMaxAsset] = useState(chapter.maxAsset || 9999);
   useEffect(() => {
     async function loadQuestion() {
       let questionList = await axios.get(
@@ -48,7 +48,7 @@ export default function Exam({ chapter }: any) {
   }
   function addCategory() {
     const newCategory: any = {
-      categoryId: getRandomInt(100000).toString(),
+      id: getRandomInt(100000).toString(),
       title: "",
       numOfAppearance: 0,
       question: [],
@@ -345,7 +345,7 @@ export default function Exam({ chapter }: any) {
             header: ["question", "Answer", "Type", "score", "compulsory"],
           });
           let category: any = {
-            categoryId: getRandomInt(100000).toString(),
+            id: getRandomInt(100000).toString(),
             title: sheetName.split(".")[0],
             numOfAppearance: sheetName.split(".")[1],
             question: [],
@@ -544,7 +544,7 @@ export default function Exam({ chapter }: any) {
         {quizList.map((category: any, index: any) => {
           return (
             <div
-              key={category.categoryId}
+              key={category.id}
               className="my-4 p-4 border rounded  shadow-md relative"
             >
               <label className="block text-lg mt-2">Click</label>

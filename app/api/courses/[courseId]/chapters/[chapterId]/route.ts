@@ -97,7 +97,6 @@ export async function PATCH(
       },
       data: {
         ...values,
-        isPublished: true,
       },
     });
 
