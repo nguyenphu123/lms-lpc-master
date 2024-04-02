@@ -2,7 +2,6 @@ import { auth } from "@clerk/nextjs";
 import { NextResponse } from "next/server";
 
 import { db } from "@/lib/db";
-import shuffleArray from "@/lib/shuffle";
 
 export async function POST(
   req: Request,
