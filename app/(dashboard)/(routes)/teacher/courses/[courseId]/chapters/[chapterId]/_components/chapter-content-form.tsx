@@ -74,7 +74,7 @@ export const ContentForm = ({ courseId, moduleId }: AttachmentFormProps) => {
       // }
     }
     loadData();
-  }, [contents]);
+  }, []);
   const router = useRouter();
 
   const onSubmit = async () => {
@@ -260,12 +260,11 @@ export const ContentForm = ({ courseId, moduleId }: AttachmentFormProps) => {
                   {item.videoUrl != "" && !edit ? (
                     <Link
                       suppressHydrationWarning={true}
-                      download="Exam_Format"
                       href={item.videoUrl}
                       target="_blank"
                       className="text-blue-600 hover:underline cursor-pointer"
                     >
-                      {item.fileUrl.split("/").pop() as string}
+                      {item.videoUrl.split("/").pop() as string}
                     </Link>
                   ) : (
                     <input
