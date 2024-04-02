@@ -40,7 +40,7 @@ export const Actions = ({
         channel.publish({
           name: "chat-message",
           data: {
-            message: `${title} course has been published<br/>`,
+            message: `<div style="border: 1px solid #ccc; border-radius: 10px; padding: 10px;"><strong>${title}</strong> has been published 🎉🎉🎉</div><br/>`,
             link: `http://localhost:3000/courses/${courseId}`,
           },
         });
