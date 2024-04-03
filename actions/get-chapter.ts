@@ -48,6 +48,11 @@ export const getChapter = async ({
             Resource: true,
           },
         },
+        Category: {
+          where: {
+            moduleId: moduleId,
+          },
+        },
         // Exam: {
         //   where: {
         //     moduleId: moduleId,

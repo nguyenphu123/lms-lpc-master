@@ -24,7 +24,7 @@ const Exam = ({
   isCompleted,
 }: any) => {
   const [maxAsset, setMaxAsset] = useState(chapter.maxAsset);
-  const [categoryList, setCategoryList]: any = useState([]);
+  const [categoryList, setCategoryList]: any = useState(chapter.Category);
   const [finishedExam, setFinishedExam] = useState(false);
   const confetti = useConfettiStore();
   let [questions, setQuestions]: any = useState([]);
@@ -42,6 +42,7 @@ const Exam = ({
           ? true
           : false
       );
+
       setCategoryList(getLatestTestResult.data?.Category);
       // console.log(shuffleArray(getLatestTestResult.data?.ExamList));
     };
@@ -421,7 +422,25 @@ const Exam = ({
           </li>
         </ul>
       </div>
-
+      {categoryList.map((item: any, index: any) => {
+        return (
+          <div key={item.id}>
+            {item.title} will have:
+            {Math.floor(
+              (parseInt(item.numOfAppearance) /
+                parseInt(
+                  categoryList.reduce(
+                    (n: number, { numOfAppearance }: any) =>
+                      n + numOfAppearance,
+                    0
+                  )
+                )) *
+                100
+            )}
+            %
+          </div>
+        );
+      })}
       <AlertDialog>
         <AlertDialogTrigger className="flex justify-center items-center">
           <div className="font-bold ml-2 rounded-lg">👉Take an exam</div>
