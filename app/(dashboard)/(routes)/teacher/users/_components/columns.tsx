@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import axios from "axios";
 import { useAuth } from "@clerk/nextjs";
+import { getAuth } from "@/actions/get-auth";
 
 export const columns: ColumnDef<User>[] = [
   {
@@ -117,7 +118,7 @@ export const columns: ColumnDef<User>[] = [
     accessorKey: "Action",
     cell: ({ row }) => {
       const { id, status, role } = row.original;
-      // const { userId }: any = useAuth();
+      const userId: any = getAuth();
       async function onChangeStatus(id: string, status: string): Promise<void> {
         let values = {
           status: status == "approved" ? "pending" : "approved",
@@ -143,7 +144,7 @@ export const columns: ColumnDef<User>[] = [
                 Edit
               </DropdownMenuItem>
             </Link>
-            {role != "ADMIN" ? (
+            {userId != id && role != "ADMIN" ? (
               <DropdownMenuItem>
                 {status == "approved" ? (
                   <div onClick={() => onChangeStatus(id, status)}>

@@ -10,7 +10,7 @@ export async function PUT(
   try {
     const { userId } = auth();
     const { progress, status, endDate } = await req.json();
-
+    console.log(userId);
     if (!userId) {
       return new NextResponse("Unauthorized", { status: 401 });
     }

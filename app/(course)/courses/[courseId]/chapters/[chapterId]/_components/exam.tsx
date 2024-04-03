@@ -24,9 +24,11 @@ const Exam = ({
   isCompleted,
 }: any) => {
   const [maxAsset, setMaxAsset] = useState(chapter.maxAsset);
-  const [categoryList, setCategoryList]: any = useState(chapter.Category);
+  const [categoryList, setCategoryList]: any = useState([...chapter.Category]);
   const [finishedExam, setFinishedExam] = useState(false);
+  const [finalScore, setFinalScore] = useState(0);
   const confetti = useConfettiStore();
+
   let [questions, setQuestions]: any = useState([]);
   useEffect(() => {
     const getHistory = async () => {
@@ -55,7 +57,7 @@ const Exam = ({
       const { finalScore }: any = calculateScore();
       const totalScore = finalScore;
       alert(
-        `Kết thúc bài kiểm tra! Điểm của bạn là ${finalScore}\n` +
+        `Kết thúc bài kiểm tra! Điểm của bạn là ${finalScore}%\n` +
           `${
             totalScore >= chapter.scoreLimit
               ? "Chúc mừng bạn đã pass"
@@ -184,9 +186,9 @@ const Exam = ({
       setQuestions(shuffleArray(questionList.data.ExamList));
     }
   };
-  const cancel = () => {
-    return redirect(`/courses`);
-  };
+  // const cancel = () => {
+  //   return redirect(`/courses`);
+  // };
   // State để theo dõi câu hỏi hiện tại, điểm số và đáp án đã chọn cho từng câu hỏi
   const [currentQuestion, setCurrentQuestion] = useState(0);
 
@@ -353,64 +355,80 @@ const Exam = ({
   // Hàm tính điểm số dựa trên câu trả lời đã chọn
   const calculateScore = () => {
     let finalScore = 0;
-
+    let newCategoryList = [...categoryList];
     if (selectedAnswers.length < 1) {
       return finalScore;
     }
-
+    let myScore: number = 0;
     for (let i = 0; i < selectedAnswers.length; i++) {
-      let categoryScore = 0;
-      for (let j = 0; j < categoryList.length; j++) {
-        if (selectedAnswers[i].type == "singleChoice") {
-          if (selectedAnswers[i].chooseAnswer[0].isCorrect == true) {
-            categoryScore = categoryScore + selectedAnswers[i].score;
-          }
-        } else {
-          let correctSelectedAnswer = 0;
-          let numberOfCorrectAnswer = selectedAnswers[i].answer.filter(
-            (item: any) => item.isCorrect == true
-          ).length;
-          for (let k = 0; k < selectedAnswers[i].answer.length; k++) {
-            if (
-              selectedAnswers[i].answer[k].isCorrect == true &&
-              selectedAnswers[i]?.chooseAnswer.includes(
-                selectedAnswers[i].answer[k]
-              )
-            ) {
-              correctSelectedAnswer++;
-            }
-          }
+      let categoryIndex = newCategoryList
+        .map((item: { id: any }) => item.id)
+        .indexOf(selectedAnswers[i].categoryId);
+      newCategoryList[categoryIndex]["categoryScore"] = isNaN(
+        parseInt(newCategoryList[categoryIndex]["categoryScore"])
+      )
+        ? 0
+        : parseInt(newCategoryList[categoryIndex]["categoryScore"]);
+      if (selectedAnswers[i].type == "singleChoice") {
+        if (selectedAnswers[i].chooseAnswer[0].isCorrect == true) {
+          myScore = myScore + parseInt(selectedAnswers[i].score);
+          newCategoryList[categoryIndex]["categoryScore"] = isNaN(
+            parseInt(newCategoryList[categoryIndex]["categoryScore"])
+          )
+            ? 0
+            : parseInt(newCategoryList[categoryIndex]["categoryScore"]) +
+              parseInt(selectedAnswers[i].score);
+        }
+      } else {
+        let correctSelectedAnswer = 0;
+        let numberOfCorrectAnswer = selectedAnswers[i].answer.filter(
+          (item: any) => item.isCorrect == true
+        ).length;
+        for (let k = 0; k < selectedAnswers[i].answer.length; k++) {
           if (
-            selectedAnswers[i]?.chooseAnswer.length == correctSelectedAnswer &&
-            correctSelectedAnswer == numberOfCorrectAnswer
+            selectedAnswers[i].answer[k].isCorrect == true &&
+            selectedAnswers[i]?.chooseAnswer.includes(
+              selectedAnswers[i].answer[k]
+            )
           ) {
-            categoryScore = categoryScore + selectedAnswers[i].score;
+            correctSelectedAnswer++;
           }
         }
-        categoryList[i]["categoryScore"] = categoryScore;
+        if (
+          selectedAnswers[i]?.chooseAnswer.length == correctSelectedAnswer &&
+          correctSelectedAnswer == numberOfCorrectAnswer
+        ) {
+          myScore = myScore + parseInt(selectedAnswers[i].score);
+          newCategoryList[categoryIndex]["categoryScore"] = isNaN(
+            parseInt(newCategoryList[categoryIndex]["categoryScore"])
+          )
+            ? 0
+            : parseInt(newCategoryList[categoryIndex]["categoryScore"]) +
+              parseInt(selectedAnswers[i].score);
+        }
       }
     }
-    let maxScore = categoryList.reduce(
-      (n: number, { categoryMaxScore }: any) => n + categoryMaxScore,
+
+    // setCategoryList([...newCategoryList]);
+    let maxScore = questions.reduce(
+      (n: number, { score }: any) => n + score,
       0
     );
-    let yourScore = categoryList.reduce(
-      (n: number, { categoryScore }: any) => n + categoryScore,
-      0
-    );
-    finalScore = (yourScore / maxScore) * 100;
+
+    finalScore = Math.floor((myScore / maxScore) * 100);
+    setFinalScore(finalScore);
     return { finalScore };
   };
 
   return questions.length == 0 ? (
     <>
-      <div className="bg-gray-100 p-6 rounded-lg dark:bg-gray-900">
+      <div className="bg-gray-100 dark:bg-gray-900 p-6 rounded-lg">
         <h1 className="text-2xl font-bold mb-4">Welcome to the Exam</h1>
         <p className="text-lg mb-4">
           Before you begin, please take a moment to review the following
           information about the exam.
         </p>
-        <ul className="list-disc pl-5">
+        <ul className="list-disc pl-5 mb-4">
           <li className="mb-2">
             This exam consists of multiple-choice questions.
           </li>
@@ -421,55 +439,57 @@ const Exam = ({
             Make sure you are in a quiet environment to avoid distractions.
           </li>
         </ul>
+        <div>
+          <p className="text-lg mb-4">Include:</p>
+          <ul className="list-disc pl-5 mb-4">
+            {categoryList.map((item: any) => (
+              <li key={item.id} className="mb-2">
+                <span className="font-bold">{item.title}</span> will have:
+                {Math.floor(
+                  (parseInt(item.numOfAppearance, 10) /
+                    parseInt(
+                      categoryList.reduce(
+                        (n: number, { numOfAppearance }: any) =>
+                          n + parseInt(numOfAppearance, 10),
+                        0
+                      ),
+                      10
+                    )) *
+                    100
+                )}
+                %
+              </li>
+            ))}
+          </ul>
+        </div>
       </div>
-      {categoryList.map((item: any, index: any) => {
-        return (
-          <div key={item.id}>
-            {item.title} will have:
-            {Math.floor(
-              (parseInt(item.numOfAppearance) /
-                parseInt(
-                  categoryList.reduce(
-                    (n: number, { numOfAppearance }: any) =>
-                      n + numOfAppearance,
-                    0
-                  )
-                )) *
-                100
+      {finishedExam ? (
+        <>
+          <DoughnutChart
+            score={finalScore}
+            maxScore={categoryList.reduce(
+              (n: number, { categoryScore }: any) => n + categoryScore,
+              0
             )}
-            %
-          </div>
-        );
-      })}
+          ></DoughnutChart>
+          {categoryList.map((item: any, index: any) => {
+            <div key={item.id}>
+              <DoughnutChart
+                score={item.categoryScore}
+                maxScore={item.Exam.reduce(
+                  (n: number, { score }: any) => n + score,
+                  0
+                )}
+              ></DoughnutChart>
+            </div>;
+          })}
+        </>
+      ) : (
+        <></>
+      )}
       <AlertDialog>
         <AlertDialogTrigger className="flex justify-center items-center">
           <div className="font-bold ml-2 rounded-lg">👉Take an exam</div>
-          {finishedExam ? (
-            <>
-              <DoughnutChart
-                score={[
-                  categoryList.reduce(
-                    (n: number, { categoryMaxScore }: any) =>
-                      n + categoryMaxScore,
-                    0
-                  ),
-                  categoryList.reduce(
-                    (n: number, { categoryScore }: any) => n + categoryScore,
-                    0
-                  ),
-                ]}
-              ></DoughnutChart>
-              {categoryList.map((item: any, index: any) => {
-                <div key={item.id}>
-                  <DoughnutChart
-                    score={[item.categoryMaxScore, item.categoryScore]}
-                  ></DoughnutChart>
-                </div>;
-              })}
-            </>
-          ) : (
-            <></>
-          )}
         </AlertDialogTrigger>
 
         <AlertDialogContent className="AlertDialogContent">
@@ -487,11 +507,7 @@ const Exam = ({
               justifyContent: "flex-end",
             }}
           >
-            <AlertDialogCancel asChild>
-              <button className="Button mauve" onClick={() => cancel()}>
-                Cancel
-              </button>
-            </AlertDialogCancel>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction asChild>
               <button className="Button red" onClick={() => accept()}>
                 Yes
@@ -553,7 +569,7 @@ const Exam = ({
                         selectedAnswers[currentQuestion]?.chooseAnswer.includes(
                           option
                         )
-                          ? "border-blue-600 text-white dark:text-black"
+                          ? "border-blue-600 text-white dark:text-white bg-blue-600"
                           : "border-gray-300 text-black dark:text-white"
                       } rounded-md hover:border-blue-600 hover:bg-blue-600 hover:text-white`}
                     >
@@ -599,7 +615,8 @@ const Exam = ({
                       : item?.chooseAnswer?.length > 0 && "chooseAnswer" in item
                       ? "bg-green-600"
                       : "bg-gray-500"
-                  } `}
+                  }
+                    ${currentQuestion === index ? "bg-blue-700" : ""}`}
                 >
                   {index + 1}
                 </button>
@@ -618,6 +635,10 @@ const Exam = ({
             <div className="flex items-center mt-2">
               <div className="w-6 h-6 rounded-full bg-yellow-400 mr-2"></div>
               <strong>: Bookmarks</strong>
+            </div>
+            <div className="flex items-center mt-2">
+              <div className="w-6 h-6 rounded-full bg-blue-600 mr-2"></div>
+              <strong>: Selected</strong>
             </div>
           </div>
         </div>
