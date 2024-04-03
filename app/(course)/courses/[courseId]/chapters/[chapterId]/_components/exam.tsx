@@ -27,9 +27,13 @@ const Exam = ({
   const [categoryList, setCategoryList]: any = useState([...chapter.Category]);
   const [finishedExam, setFinishedExam] = useState(false);
   const [finalScore, setFinalScore] = useState(0);
+
+  const [questions, setQuestions]: any = useState([]);
+  const [currentQuestion, setCurrentQuestion] = useState(0);
+
+  const [selectedAnswers, setSelectedAnswers]: Array<any> = useState([]);
   const confetti = useConfettiStore();
 
-  let [questions, setQuestions]: any = useState([]);
   useEffect(() => {
     const getHistory = async () => {
       let getLatestTestResult: any = await axios.get(
@@ -49,8 +53,18 @@ const Exam = ({
       // console.log(shuffleArray(getLatestTestResult.data?.ExamList));
     };
     getHistory();
+    window.addEventListener("beforeunload", alertUser);
+    return () => {
+      window.removeEventListener("beforeunload", alertUser);
+    };
   }, []);
-
+  const alertUser = (e: any) => {
+    if (finishedExam || questions.length == 0) {
+    } else {
+      e.preventDefault();
+      e.returnValue = "";
+    }
+  };
   const onTimeOut = async () => {
     if (questions.length == 0) {
     } else {
@@ -190,9 +204,6 @@ const Exam = ({
   //   return redirect(`/courses`);
   // };
   // State để theo dõi câu hỏi hiện tại, điểm số và đáp án đã chọn cho từng câu hỏi
-  const [currentQuestion, setCurrentQuestion] = useState(0);
-
-  const [selectedAnswers, setSelectedAnswers]: Array<any> = useState([]);
 
   // Hàm xử lý khi người dùng chọn một đáp án
   const handleAnswerClick = (question: any, option: any) => {
