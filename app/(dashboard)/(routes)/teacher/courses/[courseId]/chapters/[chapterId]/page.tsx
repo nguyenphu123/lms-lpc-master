@@ -55,7 +55,7 @@ const ChapterIdPage = async ({
         include: {
           Exam: {
             include: {
-              anwser: true,
+              answer: true,
             },
           },
         },

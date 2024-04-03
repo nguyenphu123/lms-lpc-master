@@ -22,7 +22,7 @@ export default function Exam({ chapter }: any) {
         question: string;
         type: string;
         score: number;
-        anwser: Array<{
+        answer: Array<{
           id: number;
           text: string;
           isCorrect: boolean;
@@ -90,7 +90,7 @@ export default function Exam({ chapter }: any) {
       id: getRandomInt(100000).toString(),
       question: "",
       type: "singleChoice",
-      anwser: [
+      answer: [
         {
           id: getRandomInt(100000).toString(),
           text: "",
@@ -113,8 +113,8 @@ export default function Exam({ chapter }: any) {
       text: "",
       isCorrect: false,
     };
-    newQuizsList[index].question[jindex].anwser = [
-      ...newQuizsList[index].question[jindex].anwser,
+    newQuizsList[index].question[jindex].answer = [
+      ...newQuizsList[index].question[jindex].answer,
       newAnswer,
     ];
     setQuizList([...newQuizsList]);
@@ -122,7 +122,7 @@ export default function Exam({ chapter }: any) {
 
   function removeAnswer(index: number, jindex: number, kindex: number) {
     const newQuizsList = [...quizList];
-    newQuizsList[index].question[jindex].anwser.splice(kindex, 1);
+    newQuizsList[index].question[jindex].answer.splice(kindex, 1);
     setQuizList([...newQuizsList]);
   }
 
@@ -179,7 +179,7 @@ export default function Exam({ chapter }: any) {
     kindex: number
   ) {
     const newQuizsList = [...quizList];
-    newQuizsList[index].question[jindex].anwser[kindex].text = e.target.value;
+    newQuizsList[index].question[jindex].answer[kindex].text = e.target.value;
     setQuizList([...newQuizsList]);
   }
   function isCompulsory(
@@ -195,7 +195,7 @@ export default function Exam({ chapter }: any) {
     const newQuizsList = [...quizList];
     if (newQuizsList[index].question[jindex].type === "singleChoice") {
       if (e.target.checked) {
-        const checkExistAnswer = newQuizsList[index].question[jindex].anwser
+        const checkExistAnswer = newQuizsList[index].question[jindex].answer
           .map((item: any) => item.isCorrect)
           .indexOf(true);
 
@@ -206,7 +206,7 @@ export default function Exam({ chapter }: any) {
       }
     }
 
-    newQuizsList[index].question[jindex].anwser[kindex].isCorrect =
+    newQuizsList[index].question[jindex].answer[kindex].isCorrect =
       e.target.checked;
 
     setQuizList([...newQuizsList]);
@@ -224,7 +224,7 @@ export default function Exam({ chapter }: any) {
 
       const checkAnswersList = newQuizsList.map((item) =>
         item.question.map((item: any) =>
-          item.anwser.map((item: any) => item.isCorrect).indexOf(true)
+          item.answer.map((item: any) => item.isCorrect).indexOf(true)
         )
       );
       for (let i = 0; i < checkAnswersList.length; i++) {
@@ -239,10 +239,10 @@ export default function Exam({ chapter }: any) {
           if (newQuizsList[i].question[j].type == "singleChoice") {
             const checkAnswersListType = newQuizsList[i].question[
               j
-            ].anwser.filter((item: any) => item.isCorrect == true);
+            ].answer.filter((item: any) => item.isCorrect == true);
             if (checkAnswersListType.length > 1) {
               alert(
-                "Sorry, there can only be one correct anwser in single choice question"
+                "Sorry, there can only be one correct answer in single choice question"
               );
               return;
             }
@@ -320,7 +320,7 @@ export default function Exam({ chapter }: any) {
               parsedData[i].Type == "single choice"
                 ? "singleChoice"
                 : "multiChoice",
-            anwser: customSplit(parsedData[i].Answer),
+            answer: customSplit(parsedData[i].Answer),
             score: parsedData[i].score,
             compulsory: parsedData[i].compulsory,
           };
@@ -368,7 +368,7 @@ export default function Exam({ chapter }: any) {
                 parsedData[i].Type == "single choice"
                   ? "singleChoice"
                   : "multiChoice",
-              anwser: customSplit(parsedData[i].Answer),
+              answer: customSplit(parsedData[i].Answer),
               score: parsedData[i].score,
               compulsory: parsedData[i].compulsory,
             };
@@ -702,7 +702,7 @@ export default function Exam({ chapter }: any) {
                       </div>
                     </div>
 
-                    {quiz.anwser.map((answer: any, kindex: any) => (
+                    {quiz.answer.map((answer: any, kindex: any) => (
                       <div key={answer.id} className="flex items-center mb-2">
                         <input
                           type="checkbox"

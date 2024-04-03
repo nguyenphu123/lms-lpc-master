@@ -54,12 +54,12 @@ export async function POST(
         });
         if (category.id != undefined) {
           for (let i = 0; i < values[k].question.length; i++) {
-            const { id, question, type, score, anwser, compulsory }: any =
+            const { id, question, type, score, answer, compulsory }: any =
               values[k].question[i];
-            let anwserList = [...anwser];
-            for (let j = 0; j < anwserList.length; j++) {
-              delete anwserList[j]["id"];
-              delete anwserList[j]["examId"];
+            let answerList = [...answer];
+            for (let j = 0; j < answerList.length; j++) {
+              delete answerList[j]["id"];
+              delete answerList[j]["examId"];
             }
 
             const createExam = await db.exam.upsert({
@@ -70,9 +70,9 @@ export async function POST(
                 question,
                 type,
                 score: parseInt(score) || 0,
-                anwser: {
+                answer: {
                   deleteMany: { examId: id.toString() || "" },
-                  createMany: { data: [...anwserList] },
+                  createMany: { data: [...answerList] },
                 },
               },
               create: {
@@ -85,8 +85,8 @@ export async function POST(
                 question,
                 type,
                 score: parseInt(score),
-                anwser: {
-                  createMany: { data: [...anwserList] },
+                answer: {
+                  createMany: { data: [...answerList] },
                 },
               },
             });
@@ -120,7 +120,7 @@ export async function GET(
           include: {
             Exam: {
               include: {
-                anwser: true,
+                answer: true,
               },
             },
           },

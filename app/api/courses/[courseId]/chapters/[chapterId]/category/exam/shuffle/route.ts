@@ -22,7 +22,7 @@ export async function GET(
           include: {
             Exam: {
               include: {
-                anwser: true,
+                answer: true,
               },
             },
           },
@@ -45,8 +45,8 @@ export async function GET(
         categoryMaxScore =
           categoryMaxScore + parseInt(questionsList.Category[i].Exam[j].score);
 
-        questionsList.Category[i].Exam[j].anwser = shuffleArray(
-          questionsList.Category[i].Exam[j].anwser
+        questionsList.Category[i].Exam[j].answer = shuffleArray(
+          questionsList.Category[i].Exam[j].answer
         );
         listQuestionByCategory = [
           ...listQuestionByCategory,

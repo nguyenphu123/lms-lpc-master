@@ -215,13 +215,13 @@ model Exam {
   question   String?  @db.Text
   score      Int
   compulsory Boolean
-  anwser     Anwser[]
+  answer     Answer[]
   type       String?
 
   @@index([categoryId])
 }
 
-model Anwser {
+model Answer {
   id        String  @id @default(uuid())
   exam      Exam    @relation(fields: [examId], references: [id], onDelete: Cascade)
   examId    String

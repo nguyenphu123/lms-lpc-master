@@ -195,26 +195,26 @@ const Exam = ({
   // Hàm xử lý khi người dùng chọn một đáp án
   const handleAnswerClick = (question: any, option: any) => {
     if (
-      "chooseAnwser" in question &&
-      question["chooseAnwser"].includes(option)
+      "chooseAnswer" in question &&
+      question["chooseAnswer"].includes(option)
     ) {
-      let indexOf = question["chooseAnwser"].indexOf(option);
-      question["chooseAnwser"].splice(indexOf, 1);
+      let indexOf = question["chooseAnswer"].indexOf(option);
+      question["chooseAnswer"].splice(indexOf, 1);
     } else {
       // Lưu câu trả lời đã chọn vào state
       if (question.type == "singleChoice") {
         const updatedAnswers = [...selectedAnswers];
-        question["chooseAnwser"] = [];
-        question["chooseAnwser"] = [...question["chooseAnwser"], option];
+        question["chooseAnswer"] = [];
+        question["chooseAnswer"] = [...question["chooseAnswer"], option];
         updatedAnswers[currentQuestion] = question;
         setSelectedAnswers(updatedAnswers);
       } else {
         const updatedAnswers = [...selectedAnswers];
-        // question["chosedAnwser"] = [];
-        if (!("chooseAnwser" in question)) {
-          question["chooseAnwser"] = [];
+        // question["chosedAnswer"] = [];
+        if (!("chooseAnswer" in question)) {
+          question["chooseAnswer"] = [];
         }
-        question["chooseAnwser"] = [...question["chooseAnwser"], option];
+        question["chooseAnswer"] = [...question["chooseAnswer"], option];
         updatedAnswers[currentQuestion] = question;
 
         setSelectedAnswers(updatedAnswers);
@@ -362,27 +362,27 @@ const Exam = ({
       let categoryScore = 0;
       for (let j = 0; j < categoryList.length; j++) {
         if (selectedAnswers[i].type == "singleChoice") {
-          if (selectedAnswers[i].chooseAnwser[0].isCorrect == true) {
+          if (selectedAnswers[i].chooseAnswer[0].isCorrect == true) {
             categoryScore = categoryScore + selectedAnswers[i].score;
           }
         } else {
-          let correctSelectedAnwser = 0;
-          let numberOfCorrectAnwser = selectedAnswers[i].anwser.filter(
+          let correctSelectedAnswer = 0;
+          let numberOfCorrectAnswer = selectedAnswers[i].answer.filter(
             (item: any) => item.isCorrect == true
           ).length;
-          for (let k = 0; k < selectedAnswers[i].anwser.length; k++) {
+          for (let k = 0; k < selectedAnswers[i].answer.length; k++) {
             if (
-              selectedAnswers[i].anwser[k].isCorrect == true &&
-              selectedAnswers[i]?.chooseAnwser.includes(
-                selectedAnswers[i].anwser[k]
+              selectedAnswers[i].answer[k].isCorrect == true &&
+              selectedAnswers[i]?.chooseAnswer.includes(
+                selectedAnswers[i].answer[k]
               )
             ) {
-              correctSelectedAnwser++;
+              correctSelectedAnswer++;
             }
           }
           if (
-            selectedAnswers[i]?.chooseAnwser.length == correctSelectedAnwser &&
-            correctSelectedAnwser == numberOfCorrectAnwser
+            selectedAnswers[i]?.chooseAnswer.length == correctSelectedAnswer &&
+            correctSelectedAnswer == numberOfCorrectAnswer
           ) {
             categoryScore = categoryScore + selectedAnswers[i].score;
           }
@@ -542,7 +542,7 @@ const Exam = ({
                 </div>
               </p>
               <ul>
-                {questions[currentQuestion].anwser.map(
+                {questions[currentQuestion].answer.map(
                   (option: any, index: any) => (
                     <li
                       key={index}
@@ -550,7 +550,7 @@ const Exam = ({
                         handleAnswerClick(questions[currentQuestion], option)
                       }
                       className={`cursor-pointer py-2 px-4 mb-2 border ${
-                        selectedAnswers[currentQuestion]?.chooseAnwser.includes(
+                        selectedAnswers[currentQuestion]?.chooseAnswer.includes(
                           option
                         )
                           ? "border-blue-600 text-white dark:text-black"
@@ -596,7 +596,7 @@ const Exam = ({
                   ${
                     item?.bookmark
                       ? "bg-yellow-400"
-                      : item?.chooseAnwser?.length > 0 && "chooseAnwser" in item
+                      : item?.chooseAnswer?.length > 0 && "chooseAnswer" in item
                       ? "bg-green-600"
                       : "bg-gray-500"
                   } `}
