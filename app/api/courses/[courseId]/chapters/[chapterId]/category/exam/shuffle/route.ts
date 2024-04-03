@@ -44,11 +44,10 @@ export async function GET(
       for (let j = 0; j < questionsList.Category[i].Exam.length; j++) {
         categoryMaxScore =
           categoryMaxScore + parseInt(questionsList.Category[i].Exam[j].score);
-        for (let k = 0; k < questionsList.Category[i].Exam[j].length; k++) {
-          questionsList.Category[i].Exam[j].anwser = shuffleArray(
-            questionsList.Category[i].Exam[j].anwser
-          );
-        }
+
+        questionsList.Category[i].Exam[j].anwser = shuffleArray(
+          questionsList.Category[i].Exam[j].anwser
+        );
         listQuestionByCategory = [
           ...listQuestionByCategory,
           questionsList.Category[i].Exam[j],

@@ -55,7 +55,7 @@ export const CourseSidebarItem = ({
               isCompleted && "text-emerald-700"
             )}
           />
-        ) : id == searchParams.chapterId ? (
+        ) : id == searchParams.chapterId || isCompleted == "studying" ? (
           <PlayCircle
             size={22}
             className={cn(

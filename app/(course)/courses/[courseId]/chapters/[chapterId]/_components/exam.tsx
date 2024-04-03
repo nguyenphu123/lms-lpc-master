@@ -31,7 +31,7 @@ const Exam = ({
   useEffect(() => {
     const getHistory = async () => {
       let getLatestTestResult: any = await axios.get(
-        `/api/courses/${courseId}/chapters/${chapter.id}/category/exam/shuffle`
+        `/api/courses/${courseId}/chapters/${chapter.id}/category/exam`
       );
 
       setMaxAsset(
@@ -46,7 +46,7 @@ const Exam = ({
       // console.log(shuffleArray(getLatestTestResult.data?.ExamList));
     };
     getHistory();
-  }, [maxAsset]);
+  }, []);
 
   const onTimeOut = async () => {
     if (questions.length == 0) {
@@ -165,10 +165,10 @@ const Exam = ({
   const accept = async () => {
     if (chapter.status != "finished") {
       let questionList = await axios.get(
-        `/api/courses/${chapter.courseId}/chapters/${chapter.id}/category/exam`
+        `/api/courses/${chapter.courseId}/chapters/${chapter.id}/category/exam/shuffle`
       );
 
-      setQuestions(shuffleArray(questionList.data?.ExamList));
+      setQuestions(shuffleArray(questionList.data.ExamList));
     } else {
       let getLatestTestResult: any = await axios.get(
         `/api/courses/${courseId}/chapters${chapter.id}/category/exam`
@@ -177,9 +177,10 @@ const Exam = ({
         maxAsset - getLatestTestResult.data?.UserProgress[0]?.attempt
       );
       let questionList = await axios.get(
-        `/api/courses/${chapter.courseId}/chapters/${chapter.id}/category/exam`
+        `/api/courses/${chapter.courseId}/chapters/${chapter.id}/category/exam/shuffle`
       );
-      setQuestions(shuffleArray(questionList.data?.ExamList));
+
+      setQuestions(shuffleArray(questionList.data.ExamList));
     }
   };
   const cancel = () => {
@@ -401,65 +402,86 @@ const Exam = ({
   };
 
   return questions.length == 0 ? (
-    <AlertDialog>
-      <AlertDialogTrigger>
-        <div className="mb-2">Take the exam</div>
-        {finishedExam ? (
-          <>
-            <DoughnutChart
-              score={[
-                categoryList.reduce(
-                  (n: number, { categoryMaxScore }: any) =>
-                    n + categoryMaxScore,
-                  0
-                ),
-                categoryList.reduce(
-                  (n: number, { categoryScore }: any) => n + categoryScore,
-                  0
-                ),
-              ]}
-            ></DoughnutChart>
-            {categoryList.map((item: any, index: any) => {
-              <div key={item.id}>
-                <DoughnutChart
-                  score={[item.categoryMaxScore, item.categoryScore]}
-                ></DoughnutChart>
-              </div>;
-            })}
-          </>
-        ) : (
-          <></>
-        )}
-      </AlertDialogTrigger>
+    <>
+      <div className="bg-gray-100 p-6 rounded-lg dark:bg-gray-900">
+        <h1 className="text-2xl font-bold mb-4">Welcome to the Exam</h1>
+        <p className="text-lg mb-4">
+          Before you begin, please take a moment to review the following
+          information about the exam.
+        </p>
+        <ul className="list-disc pl-5">
+          <li className="mb-2">
+            This exam consists of multiple-choice questions.
+          </li>
+          <li className="mb-2">
+            You will have a limited time to complete the exam.
+          </li>
+          <li className="mb-2">
+            Make sure you are in a quiet environment to avoid distractions.
+          </li>
+        </ul>
+      </div>
 
-      <AlertDialogContent className="AlertDialogContent">
-        <AlertDialogTitle className="AlertDialogTitle">
-          Exam note
-        </AlertDialogTitle>
-        <AlertDialogDescription className="AlertDialogDescription">
-          Do you want to do the exam? you have{" "}
-          {maxAsset > 5 ? "Infinite" : maxAsset} time to do this test
-        </AlertDialogDescription>
-        <div
-          style={{
-            display: "flex",
-            gap: 25,
-            justifyContent: "flex-end",
-          }}
-        >
-          <AlertDialogCancel asChild>
-            <button className="Button mauve" onClick={() => cancel()}>
-              Cancel
-            </button>
-          </AlertDialogCancel>
-          <AlertDialogAction asChild>
-            <button className="Button red" onClick={() => accept()}>
-              Yes
-            </button>
-          </AlertDialogAction>
-        </div>
-      </AlertDialogContent>
-    </AlertDialog>
+      <AlertDialog>
+        <AlertDialogTrigger className="flex justify-center items-center">
+          <div className="font-bold ml-2 rounded-lg">👉Take an exam</div>
+          {finishedExam ? (
+            <>
+              <DoughnutChart
+                score={[
+                  categoryList.reduce(
+                    (n: number, { categoryMaxScore }: any) =>
+                      n + categoryMaxScore,
+                    0
+                  ),
+                  categoryList.reduce(
+                    (n: number, { categoryScore }: any) => n + categoryScore,
+                    0
+                  ),
+                ]}
+              ></DoughnutChart>
+              {categoryList.map((item: any, index: any) => {
+                <div key={item.id}>
+                  <DoughnutChart
+                    score={[item.categoryMaxScore, item.categoryScore]}
+                  ></DoughnutChart>
+                </div>;
+              })}
+            </>
+          ) : (
+            <></>
+          )}
+        </AlertDialogTrigger>
+
+        <AlertDialogContent className="AlertDialogContent">
+          <AlertDialogTitle className="AlertDialogTitle">
+            Exam note
+          </AlertDialogTitle>
+          <AlertDialogDescription className="AlertDialogDescription">
+            Do you want to do the exam? You have{" "}
+            {maxAsset > 5 ? "Infinite" : maxAsset} time to do this test
+          </AlertDialogDescription>
+          <div
+            style={{
+              display: "flex",
+              gap: 25,
+              justifyContent: "flex-end",
+            }}
+          >
+            <AlertDialogCancel asChild>
+              <button className="Button mauve" onClick={() => cancel()}>
+                Cancel
+              </button>
+            </AlertDialogCancel>
+            <AlertDialogAction asChild>
+              <button className="Button red" onClick={() => accept()}>
+                Yes
+              </button>
+            </AlertDialogAction>
+          </div>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
   ) : (
     <main className="min-h-full items-center">
       {/* <br />

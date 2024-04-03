@@ -6,6 +6,7 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
 import * as XLSX from "xlsx";
 import dynamic from "next/dynamic";
+import { useRouter } from "next/navigation";
 const Link = dynamic(() => import("next/link"), {
   ssr: false,
 });
@@ -210,7 +211,7 @@ export default function Exam({ chapter }: any) {
 
     setQuizList([...newQuizsList]);
   }
-
+  const router = useRouter();
   async function submit() {
     if (quizList.length === 0) {
       alert("Please add some questions");
@@ -272,7 +273,15 @@ export default function Exam({ chapter }: any) {
       quizList
     );
     toast.success("Exam updated");
-    // router.refresh();
+    router.push(
+      `/teacher/courses/${chapter?.courseId}/chapters/${chapter?.id}`
+    );
+    router.refresh();
+    let questionList = await axios.get(
+      `/api/courses/${chapter.courseId}/chapters/${chapter.id}/category/exam`
+    );
+
+    setQuizList(questionList.data.Category);
   }
 
   const fileRef: any = useRef();
@@ -384,7 +393,10 @@ export default function Exam({ chapter }: any) {
     for (let i = 0; i < newArray.length; i++) {
       let newItem = {
         id: getRandomInt(100000),
-        text: newArray[i].toString().replace("(T)", ""),
+        text: newArray[i]
+          .toString()
+          .replace(/^(\r\n\.)/, "")
+          .replace("(T)", ""),
         isCorrect: newArray[i].includes("(T)") ? true : false,
       };
       returnArr = [...returnArr, newItem];
@@ -447,8 +459,10 @@ export default function Exam({ chapter }: any) {
               name={"passPercentage"}
               defaultValue={passPercentage}
             >
-              <option value="60">0%</option>
-              <option value="70">40%</option>
+              <option value="40">40%</option>
+              <option value="50">50%</option>
+              <option value="60">60%</option>
+              <option value="70">70%</option>
               <option value="80">80%</option>
               <option value="90">90%</option>
               <option value="100">100%</option>
