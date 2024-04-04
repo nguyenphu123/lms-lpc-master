@@ -1,15 +1,10 @@
 "use client";
 import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
-import { Switch } from "@/components/ui/switch";
+
 import { getFromStorage, saveToStorage } from "./current-theme";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuLabel,
-  DropdownMenuTrigger,
-} from "./dropdown-menu";
-import { Moon, Sun, SunMoon } from "lucide-react";
+
+import { Moon, Sun } from "lucide-react";
 export function ModeToggle() {
   const { setTheme, systemTheme } = useTheme();
   const [currentTheme, setCurrentTheme] = useState("light");

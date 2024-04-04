@@ -4,8 +4,14 @@ import axios from "axios";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { EmailCodeFactor, SignInFirstFactor } from "@clerk/types";
-import Image from "next/image";
+
 import Link from "next/link";
+import dynamic from "next/dynamic";
+import { ModeToggle } from "@/components/ui/theme-button";
+const Logo = dynamic(() => import("@/app/(auth)/_component/logo" as string), {
+  ssr: false,
+});
+
 export default function Page() {
   const { isLoaded, signIn, setActive } = useSignIn();
   const [emailAddress, setEmailAddress] = useState("");
@@ -86,9 +92,14 @@ export default function Page() {
     }
   };
   return (
-    <div className="max-w-md mx-auto border border-gray-300 p-6 rounded-lg">
+    <div className="max-w-md mx-auto border mt-24 border-gray-300 p-6 rounded-lg">
+      <div className="relative">
+        <div className="absolute mt-1 top-0 right-0">
+          <ModeToggle />
+        </div>
+      </div>
       <div className="mb-4 flex justify-center">
-        <Image src="/LPC_Logo_white.png" alt="LPC" width={200} height={200} />
+        <Logo />
       </div>
       <h1 className="text-2xl font-semibold mb-4">Lien Phat Learning System</h1>
       <form onSubmit={handleSubmit} className="space-y-4">
@@ -111,7 +122,7 @@ export default function Page() {
           Sign In
         </button>
         <Link href={"/sign-up"}>
-          <button className="w-full bg-gray-300 text-gray-800 py-2 rounded-md hover:bg-gray-400 transition duration-300">
+          <button className="w-full bg-gray-300 mt-1 text-gray-800 py-2 rounded-md hover:bg-gray-400 transition duration-300">
             Switch Sign Up
           </button>
         </Link>
