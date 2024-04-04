@@ -100,9 +100,6 @@ export async function GET(
 
     const slide = await db.slide.findMany({
       where: { moduleId: chapter.id },
-      include: {
-        Resource: true,
-      },
     });
 
     return NextResponse.json(slide);

@@ -13,7 +13,6 @@ interface AttachmentFormProps {
   initialData: any;
   courseId: string;
   moduleId: string;
-  slideId: string;
 }
 
 const formSchema = z.object({
@@ -26,13 +25,11 @@ export const AttacthmentForm = ({
   initialData,
   courseId,
   moduleId,
-  slideId,
 }: AttachmentFormProps) => {
   const [edit, setEdit] = useState(false);
   const toggleEdit = () => setEdit((current) => !current);
   const [contents, setContents] = useState<
     Array<{
-      slideId: string;
       attachment: string;
       attachmentType: string;
     }>
@@ -82,7 +79,6 @@ export const AttacthmentForm = ({
   };
   const addResource = () => {
     let newItem = {
-      slideId: slideId,
       attachment: "",
       attachmentType: "Extra",
     };
@@ -91,7 +87,7 @@ export const AttacthmentForm = ({
   const onSubmit = async () => {
     try {
       await axios.patch(
-        `/api/courses/${courseId}/chapters/${moduleId}/slide/${slideId}/attachment`,
+        `/api/courses/${courseId}/chapters/${moduleId}/attachment`,
         contents
       );
       toast.success("Attachment created");

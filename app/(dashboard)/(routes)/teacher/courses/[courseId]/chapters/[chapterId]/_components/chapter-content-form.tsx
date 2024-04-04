@@ -369,12 +369,6 @@ export const ContentForm = ({ courseId, moduleId }: AttachmentFormProps) => {
                 </div>
               </div>
             )}
-            <AttacthmentForm
-              initialData={item}
-              courseId={courseId}
-              moduleId={moduleId}
-              slideId={item.id}
-            ></AttacthmentForm>
           </div>
         ))}
       {contents.length > 0 && (

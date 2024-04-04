@@ -26,6 +26,7 @@ import { z } from "zod";
 import Dropzone from "@/components/ui/dropzone";
 import router from "next/dist/client/router";
 import { ContentForm } from "./_components/chapter-content-form";
+import { AttacthmentForm } from "./_components/chapter-attachment-form";
 
 const ChapterIdPage = async ({
   params,
@@ -46,11 +47,7 @@ const ChapterIdPage = async ({
       courseId: params.courseId,
     },
     include: {
-      Slide: {
-        include: {
-          Resource: true,
-        },
-      },
+      Slide: true,
       Category: {
         include: {
           Exam: {
@@ -60,6 +57,7 @@ const ChapterIdPage = async ({
           },
         },
       },
+      Resource: true,
     },
   });
 
@@ -71,7 +69,9 @@ const ChapterIdPage = async ({
     chapter.title,
     // chapter.description,
     // chapter.videoUrl,
-    chapter.type == "Exam" ? chapter.Category.length > 0 : chapter.Slide.length > 0,
+    chapter.type == "Exam"
+      ? chapter.Category.length > 0
+      : chapter.Slide.length > 0,
   ];
 
   const totalFields = requiredFields.length;
@@ -142,7 +142,11 @@ const ChapterIdPage = async ({
                 />
               </div>
             </div>
-
+            <AttacthmentForm
+              initialData={chapter}
+              courseId={params.courseId}
+              moduleId={params.chapterId}
+            ></AttacthmentForm>
             <div>
               <div className="flex items-center gap-x-2">
                 <IconBadge icon={BookOpen} />
