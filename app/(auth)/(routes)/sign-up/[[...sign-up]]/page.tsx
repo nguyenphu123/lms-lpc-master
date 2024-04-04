@@ -3,8 +3,9 @@ import { useConfettiStore } from "@/hooks/use-confetti-store";
 import { useSignUp } from "@clerk/nextjs";
 import axios from "axios";
 import { useRouter } from "next/navigation";
-
+import Image from "next/image";
 import { useState } from "react";
+import Link from "next/link";
 
 export default function Page() {
   const { isLoaded, signUp, setActive } = useSignUp();
@@ -82,7 +83,10 @@ export default function Page() {
     }
   };
   return (
-    <div className="max-w-md mx-auto mt-8">
+    <div className="max-w-md mx-auto mt-8 border border-gray-300 p-6 rounded-lg">
+      <div className="mb-4 flex justify-center">
+        <Image src="/LPC_Logo_white.png" alt="LPC" width={200} height={200} />
+      </div>
       <h1 className="text-2xl font-semibold mb-4">
         Please link your Lien Phat account
       </h1>
@@ -136,8 +140,14 @@ export default function Page() {
           type="submit"
           className="w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600 transition duration-300"
         >
-          Sign up
+          Sign Up
         </button>
+        <Link
+          href={"/sign-in"}
+          className="w-full bg-gray-300 text-gray-800 py-2 rounded-md hover:bg-gray-400 transition duration-300"
+        >
+          Switch Sign Up
+        </Link>
       </form>
       {pendingVerification && (
         <div className="fixed top-0 left-0 w-full h-full bg-gray-900 bg-opacity-50 flex justify-center items-center">

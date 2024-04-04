@@ -4,6 +4,7 @@ import axios from "axios";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { EmailCodeFactor, SignInFirstFactor } from "@clerk/types";
+import Image from "next/image";
 import Link from "next/link";
 export default function Page() {
   const { isLoaded, signIn, setActive } = useSignIn();
@@ -84,43 +85,63 @@ export default function Page() {
       console.error(JSON.stringify(err, null, 2));
     }
   };
-
   return (
-    <div>
-      <form>
+    <div className="max-w-md mx-auto border border-gray-300 p-6 rounded-lg">
+      <div className="mb-4 flex justify-center">
+        <Image src="/LPC_Logo_white.png" alt="LPC" width={200} height={200} />
+      </div>
+      <h1 className="text-2xl font-semibold mb-4">Lien Phat Learning System</h1>
+      <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label htmlFor="email">Email</label>
+          <label htmlFor="email" className="block mb-1">
+            Email
+          </label>
           <input
             onChange={(e) => setEmailAddress(e.target.value)}
             id="email"
             name="email"
             type="email"
+            className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring focus:ring-blue-400"
           />
         </div>
-        <button onClick={handleSubmit}>Sign In</button>
-        <br />
-        <Link href={"/sign-up"}>Sign Up</Link>
-      </form>
-      {pendingVerification ? (
-        <>
-          <div>
-            <label htmlFor="code">Code</label>
-            <input
-              onChange={(e) => setCode(e.target.value)}
-              id="code"
-              name="code"
-              type="text"
-            />
-          </div>
-          <button
-            onClick={(e) => onPressVerify(e)}
-            className="bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600 transition duration-300"
-          >
-            Verify
+        <button
+          type="submit"
+          className="w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600 transition duration-300"
+        >
+          Sign In
+        </button>
+        <Link href={"/sign-up"}>
+          <button className="w-full bg-gray-300 text-gray-800 py-2 rounded-md hover:bg-gray-400 transition duration-300">
+            Switch Sign Up
           </button>
-        </>
-      ) : (
-        <></>
+        </Link>
+      </form>
+      {/* Xác minh mã nếu cần */}
+      {/* Hiển thị phần xác minh mã nếu pendingVerification là true */}
+      {pendingVerification && (
+        <div className="fixed top-0 left-0 w-full h-full bg-gray-900 bg-opacity-50 flex justify-center items-center">
+          <div className="bg-white p-6 rounded-lg shadow-lg dark:bg-zinc-950">
+            <h2 className="text-xl font-bold mb-4 text-center">Verify Email</h2>
+            <form className="flex flex-col space-y-4">
+              <div>
+                <label htmlFor="code">Code</label>
+                <input
+                  onChange={(e) => setCode(e.target.value)}
+                  id="code"
+                  name="code"
+                  type="text"
+                  className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring focus:ring-blue-400"
+                />
+              </div>
+              <button
+                onClick={onPressVerify}
+                className="bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600 transition duration-300"
+              >
+                Verify
+              </button>
+            </form>
+          </div>
+        </div>
       )}
     </div>
   );
