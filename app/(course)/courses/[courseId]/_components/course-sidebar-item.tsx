@@ -30,7 +30,7 @@ export const CourseSidebarItem = ({
   const onClick = () => {
     router.push(`/courses/${courseId}/chapters/${id}`);
   };
-
+  console.log(isCompleted)
   return (
     <button
       disabled={isLocked}

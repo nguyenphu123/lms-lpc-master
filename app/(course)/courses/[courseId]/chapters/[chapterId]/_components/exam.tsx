@@ -1,5 +1,5 @@
 "use client";
-import { countdown } from "@/hooks/use-countdown";
+import { Countdown } from "@/hooks/use-countdown";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { BookmarkCheck, Timer } from "lucide-react";
@@ -27,10 +27,10 @@ const Exam = ({
   const [categoryList, setCategoryList]: any = useState([...chapter.Category]);
   const [finishedExam, setFinishedExam] = useState(false);
   const [finalScore, setFinalScore] = useState(0);
-
+  const [timeLimit, setTimeLimit]: any = useState(chapter.timeLimit);
   const [questions, setQuestions]: any = useState([]);
   const [currentQuestion, setCurrentQuestion] = useState(0);
-
+  const [examMaxScore, setExamMaxSocre] = useState(0);
   const [selectedAnswers, setSelectedAnswers]: Array<any> = useState([]);
   const confetti = useConfettiStore();
 
@@ -65,7 +65,7 @@ const Exam = ({
       e.returnValue = "";
     }
   };
-  const onTimeOut = async () => {
+  const onTimeOut: any = async () => {
     if (questions.length == 0) {
     } else {
       const { finalScore }: any = calculateScore();
@@ -172,7 +172,7 @@ const Exam = ({
       setQuestions([]);
     }
   };
-  const time = countdown(chapter.timeLimit, onTimeOut);
+
   // Danh sách câu hỏi và đáp án
 
   // useEffect(() => {
@@ -180,6 +180,10 @@ const Exam = ({
   //   loadQuestion();
   // }, []);
   const accept = async () => {
+    setFinalScore(0);
+    setTimeLimit(chapter.timeLimit);
+    setCurrentQuestion(0);
+    setSelectedAnswers([]);
     if (chapter.status != "finished") {
       let questionList = await axios.get(
         `/api/courses/${chapter.courseId}/chapters/${chapter.id}/category/exam/shuffle`
@@ -370,6 +374,7 @@ const Exam = ({
     if (selectedAnswers.length < 1) {
       return finalScore;
     }
+
     let myScore: number = 0;
     for (let i = 0; i < selectedAnswers.length; i++) {
       let categoryIndex = newCategoryList
@@ -428,6 +433,7 @@ const Exam = ({
 
     finalScore = Math.floor((myScore / maxScore) * 100);
     setFinalScore(finalScore);
+    setExamMaxSocre(maxScore);
     return { finalScore };
   };
 
@@ -452,48 +458,15 @@ const Exam = ({
         </ul>
         <div>
           <p className="text-lg mb-4">Include:</p>
-          <ul className="list-disc pl-5 mb-4">
-            {categoryList.map((item: any) => (
-              <li key={item.id} className="mb-2">
-                <span className="font-bold">{item.title}</span> will have:
-                {Math.floor(
-                  (parseInt(item.numOfAppearance, 10) /
-                    parseInt(
-                      categoryList.reduce(
-                        (n: number, { numOfAppearance }: any) =>
-                          n + parseInt(numOfAppearance, 10),
-                        0
-                      ),
-                      10
-                    )) *
-                    100
-                )}
-                %
-              </li>
-            ))}
-          </ul>
+          <ul className="list-disc pl-5 mb-4"></ul>
         </div>
       </div>
       {finishedExam ? (
         <>
           <DoughnutChart
             score={finalScore}
-            maxScore={categoryList.reduce(
-              (n: number, { categoryScore }: any) => n + categoryScore,
-              0
-            )}
+            maxScore={examMaxScore}
           ></DoughnutChart>
-          {categoryList.map((item: any, index: any) => {
-            <div key={item.id}>
-              <DoughnutChart
-                score={item.categoryScore}
-                maxScore={item.Exam.reduce(
-                  (n: number, { score }: any) => n + score,
-                  0
-                )}
-              ></DoughnutChart>
-            </div>;
-          })}
         </>
       ) : (
         <></>
@@ -544,10 +517,7 @@ const Exam = ({
                 <span>
                   {currentQuestion + 1} of {questions.length} questions
                 </span>
-                <div className="flex ml-auto rounded-full bg-blue-500 p-2 text-white">
-                  <Timer />
-                  <span className="mr-2"></span> {time}
-                </div>
+                <Countdown time={timeLimit} callback={onTimeOut}></Countdown>
               </div>
 
               <hr className="my-3" />

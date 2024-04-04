@@ -1,6 +1,7 @@
+import { Timer } from "lucide-react";
 import { useEffect, useState } from "react";
 
-export const countdown = (time: number, callback: () => void) => {
+export const Countdown = ({ time }: any, { callback }: any) => {
   const [number, setNumber] = useState(time * 60); // Convert to seconds
   useEffect(() => {
     const interval = setInterval(() => {
@@ -24,5 +25,11 @@ export const countdown = (time: number, callback: () => void) => {
     seconds
   ).padStart(2, "0")}`;
 
-  return formattedTime;
+  return (
+    <div className="flex ml-auto rounded-full bg-blue-500 p-2 text-white">
+      <Timer />
+      <span className="mr-2"></span>
+      {formattedTime}
+    </div>
+  );
 };
