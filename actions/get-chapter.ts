@@ -44,15 +44,13 @@ export const getChapter = async ({
           orderBy: {
             position: "asc",
           },
-          include: {
-            Resource: true,
-          },
         },
         Category: {
           where: {
             moduleId: moduleId,
           },
         },
+        Resource: true,
         // Exam: {
         //   where: {
         //     moduleId: moduleId,
