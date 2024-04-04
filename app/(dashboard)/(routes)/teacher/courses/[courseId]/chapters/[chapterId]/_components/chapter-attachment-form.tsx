@@ -105,7 +105,7 @@ export const AttacthmentForm = ({
   return (
     <div className="mt-6 border rounded-md p-4 dark:text-white">
       <div className="font-medium flex items-center justify-between">
-        Course Extra resources
+        Chapter Extra resources
       </div>
 
       <div>

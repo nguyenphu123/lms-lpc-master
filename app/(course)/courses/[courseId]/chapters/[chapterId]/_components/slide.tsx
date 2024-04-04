@@ -194,11 +194,6 @@ const Slide = ({
             />
           )}
           Extra resources
-          {slide[currentSlide].Resource.map((item: any) => (
-            <Link key={item.attachment} href={item.attachment}>
-              {item.attachment.split("/").pop() as string}
-            </Link>
-          ))}
           {currentSlide == 0 ? (
             <></>
           ) : (
@@ -231,6 +226,11 @@ const Slide = ({
             </button>
           )}
         </div>
+        {slide[currentSlide].Resource.map((item: any) => (
+          <Link key={item.attachment} href={item.attachment}>
+            {item.attachment.split("/").pop() as string}
+          </Link>
+        ))}
       </motion.div>
     </AnimatePresence>
   );
