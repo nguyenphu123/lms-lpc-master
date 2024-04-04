@@ -96,6 +96,7 @@ export default function Page() {
           />
         </div>
         <button onClick={handleSubmit}>Sign In</button>
+        <button onClick={() => router.push("/sign-up")}>Sign Up</button>
       </form>
       {pendingVerification ? (
         <>
