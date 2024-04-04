@@ -4,6 +4,7 @@ import axios from "axios";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { EmailCodeFactor, SignInFirstFactor } from "@clerk/types";
+import Link from "next/link";
 export default function Page() {
   const { isLoaded, signIn, setActive } = useSignIn();
   const [emailAddress, setEmailAddress] = useState("");
@@ -83,6 +84,7 @@ export default function Page() {
       console.error(JSON.stringify(err, null, 2));
     }
   };
+
   return (
     <div>
       <form>
@@ -96,7 +98,8 @@ export default function Page() {
           />
         </div>
         <button onClick={handleSubmit}>Sign In</button>
-        <button onClick={() => router.push("/sign-up")}>Sign Up</button>
+        <br />
+        <Link href={"/sign-up"}>Sign Up</Link>
       </form>
       {pendingVerification ? (
         <>

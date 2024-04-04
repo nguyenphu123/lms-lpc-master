@@ -13,7 +13,7 @@ const StepTwo = async () => {
       <div className="h-[80px] md:pl-80 fixed inset-y-0 w-full z-50">
         <BasicNavbar userId={sessionClaims?.userId} />
       </div>
-      <div className="p-6 flex items-center justify-center">
+      <div className="p-6 flex items-center justify-center mt-24">
         <div className="text-center">
           <p className="mb-4">Sorry, you are not approved.</p>
           <p className="mb-4">Please contact the administrator for approval.</p>
