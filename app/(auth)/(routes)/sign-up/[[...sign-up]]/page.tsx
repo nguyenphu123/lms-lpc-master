@@ -50,10 +50,9 @@ export default function Page() {
       });
       await signUp.prepareEmailAddressVerification({ strategy: "email_code" });
       setPendingVerification(true);
-    } catch (error) {
-      console.log(error);
+    } catch (err: any) {
+      alert(err.errors[0].longMessage);
     }
-    setPendingVerification(true);
   };
   // This verifies the user using email code that is delivered.
   const onPressVerify = async (e: any) => {

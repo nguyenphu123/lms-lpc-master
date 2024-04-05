@@ -13,6 +13,7 @@ const Logo = dynamic(() => import("@/app/(auth)/_component/logo" as string), {
 });
 
 export default function Page() {
+  const [error, setError] = useState(null);
   const { isLoaded, signIn, setActive } = useSignIn();
   const [emailAddress, setEmailAddress] = useState("");
   const [pendingVerification, setPendingVerification] = useState(false);
@@ -62,7 +63,7 @@ export default function Page() {
         setPendingVerification(true);
       }
     } catch (err: any) {
-      console.error("error", err.errors[0].longMessage);
+      alert(err.errors[0].longMessage);
     }
   };
   const onPressVerify = async (e: any) => {
