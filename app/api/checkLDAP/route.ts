@@ -17,6 +17,6 @@ export async function POST(req: Request) {
     return NextResponse.json(userCheck.mail == emailAddress);
   } catch (error) {
     console.log("[PROGRAMS]", error);
-    return new NextResponse("Internal Error", { status: 500 });
+    return NextResponse.json(false);
   }
 }

@@ -34,6 +34,7 @@ export default function Exam({ chapter }: any) {
   const [timeLimit, setTimeLimit]: any = useState(chapter.timeLimit || 0);
   const [passPercentage, setPassPercentage] = useState(chapter.scoreLimit || 0);
   const [maxAsset, setMaxAsset] = useState(chapter.maxAsset || 9999);
+  const [waitTime, setWaitTime] = useState(chapter.waitTime || 1);
   useEffect(() => {
     async function loadQuestion() {
       let questionList = await axios.get(
@@ -263,6 +264,7 @@ export default function Exam({ chapter }: any) {
       timeLimit: parseFloat(timeLimit),
       scoreLimit: passPercentage,
       maxAsset,
+      waitTime
     };
     await axios.patch(
       `/api/courses/${chapter?.courseId}/chapters/${chapter?.id}`,
@@ -459,13 +461,8 @@ export default function Exam({ chapter }: any) {
               name={"passPercentage"}
               defaultValue={passPercentage}
             >
-              <option value="40">40%</option>
-              <option value="50">50%</option>
-              <option value="60">60%</option>
               <option value="70">70%</option>
               <option value="80">80%</option>
-              <option value="90">90%</option>
-              <option value="100">100%</option>
             </select>
           </div>
           <div className="grow-0 mr-2">
@@ -481,12 +478,29 @@ export default function Exam({ chapter }: any) {
               name={"maxAsset"}
               defaultValue={maxAsset}
             >
-              <option value="1">one time</option>
-              <option value="2">two time</option>
               <option value="3">three time</option>
-              <option value="4">four time</option>
+
               <option value="5">five time</option>
-              <option value="99999">Infinite</option>
+            </select>
+          </div>
+          <div className="grow-0 mr-2">
+            <label
+              className="block text-sm font-medium text-gray-700 mb-1"
+              htmlFor="maxAsset"
+            >
+              Reset this test after
+            </label>
+            <select
+              className="px-4 py-2 border rounded focus:outline-none border-black "
+              onChange={(e: any) => setWaitTime(parseInt(e.target.value))}
+              name={"maxAsset"}
+              defaultValue={maxAsset}
+            >
+              <option value="1">1 day</option>
+
+              <option value="3">3 days</option>
+
+              <option value="7">7 days</option>
             </select>
           </div>
           <div className="grow-0 mr-2">

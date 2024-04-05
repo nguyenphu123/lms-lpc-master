@@ -4,7 +4,6 @@ import axios from "axios";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { EmailCodeFactor, SignInFirstFactor } from "@clerk/types";
-
 import Link from "next/link";
 import dynamic from "next/dynamic";
 import { ModeToggle } from "@/components/ui/theme-button";
@@ -13,18 +12,26 @@ const Logo = dynamic(() => import("@/app/(auth)/_component/logo" as string), {
 });
 
 export default function Page() {
-  const [error, setError] = useState(null);
+  const [error, setError] = useState("");
   const { isLoaded, signIn, setActive } = useSignIn();
   const [emailAddress, setEmailAddress] = useState("");
   const [pendingVerification, setPendingVerification] = useState(false);
   const [code, setCode] = useState("");
   const router = useRouter();
+
+  const handleCodeChange = (e: any) => {
+    const value = e.target.value;
+    const formattedValue = value.replace(/\D/g, "").slice(0, 6);
+    setCode(formattedValue);
+  };
+
   const handleSubmit = async (e: any) => {
     e.preventDefault();
     if (!isLoaded) {
       return;
     }
     if (!emailAddress.includes("@lp.com.vn")) {
+      setError("Please enter a valid email address.");
       return;
     }
 
@@ -35,6 +42,7 @@ export default function Page() {
     });
 
     if (!user.data) {
+      setError("User not found.");
       return;
     }
     try {
@@ -63,7 +71,7 @@ export default function Page() {
         setPendingVerification(true);
       }
     } catch (err: any) {
-      alert(err.errors[0].longMessage);
+      setError(err.errors[0].longMessage);
     }
   };
   const onPressVerify = async (e: any) => {
@@ -116,6 +124,7 @@ export default function Page() {
             className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring focus:ring-blue-400"
           />
         </div>
+        {error && <p className="text-red-500 mt-2">{error}</p>}
         <button
           type="submit"
           className="w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600 transition duration-300"
@@ -123,7 +132,7 @@ export default function Page() {
           Sign In
         </button>
         <Link href={"/sign-up"}>
-          <button className="w-full bg-gray-300 mt-1 text-gray-800 py-2 rounded-md hover:bg-gray-400 transition duration-300">
+          <button className="w-full bg-gray-300 mt-2 text-gray-800 py-2 rounded-md hover:bg-gray-400 transition duration-300">
             Switch Sign Up
           </button>
         </Link>
@@ -133,23 +142,51 @@ export default function Page() {
       {pendingVerification && (
         <div className="fixed top-0 left-0 w-full h-full bg-gray-900 bg-opacity-50 flex justify-center items-center">
           <div className="bg-white p-6 rounded-lg shadow-lg dark:bg-zinc-950">
-            <h2 className="text-xl font-bold mb-4 text-center">Verify Email</h2>
+            <div className="flex justify-end">
+              <button
+                onClick={() => setPendingVerification(false)}
+                className="text-gray-600 hover:text-gray-800 focus:outline-none"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-6 w-6"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                </svg>
+              </button>
+            </div>
+            <h2 className="text-xl font-bold mb-4 text-center">
+              Email Verification
+            </h2>
+            <p className="mb-2 text-center text-gray-600">
+              We sent a code to <strong>{emailAddress}</strong>
+            </p>
             <form className="flex flex-col space-y-4">
               <div>
-                <label htmlFor="code">Code</label>
+                {/* <label htmlFor="code">Code</label> */}
                 <input
-                  onChange={(e) => setCode(e.target.value)}
+                  onChange={handleCodeChange}
                   id="code"
                   name="code"
                   type="text"
+                  placeholder="Enter 6-digit code"
                   className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring focus:ring-blue-400"
+                  value={code}
                 />
               </div>
               <button
                 onClick={onPressVerify}
                 className="bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600 transition duration-300"
               >
-                Verify
+                Confirm
               </button>
             </form>
           </div>

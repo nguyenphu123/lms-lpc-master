@@ -9,6 +9,7 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
+import { auth } from "@clerk/nextjs";
 
 type CourseWithProgressWithCategory = Course & {
   programs: Program | null;
@@ -22,6 +23,8 @@ interface RecommendProps {
 }
 
 export const Recommend = ({ items }: RecommendProps) => {
+  const { userId }: any = auth();
+  console.log(items);
   return items.length == 0 ? (
     <>
       <h2 className="font-semibold text-2xl text-blue-700 mb-4 flex items-center">
@@ -51,7 +54,13 @@ export const Recommend = ({ items }: RecommendProps) => {
                 key={item.course.id}
                 id={item.course.id}
                 title={item.course.title}
-                imageUrl={item.course.imageUrl!}
+                imageUrl={
+                  item.course.ClassSessionRecord.map(
+                    (item: { userId: any }) => item.userId
+                  ).indexOf(userId) == -1
+                    ? "/istockphoto-936681148-612x612.jpg"
+                    : item.course.imageUrl!
+                }
                 chaptersLength={item.course.Module.length}
                 chapters={item?.course.Module}
                 bookmark={item.course.BookMark}

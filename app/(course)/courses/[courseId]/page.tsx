@@ -23,13 +23,20 @@ const CourseIdPage = async ({ params }: { params: { courseId: string } }) => {
           },
         },
       },
+      ClassSessionRecord: true,
     },
   });
 
   if (!course) {
     return redirect("/");
   }
-
+  if (
+    course.ClassSessionRecord.map(
+      (item: { userId: any }) => item.userId
+    ).indexOf(userId)
+  ) {
+    return redirect("/");
+  }
   return redirect(`/courses/${course.id}/chapters/${course.Module[0].id}`);
 };
 

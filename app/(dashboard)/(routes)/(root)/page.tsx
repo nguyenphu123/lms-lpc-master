@@ -38,21 +38,36 @@ export default async function Dashboard() {
 
     return true;
   }
-
-  var tsYesterday: Date = new Date(
-    Date.UTC(2012, 5, 17, 22, 34) - 24 * 3600 * 1000
-  );
-
-  await db.userProgress.updateMany({
+  const examList = await db.module.findMany({
     where: {
-      userId: sessionClaims.userId,
-      status: "studying",
-      endDate: tsYesterday,
-    },
-    data: {
-      attempt: 0,
+      type: "Exam",
     },
   });
+  for (let i = 0; i < examList.length; i++) {
+    let date = 24;
+    if (examList[i].waitTime == 3) {
+      date = 72;
+    }
+    if (examList[i].waitTime == 7) {
+      date = 168;
+    }
+    var tsYesterday: Date = new Date(
+      Date.UTC(2012, 5, 17, 22, 34) - date * 3600 * 1000
+    );
+
+    await db.userProgress.updateMany({
+      where: {
+        userId: sessionClaims.userId,
+        status: "studying",
+        endDate: tsYesterday,
+      },
+
+      data: {
+        attempt: 0,
+      },
+    });
+  }
+
   let myActivity: any = await db.classSessionRecord.findMany({
     where: {
       userId: sessionClaims.userId,
@@ -70,11 +85,7 @@ export default async function Dashboard() {
   });
   let recommendCourses: any = await db.department.findUnique({
     where: {
-      title:
-        sessionClaims.userInfo.department != undefined ||
-        !isEmpty(sessionClaims.userInfo)
-          ? sessionClaims.userInfo.department
-          : "no department",
+      id: userInfo.departmentId + "",
       CourseOnDepartment: {
         every: {
           course: {
@@ -100,6 +111,7 @@ export default async function Dashboard() {
             include: {
               Module: true,
               BookMark: true,
+              ClassSessionRecord: true,
             },
           },
         },

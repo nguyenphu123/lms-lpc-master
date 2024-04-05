@@ -162,6 +162,7 @@ model Module {
   UserProgress UserProgress[]
   Slide        Slide[]
   maxAsset     Int?
+  waitTime     Int?
   timeLimit    Float?
   scoreLimit   Int?
   Category     Category[]

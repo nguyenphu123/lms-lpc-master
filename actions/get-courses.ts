@@ -31,11 +31,7 @@ export const getCourses = async ({
       include: {
         courseWithProgram: true,
         BookMark: true,
-        // ClassSessionRecord: {
-        //   where: {
-        //     userId,
-        //   },
-        // },
+        ClassSessionRecord: true,
         Module: {
           where: {
             isPublished: true,
