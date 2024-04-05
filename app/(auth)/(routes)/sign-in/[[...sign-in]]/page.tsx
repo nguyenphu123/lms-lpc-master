@@ -10,11 +10,12 @@ import { ModeToggle } from "@/components/ui/theme-button";
 const Logo = dynamic(() => import("@/app/(auth)/_component/logo" as string), {
   ssr: false,
 });
-
+var CryptoJS = require("crypto-js");
 export default function Page() {
   const [error, setError] = useState("");
   const { isLoaded, signIn, setActive } = useSignIn();
   const [emailAddress, setEmailAddress] = useState("");
+  const [password, setPassword] = useState("");
   const [pendingVerification, setPendingVerification] = useState(false);
   const [code, setCode] = useState("");
   const router = useRouter();
@@ -34,10 +35,10 @@ export default function Page() {
       setError("Please enter a valid email address.");
       return;
     }
-
-    let user = await axios.post("/api/checkLDAP", {
+    var ciphertext = CryptoJS.AES.encrypt(password, "1").toString();
+    let user = await axios.post("/api/authLDAP", {
       emailAddress,
-      // password,
+      password: ciphertext,
       // department,
     });
 
@@ -121,6 +122,18 @@ export default function Page() {
             id="email"
             name="email"
             type="email"
+            className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring focus:ring-blue-400"
+          />
+        </div>
+        <div>
+          <label htmlFor="password" className="block mb-1">
+            Password
+          </label>
+          <input
+            onChange={(e) => setPassword(e.target.value)}
+            id="password"
+            name="password"
+            type="password"
             className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring focus:ring-blue-400"
           />
         </div>
