@@ -24,7 +24,7 @@ interface RecommendProps {
 
 export const Recommend = ({ items }: RecommendProps) => {
   const { userId }: any = auth();
-  console.log(items);
+
   return items.length == 0 ? (
     <>
       <h2 className="font-semibold text-2xl text-blue-700 mb-4 flex items-center">

@@ -1,19 +1,13 @@
-import { Program, Course } from "@prisma/client";
 import { BookOpenText } from "lucide-react";
 import { CourseCard } from "@/components/course-card";
-
-type CourseWithProgressWithCategory = Course & {
-  programs: Program | null;
-  Module: { id: string }[];
-  progress: string | null;
-  BookMark: { length: number; id: string };
-};
+import { useAuth } from "@clerk/nextjs";
 
 interface CoursesListProps {
-  items: CourseWithProgressWithCategory[];
+  items: any[];
 }
 
 export const CoursesList = ({ items }: CoursesListProps) => {
+  const { userId }: any = useAuth();
   return (
     <div>
       <h2 className="font-semibold text-2xl text-blue-700 mb-4 flex items-center">
@@ -26,7 +20,13 @@ export const CoursesList = ({ items }: CoursesListProps) => {
             key={item.id}
             id={item.id}
             title={item.title}
-            imageUrl={item.imageUrl!}
+            imageUrl={
+              item?.ClassSessionRecord.map(
+                (item: { userId: any }) => item.userId
+              ).indexOf(userId) == -1
+                ? "/istockphoto-936681148-612x612.jpg"
+                : item.imageUrl!
+            }
             chapters={item?.Module}
             chaptersLength={item.Module.length}
             bookmark={item.BookMark}
