@@ -13,10 +13,7 @@ interface CourseCardProps {
   title: string;
   imageUrl: string;
   chaptersLength: number;
-  bookmark: {
-    length: number;
-    id: string;
-  };
+  bookmark: any[];
   progress: string | null;
   chapters: any;
 }
@@ -101,7 +98,7 @@ export const CourseCard = ({
           >
             <Eye />
           </button>
-          {bookmark?.length > 0 ? (
+          {bookmark?.map((item) => item.courseId).indexOf(id) > -1 ? (
             <button
               onClick={onUnBookMark}
               className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-gray-600 transition"

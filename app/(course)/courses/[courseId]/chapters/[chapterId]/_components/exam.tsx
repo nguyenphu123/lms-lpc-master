@@ -39,16 +39,19 @@ const Exam = ({
       let getLatestTestResult: any = await axios.get(
         `/api/courses/${courseId}/chapters/${chapter.id}/category/exam`
       );
+      if (getLatestTestResult.data?.UserProgress[0]?.status == "finished") {
+      } else {
+        setMaxAsset(
+          maxAsset - getLatestTestResult.data?.UserProgress[0]?.attempt
+        );
+      }
 
-      setMaxAsset(
-        maxAsset - getLatestTestResult.data?.UserProgress[0]?.attempt
-      );
       setFinishedExam(
         getLatestTestResult.data?.UserProgress[0]?.status == "finished"
           ? true
           : false
       );
-
+      setFinalScore(getLatestTestResult.data?.UserProgress[0]?.score);
       setCategoryList(getLatestTestResult.data?.Category);
       // console.log(shuffleArray(getLatestTestResult.data?.ExamList));
     };
@@ -78,14 +81,14 @@ const Exam = ({
               : "Bạn đã không vượt qua bài test"
           }`
       );
-      if (chapter.status != "finished") {
+      if (chapter.status != "finished" && !finishedExam) {
         const year = new Date();
         const date = new Date(year.getFullYear(), 6, 1).toISOString();
         await axios.put(
           `/api/courses/${courseId}/chapters/${chapter.id}/progress`,
           {
             status: totalScore >= chapter.scoreLimit ? "finished" : "failed",
-            score: finalScore.toString(),
+            score: finalScore,
             progress: "100%",
             endDate: date,
           }
@@ -257,7 +260,7 @@ const Exam = ({
               : "Bạn đã không vượt qua bài test"
           }`
       );
-      if (chapter.status != "finished") {
+      if (chapter.status != "finished" && !finishedExam) {
         const year = new Date();
         const date = new Date(year.getFullYear(), 6, 1).toISOString();
         await axios.put(
@@ -458,11 +461,33 @@ const Exam = ({
         </ul>
         <div>
           <p className="text-lg mb-4">Include:</p>
-          <ul className="list-disc pl-5 mb-4"></ul>
+          <ul className="list-disc pl-5 mb-4">
+            {chapter.Category.map((item: any) => {
+              return (
+                <li>
+                  {item.title}:
+                  {Math.floor(
+                    (parseInt(item.numOfAppearance) /
+                      parseInt(
+                        chapter.Category.reduce(
+                          (n: number, { numOfAppearance }: any) =>
+                            n + numOfAppearance,
+                          0
+                        )
+                      )) *
+                      100
+                  )}
+                  %
+                </li>
+              );
+            })}
+          </ul>
         </div>
       </div>
       {finishedExam ? (
         <>
+          You have finished this exam, you can retake it but your score will not
+          count.
           <DoughnutChart
             score={finalScore}
             maxScore={examMaxScore}
@@ -481,8 +506,14 @@ const Exam = ({
             Exam note
           </AlertDialogTitle>
           <AlertDialogDescription className="AlertDialogDescription">
-            Do you want to do the exam? You have{" "}
-            {maxAsset > 5 ? "Infinite" : maxAsset} time to do this test
+            {finishedExam ? (
+              <>Do you want to retake this exam?</>
+            ) : (
+              <>
+                Do you want to do the exam? You have
+                {maxAsset > 5 ? "Infinite" : maxAsset} time to do this test
+              </>
+            )}
           </AlertDialogDescription>
           <div
             style={{

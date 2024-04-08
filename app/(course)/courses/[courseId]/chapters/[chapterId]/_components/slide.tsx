@@ -121,7 +121,7 @@ const Slide = ({
       // router.push(`/search`);
     }
   };
-  console.log(isCompleted);
+
   return slide.length < 1 ? (
     <>This module is updating.</>
   ) : (

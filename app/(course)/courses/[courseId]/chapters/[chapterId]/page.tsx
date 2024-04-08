@@ -39,7 +39,7 @@ const ChapterIdPage = async ({
         nextChapterId={nextChapter}
         courseId={params.courseId}
         course={course}
-        isCompleted={!!userProgress?.status}
+        isCompleted={userProgress?.status}
       />
     </>
   ) : (
@@ -56,7 +56,7 @@ const ChapterIdPage = async ({
             nextChapterId={nextChapter}
             courseId={params.courseId}
             course={course}
-            isCompleted={!!userProgress?.status}
+            isCompleted={userProgress?.status}
           ></Slide>
         </div>
         <div>

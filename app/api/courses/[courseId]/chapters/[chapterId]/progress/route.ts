@@ -9,13 +9,13 @@ export async function PUT(
 ) {
   try {
     const { userId } = auth();
-    const { progress, status, endDate } = await req.json();
-    console.log(userId);
+    const { progress, status, endDate, score } = await req.json();
+
     if (!userId) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
     const year = new Date();
-    const date = new Date(year.getFullYear(), 6, 1).toISOString();
+    const date = new Date().toISOString();
     const userProgress = await db.userProgress.upsert({
       where: {
         moduleId_userId: {
@@ -27,6 +27,7 @@ export async function PUT(
         progress,
         status,
         endDate,
+        score,
         attempt: {
           increment: 1,
         },

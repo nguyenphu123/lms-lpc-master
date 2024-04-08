@@ -49,6 +49,9 @@ export const getChapter = async ({
           where: {
             moduleId: moduleId,
           },
+          include: {
+            Exam: true,
+          },
         },
         Resource: true,
         // Exam: {
