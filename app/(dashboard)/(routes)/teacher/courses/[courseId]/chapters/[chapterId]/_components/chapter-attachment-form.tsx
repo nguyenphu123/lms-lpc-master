@@ -30,6 +30,7 @@ export const AttacthmentForm = ({
   const toggleEdit = () => setEdit((current) => !current);
   const [contents, setContents] = useState<
     Array<{
+      moduleId: string;
       attachment: string;
       attachmentType: string;
     }>
@@ -72,6 +73,7 @@ export const AttacthmentForm = ({
       }
     );
     contents[objIndex].attachmentType = "extra";
+    contents[objIndex].moduleId = moduleId;
     contents[
       objIndex
     ].attachment = `${process.env.NEXT_PUBLIC_ACCOUNT_URL}/Course/${getCourse.data.title}/${getChapter.data.title}/${initialData.title}/attachment/${file.name}`;
@@ -81,6 +83,7 @@ export const AttacthmentForm = ({
     let newItem = {
       attachment: "",
       attachmentType: "Extra",
+      moduleId,
     };
     setContents([...contents, newItem]);
   };
