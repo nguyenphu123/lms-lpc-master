@@ -26,6 +26,17 @@ export async function PATCH(
           departmentId: departmentList[i].id,
         },
       });
+      const findUsers = await db.user.findMany({
+        where: {
+          departmentId: departmentList[i].id,
+        },
+      });
+      await db.classSessionRecord.createMany({
+        data: findUsers.map((user) => ({
+          userId: user.id,
+          courseId: params.courseId,
+        })),
+      });
     }
     return NextResponse.json("");
   } catch (error) {
@@ -33,4 +44,3 @@ export async function PATCH(
     return new NextResponse("Internal Error", { status: 500 });
   }
 }
-

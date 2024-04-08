@@ -64,12 +64,29 @@ const CourseIdPage = async ({ params }: { params: { courseId: string } }) => {
     // where: {
     //   id: { not: userId },
     // },
+    include: {
+      ClassSessionRecord: {
+        where: {
+          courseId: params.courseId,
+        },
+      },
+    },
   });
 
   if (!course) {
     return redirect("/");
   }
-
+  for (let i = 0; i < users.length; i++) {
+    if (
+      users[i].ClassSessionRecord.map((item: any) => item.courseId).indexOf(
+        params.courseId
+      ) !== -1
+    ) {
+      users[i]["isEnrolled"] = true;
+    } else {
+      users[i]["isEnrolled"] = false;
+    }
+  }
   const requiredFields = [
     course.title,
     // course.description,

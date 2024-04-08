@@ -4,7 +4,7 @@ import * as z from "zod";
 import axios from "axios";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { Pencil } from "lucide-react";
+import { Pencil, TrendingUp } from "lucide-react";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
@@ -30,7 +30,7 @@ export const StudentAssignForm = ({
   Student,
 }: StudentFormProps) => {
   const [isEditing, setIsEditing] = useState(false);
-  const [studentList, setStudentList] = useState(initialData.Student || []);
+  const [studentList, setStudentList] = useState(Student);
   const toggleEdit = () => setIsEditing((current) => !current);
 
   const router = useRouter();
@@ -39,25 +39,14 @@ export const StudentAssignForm = ({
     resolver: zodResolver(formSchema),
     defaultValues: initialData.Student,
   });
-  const onChangeStudentList = async (student: any) => {
-    let checkIndex = studentList.map((val: any) => val.id).indexOf(student.id);
-    if (checkIndex > -1) {
-      if (
-        confirm(
-          "Remove this student from the course?This student progress will be removed as well."
-        )
-      ) {
-        let tempList = [...studentList];
-        tempList.splice(checkIndex, 1);
-        setStudentList([...tempList]);
-        await axios.patch(`/api/courses/${courseId}/unassign`, {
-          studentId: student.id,
-        });
-      } else {
-      }
+  const onChangeStudentList = async (i: any) => {
+    let newList = [...studentList];
+    if (newList[i].isEnrolled) {
+      newList[i].isEnrolled = false;
     } else {
-      setStudentList([...studentList, student]);
+      newList[i].isEnrolled = true;
     }
+    setStudentList(newList);
   };
   // const { isSubmitting, isValid } = form.formState;
 
@@ -95,23 +84,18 @@ export const StudentAssignForm = ({
             onSubmit={form.handleSubmit(onSubmit)}
             className="space-y-4 mt-4"
           >
-            {Student.map((item, i) => {
+            {studentList.map((item, i) => {
               return (
                 <div
                   key={item.id}
                   className="flex items-center space-x-2 dark:text-slate-50"
                 >
                   <input
-                    onClick={() => onChangeStudentList(item)}
+                    onClick={() => onChangeStudentList(i)}
                     disabled={isEditing ? false : true}
                     value={item.id}
                     type="checkbox"
-                    checked={
-                      studentList.map((val: any) => val.id).indexOf(item.id) !=
-                      -1
-                        ? true
-                        : false
-                    }
+                    checked={item.isEnrolled}
                     className="text-blue-500"
                   />
                   <label>{item.username}</label>

@@ -17,22 +17,33 @@ export async function PATCH(
 
     const date = new Date().toISOString();
     for (const student of studentList) {
-      await db.classSessionRecord.upsert({
-        where: {
-          courseId_userId: {
-            courseId: courseId.toString(),
-            userId: student.id,
+      if (student.isEnrolled) {
+        await db.classSessionRecord.upsert({
+          where: {
+            courseId_userId: {
+              courseId: courseId.toString(),
+              userId: student.id,
+            },
           },
-        },
-        create: {
-          courseId,
-          userId: student.id,
-          progress: "0%",
-          status: "studying",
-          startDate: date,
-        },
-        update: {},
-      });
+          create: {
+            courseId,
+            userId: student.id,
+            progress: "0%",
+            status: "studying",
+            startDate: date,
+          },
+          update: {},
+        });
+      } else {
+        await db.classSessionRecord.delete({
+          where: {
+            courseId_userId: {
+              courseId: courseId.toString(),
+              userId: student.id,
+            },
+          },
+        });
+      }
     }
     return NextResponse.json("");
   } catch (error) {
