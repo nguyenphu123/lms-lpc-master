@@ -7,8 +7,10 @@ import axios from "axios";
 export async function GET(req: Request) {
   try {
     const { userId, sessionClaims }: any = auth();
-
-    if (!userId || sessionClaims.userInfo.role.toUpperCase() == "STAFF") {
+    let userInfo: any = await db.user.findUnique({
+      where: { id: userId, status: "approved" },
+    });
+    if (!userId || userInfo.role.toUpperCase() == "STAFF") {
       return new NextResponse("Unauthorized", { status: 401 });
     }
 

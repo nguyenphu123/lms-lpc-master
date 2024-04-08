@@ -11,10 +11,13 @@ const ProgramLayout = async ({
   params: { programId: string };
 }) => {
   const { userId, sessionClaims }: any = auth();
+  let userInfo: any = await db.user.findUnique({
+    where: { id: userId, status: "approved" },
+  });
   if (!userId) {
     return redirect("/");
   }
-  if (sessionClaims.userInfo.role.toUpperCase() == "STAFF") {
+  if (userInfo.role.toUpperCase() == "STAFF") {
     return redirect("/");
   }
 

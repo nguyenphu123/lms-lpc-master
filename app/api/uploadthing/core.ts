@@ -1,11 +1,15 @@
+import { db } from "@/lib/db";
 import { auth } from "@clerk/nextjs";
 import { createUploadthing, type FileRouter } from "uploadthing/next";
 
 const f = createUploadthing();
 
-const handleAuth = () => {
+const handleAuth = async () => {
   const { userId, sessionClaims }: any = auth();
-  const isAuthorized = sessionClaims.userInfo.role.toUpperCase() == "STAFF";
+  let userInfo: any = await db.user.findUnique({
+    where: { id: userId, status: "approved" },
+  });
+  const isAuthorized = userInfo.role.toUpperCase() == "STAFF";
 
   if (!userId || !isAuthorized) throw new Error("Unauthorized");
   return { userId };
