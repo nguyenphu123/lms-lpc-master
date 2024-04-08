@@ -34,7 +34,7 @@ const CourseIdPage = async ({ params }: { params: { courseId: string } }) => {
   if (
     course.ClassSessionRecord.map(
       (item: { userId: any }) => item.userId
-    ).indexOf(userId)
+    ).indexOf(userId) == -1
   ) {
     return redirect("/");
   }
@@ -43,13 +43,13 @@ const CourseIdPage = async ({ params }: { params: { courseId: string } }) => {
       id: userId,
     },
   });
-  if (
-    course.CourseOnDepartment.map((item: { id: any }) => item.id).indexOf(
-      user.departmentId
-    )
-  ) {
-    return redirect("/");
-  }
+  // if (
+  //   course.CourseOnDepartment.map((item: { id: any }) => item.id).indexOf(
+  //     user.departmentId
+  //   )
+  // ) {
+  //   return redirect("/");
+  // }
   return redirect(`/courses/${course.id}/chapters/${course.Module[0].id}`);
 };
 

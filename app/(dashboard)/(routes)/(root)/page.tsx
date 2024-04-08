@@ -29,7 +29,7 @@ export default async function Dashboard() {
       imageUrl: sessionClaims.userImage || "",
     },
   });
-  
+
   const examList = await db.module.findMany({
     where: {
       type: "Exam",
@@ -71,6 +71,7 @@ export default async function Dashboard() {
         include: {
           Module: true,
           ClassSessionRecord: true,
+          BookMark: true,
         },
       },
     },
