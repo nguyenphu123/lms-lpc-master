@@ -44,7 +44,7 @@ model ProgramOnDepartment {
 
 model User {
   id                       String                     @id @default(uuid())
-  email                    String
+  email                    String                     @unique
   Department               Department?                @relation(fields: [departmentId], references: [id])
   departmentId             String?
   username                 String
@@ -126,9 +126,9 @@ model ClassSessionRecord {
   courseId  String
   user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId    String
-  progress  String    @db.Text
-  status    String
-  startDate DateTime
+  progress  String?    @db.Text
+  status    String?
+  startDate DateTime?
   endDate   DateTime?
   score     Int?
 

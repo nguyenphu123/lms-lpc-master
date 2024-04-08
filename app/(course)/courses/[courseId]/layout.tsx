@@ -11,15 +11,10 @@ const CourseLayout = async ({
   children: React.ReactNode;
   params: { courseId: string };
 }) => {
-  const { userId, sessionClaims }: any = auth();
+  const { userId }: any = auth();
   if (!userId) {
     return redirect("/");
   }
-  if (sessionClaims.userInfo.role.toUpperCase() == "STAFF") {
-    return redirect("/");
-  }
-
-  
 
   const course: any = await db.course.findUnique({
     where: {

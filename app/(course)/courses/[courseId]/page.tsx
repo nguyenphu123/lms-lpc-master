@@ -24,6 +24,7 @@ const CourseIdPage = async ({ params }: { params: { courseId: string } }) => {
         },
       },
       ClassSessionRecord: true,
+      CourseOnDepartment: true,
     },
   });
 
@@ -34,6 +35,18 @@ const CourseIdPage = async ({ params }: { params: { courseId: string } }) => {
     course.ClassSessionRecord.map(
       (item: { userId: any }) => item.userId
     ).indexOf(userId)
+  ) {
+    return redirect("/");
+  }
+  const user: any = await db.user.findUnique({
+    where: {
+      id: userId,
+    },
+  });
+  if (
+    course.CourseOnDepartment.map((item: { id: any }) => item.id).indexOf(
+      user.departmentId
+    )
   ) {
     return redirect("/");
   }

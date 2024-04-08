@@ -61,9 +61,9 @@ const CourseIdPage = async ({ params }: { params: { courseId: string } }) => {
   });
   const department: any = await db.department.findMany({});
   const users: any = await db.user.findMany({
-    where: {
-      id: { not: userId },
-    },
+    // where: {
+    //   id: { not: userId },
+    // },
   });
 
   if (!course) {

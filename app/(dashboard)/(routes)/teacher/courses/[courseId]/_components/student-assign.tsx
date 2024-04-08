@@ -39,12 +39,22 @@ export const StudentAssignForm = ({
     resolver: zodResolver(formSchema),
     defaultValues: initialData.Student,
   });
-  const onChangeDepartmentList = (student: any) => {
+  const onChangeStudentList = async (student: any) => {
     let checkIndex = studentList.map((val: any) => val.id).indexOf(student.id);
     if (checkIndex > -1) {
-      let tempList = [...studentList];
-      tempList.splice(checkIndex, 1);
-      setStudentList([...tempList]);
+      if (
+        confirm(
+          "Remove this student from the course?This student progress will be removed as well."
+        )
+      ) {
+        let tempList = [...studentList];
+        tempList.splice(checkIndex, 1);
+        setStudentList([...tempList]);
+        await axios.patch(`/api/courses/${courseId}/unassign`, {
+          studentId: student.id,
+        });
+      } else {
+      }
     } else {
       setStudentList([...studentList, student]);
     }
@@ -92,7 +102,7 @@ export const StudentAssignForm = ({
                   className="flex items-center space-x-2 dark:text-slate-50"
                 >
                   <input
-                    onClick={() => onChangeDepartmentList(item)}
+                    onClick={() => onChangeStudentList(item)}
                     disabled={isEditing ? false : true}
                     value={item.id}
                     type="checkbox"
