@@ -120,7 +120,9 @@ export const StudentAssignForm = ({
             })}
 
             <div className="flex items-center gap-x-2">
-              <Button type="submit">Save</Button>
+              <Button type="submit" onClick={() => onSubmit()}>
+                Save
+              </Button>
             </div>
           </form>
         </Form>

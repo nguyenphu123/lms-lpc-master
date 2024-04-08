@@ -19,47 +19,42 @@ interface SearchPageProps {
 
 const SearchPage = async ({ searchParams }: SearchPageProps) => {
   const { sessionClaims, userId }: any = auth();
-
-  if (!sessionClaims.userId) {
+  let userInfo: any = await db.user.findUnique({
+    where: { id: userId, status: "approved" },
+  });
+  if (!userId) {
     return redirect("/");
   }
-  function isEmpty(obj: object) {
-    for (const prop in obj) {
-      if (Object.hasOwn(obj, prop)) {
-        return false;
-      }
-    }
 
-    return true;
-  }
   let recommendCourses: any = await db.department.findUnique({
     where: {
-      title:
-        sessionClaims.userInfo.department != undefined ||
-        !isEmpty(sessionClaims.userInfo)
-          ? sessionClaims.userInfo.department
-          : "no department",
-      // CourseOnDepartment: {
-      //   every: {
-      //     course: {
-      //       ClassSessionRecord: {
-      //         every: {
-      //           userId: sessionClaims.userId,
-      //           status: { not: "finnish" },
-      //           progress: { not: "100%" },
-      //         },
-      //       },
-      //     },
-      //   },
-      // },
+      id: userInfo.departmentId + "",
+      CourseOnDepartment: {
+        every: {
+          course: {
+            isPublished: true,
+            ClassSessionRecord: {
+              every: {
+                userId: sessionClaims.userId,
+                status: { not: "finnish" },
+                progress: { not: "100%" },
+              },
+            },
+          },
+        },
+      },
     },
     include: {
       CourseOnDepartment: {
         include: {
           course: {
+            where: {
+              isPublished: true,
+            },
             include: {
               Module: true,
               BookMark: true,
+              ClassSessionRecord: true,
             },
           },
         },
@@ -75,6 +70,7 @@ const SearchPage = async ({ searchParams }: SearchPageProps) => {
           progress: { not: "100%" },
         },
       },
+      isPublished: true,
     },
     include: {
       Module: true,

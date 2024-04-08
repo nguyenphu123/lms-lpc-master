@@ -15,6 +15,7 @@ export async function PATCH(
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
+    const date = new Date().toISOString();
     for (const student of studentList) {
       await db.classSessionRecord.upsert({
         where: {
@@ -28,6 +29,7 @@ export async function PATCH(
           userId: student.id,
           progress: "0%",
           status: "studying",
+          startDate: date,
         },
         update: {},
       });
