@@ -8,6 +8,7 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
+import { auth } from "@clerk/nextjs";
 
 type CourseWithProgressWithCategory = Course & {
   programs: Program | null;
@@ -17,10 +18,11 @@ type CourseWithProgressWithCategory = Course & {
 };
 
 interface BookmarkProps {
-  items: CourseWithProgressWithCategory[];
+  items: any[];
 }
 
 export const Bookmark = ({ items }: BookmarkProps) => {
+  const { userId }: any = auth();
   return items.length == 0 ? (
     <>
       <h2 className="font-semibold text-2xl text-blue-700 mb-4 flex items-center">
@@ -47,7 +49,13 @@ export const Bookmark = ({ items }: BookmarkProps) => {
                 key={item.id}
                 id={item.id}
                 title={item.title}
-                imageUrl={item.imageUrl!}
+                imageUrl={
+                  item.ClassSessionRecord.map(
+                    (item: { userId: any }) => item.userId
+                  ).indexOf(userId) == -1
+                    ? "/istockphoto-936681148-612x612.jpg"
+                    : item.imageUrl!
+                }
                 chaptersLength={item?.Module.length}
                 chapters={item?.Module}
                 bookmark={item?.BookMark}

@@ -59,7 +59,19 @@ const CourseIdPage = async ({ params }: { params: { courseId: string } }) => {
       // },
     },
   });
+
   const department: any = await db.department.findMany({});
+  for (let i = 0; i < department.length; i++) {
+    if (
+      course.CourseOnDepartment.map((item: any) => item.departmentId).indexOf(
+        department[i].id
+      ) !== -1
+    ) {
+      department[i]["isEnrolled"] = true;
+    } else {
+      department[i]["isEnrolled"] = false;
+    }
+  }
   const users: any = await db.user.findMany({
     // where: {
     //   id: { not: userId },

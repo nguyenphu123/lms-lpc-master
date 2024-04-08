@@ -35,9 +35,8 @@ const formSchema = z.array(Department);
 
 export const DepartmentForm = ({ initialData, courseId, department }: any) => {
   const [isEditing, setIsEditing] = useState(false);
-  const [departmentList, setDepartmentList] = useState(
-    initialData.CourseOnDepartment || []
-  );
+  const [departmentList, setDepartmentList] = useState(department);
+
   const toggleEdit = () => setIsEditing((current) => !current);
   const router = useRouter();
 
@@ -46,28 +45,22 @@ export const DepartmentForm = ({ initialData, courseId, department }: any) => {
     defaultValues: initialData.Department,
   });
 
-  const onChangeDepartmentList = useCallback(
-    (e: any, department: DepartmentProps) => {
-      // e.preventDefault();
-      setDepartmentList((items: DepartmentProps[]) => {
-        let checkIndex = items
-          .map((val: DepartmentProps) => val.id)
-          .indexOf(department.id);
-        let checkIndex2 = items
-          .map((val: any) => val.departmentId)
-          .indexOf(department.id);
-        if (checkIndex > -1 || checkIndex2 > -1) {
-          let tempList = [...departmentList];
-          tempList.splice(checkIndex, 1);
+  const onChangeDepartmentList = (
+    e: any,
+    department: DepartmentProps,
+    index: any
+  ) => {
+    // e.preventDefault();
+    let newList = [...departmentList];
 
-          return [...tempList];
-        } else {
-          return [...departmentList, department];
-        }
-      });
-    },
-    [departmentList]
-  );
+    if (newList[index].isEnrolled) {
+      newList[index].isEnrolled = false;
+    } else {
+      newList[index].isEnrolled = true;
+    }
+    setDepartmentList(newList);
+  };
+
   // const { isSubmitting, isValid } = form.formState;
 
   const onSubmit = async () => {
@@ -108,20 +101,11 @@ export const DepartmentForm = ({ initialData, courseId, department }: any) => {
               return (
                 <div key={item.id} className="dark:text-slate-50">
                   <input
-                    onChange={(e) => onChangeDepartmentList(e, item)}
+                    onChange={(e) => onChangeDepartmentList(e, item, i)}
                     disabled={isEditing ? false : true}
                     value={item.title}
                     type="checkbox"
-                    defaultChecked={
-                      departmentList
-                        .map((val: any) => val.id)
-                        .indexOf(item.id) != -1 ||
-                      departmentList
-                        .map((val: any) => val.departmentId)
-                        .indexOf(item.id) != -1
-                        ? true
-                        : false
-                    }
+                    defaultChecked={item.isEnrolled}
                   />
                   {item.title}
                 </div>

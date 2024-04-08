@@ -19,24 +19,32 @@ export async function PATCH(
         courseId: params.courseId,
       },
     });
+    const date = new Date().toISOString();
     for (let i = 0; i < departmentList.length; i++) {
-      const updateCourse = await db.courseOnDepartment.create({
-        data: {
-          courseId: params.courseId,
-          departmentId: departmentList[i].id,
-        },
-      });
-      const findUsers = await db.user.findMany({
-        where: {
-          departmentId: departmentList[i].id,
-        },
-      });
-      await db.classSessionRecord.createMany({
-        data: findUsers.map((user) => ({
-          userId: user.id,
-          courseId: params.courseId,
-        })),
-      });
+      if (departmentList[i].isEnrolled) {
+        const updateCourse = await db.courseOnDepartment.create({
+          data: {
+            courseId: params.courseId,
+            departmentId: departmentList[i].id,
+          },
+        });
+        const findUsers = await db.user.findMany({
+          where: {
+            departmentId: departmentList[i].id,
+          },
+        });
+        await db.classSessionRecord.createMany({
+          data: findUsers.map((user) => ({
+            userId: user.id,
+            courseId: params.courseId,
+            progress: "0%",
+            status: "studying",
+            startDate: date,
+          })),
+          skipDuplicates: true,
+        });
+      } else {
+      }
     }
     return NextResponse.json("");
   } catch (error) {
