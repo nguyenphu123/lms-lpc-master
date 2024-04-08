@@ -59,17 +59,21 @@ export default function Page() {
       const emailCodeFactor = supportedFirstFactors?.find(isEmailCodeFactor);
 
       if (emailCodeFactor) {
-        // Grab the phoneNumberId
-        const { emailAddressId }: any = emailCodeFactor;
+        // Grab the emailAddressId
+        try {
+          const { emailAddressId }: any = emailCodeFactor;
 
-        // Send the OTP code to the user
-        await signIn.prepareFirstFactor({
-          strategy: "email_code",
-          emailAddressId,
-        });
+          // Send the OTP code to the user
+          await signIn.prepareFirstFactor({
+            strategy: "email_code",
+            emailAddressId,
+          });
 
-        // Set 'verifying' true to display second form and capture the OTP code
-        setPendingVerification(true);
+          // Set 'verifying' true to display second form and capture the OTP code
+          setPendingVerification(true);
+        } catch (error: any) {
+          setError(error.errors[0].longMessage);
+        }
       }
     } catch (err: any) {
       setError(err.errors[0].longMessage);
