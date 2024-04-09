@@ -20,39 +20,28 @@ import {
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { Textarea } from "@/components/ui/textarea";
+import { Editor } from "@tinymce/tinymce-react";
 
 interface DescriptionFormProps {
   initialData: Course;
   courseId: string;
 }
 
-const formSchema = z.object({
-  description: z.string().min(1, {
-    message: "Description is required",
-  }),
-});
-
 export const DescriptionForm = ({
   initialData,
   courseId,
 }: DescriptionFormProps) => {
   const [isEditing, setIsEditing] = useState(false);
-
+  const [content, setContent] = useState(initialData?.description || "");
   const toggleEdit = () => setIsEditing((current) => !current);
 
   const router = useRouter();
 
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      description: initialData?.description || "",
-    },
-  });
-
-  const { isSubmitting, isValid } = form.formState;
-
-  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+  const onSubmit = async () => {
     try {
+      let values = {
+        description: content,
+      };
       await axios.patch(`/api/courses/${courseId}`, values);
       toast.success("Course updated");
       toggleEdit();
@@ -82,42 +71,37 @@ export const DescriptionForm = ({
           className={cn(
             "dark:text-slate-50",
             "text-sm mt-2",
-            !initialData.description && "text-slate-500 italic"
+            !content && "text-slate-500 italic"
           )}
         >
-          {initialData.description || "No description"}
+          <div dangerouslySetInnerHTML={{ __html: content + "" }}></div>
         </p>
       )}
       {isEditing && (
-        <Form {...form}>
-          <form
-            onSubmit={form.handleSubmit(onSubmit)}
-            className="space-y-4 mt-4"
+        <>
+          <Editor
+            apiKey="8jo1uligpkc7y1v598qze63nfgfvcflmy7ifyfqt9ah17l7m"
+            value={content}
+            onEditorChange={(content: any) => setContent(content)}
+            init={{
+              height: 500,
+              width: "auto",
+              // ... (unchanged options)
+            }}
+          />
+          <button
+            onClick={() => onSubmit()}
+            className="bg-black text-white px-4 py-2 rounded-md ml-auto"
           >
-            <FormField
-              control={form.control}
-              name="description"
-              render={({ field }) => (
-                <FormItem>
-                  <FormControl>
-                    <Textarea
-                      className="dark:text-slate-50"
-                      disabled={isSubmitting}
-                      placeholder="e.g. 'This course is about...'"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <div className="flex items-center gap-x-2">
-              <Button disabled={!isValid || isSubmitting} type="submit">
-                Save
-              </Button>
-            </div>
-          </form>
-        </Form>
+            Submit
+          </button>
+          <button
+            onClick={() => setIsEditing(false)}
+            className="bg-black text-white px-4 py-2 rounded-md ml-auto"
+          >
+            Cancel
+          </button>
+        </>
       )}
     </div>
   );

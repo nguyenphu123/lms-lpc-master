@@ -56,6 +56,8 @@ export const CompletedCourse = ({ items }: CompletedCourseProps) => {
                 chapters={item?.course.Module}
                 bookmark={item?.course.BookMark}
                 progress={item?.progress}
+                isLocked={false}
+                description={item?.course.description}
               />
             </CarouselItem>
           ))}

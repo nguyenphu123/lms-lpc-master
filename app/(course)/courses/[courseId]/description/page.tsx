@@ -41,9 +41,9 @@ const CourseDescriptionPage = async ({
 
       <div className="border border-l-8 border-blue-800 shadow rounded-lg mt-8 mb-8">
         <h5 className="text-3xl font-bold m-5">What is this course about?</h5>
-        <p className="text-gray-700 text-sm ml-5 mr-5 mb-8 dark:text-white">
-          {course.description}
-        </p>
+        <div
+          dangerouslySetInnerHTML={{ __html: course.description + "" }}
+        ></div>
       </div>
       <div className="border border-l-8 border-blue-800 shadow rounded-lg mt-8 mb-8">
         <h5 className="text-3xl font-bold m-5">Course content:</h5>

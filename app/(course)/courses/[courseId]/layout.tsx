@@ -53,6 +53,13 @@ const CourseLayout = async ({
           progressCount={progressCount}
           course={course}
           userId={userId}
+          isLocked={
+            course.ClassSessionRecord.map(
+              (item: { userId: any }) => item.userId
+            ).indexOf(userId) == -1
+              ? true
+              : false
+          }
         />
       </div>
       <div className="hidden md:flex h-full w-64 flex-col fixed inset-y-0 z-50">

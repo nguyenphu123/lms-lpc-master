@@ -12,11 +12,13 @@ interface CourseMobileSidebarProps {
     })[];
   };
   progressCount: number;
+  isLocked: boolean;
 }
 
 export const CourseMobileSidebar = ({
   course,
   progressCount,
+  isLocked,
 }: CourseMobileSidebarProps) => {
   return (
     <Sheet>
@@ -24,7 +26,11 @@ export const CourseMobileSidebar = ({
         <Menu />
       </SheetTrigger>
       <SheetContent side="left" className="p-0  w-72">
-        <CourseSidebar course={course} progressCount={progressCount} />
+        <CourseSidebar
+          isLocked={isLocked}
+          course={course}
+          progressCount={progressCount}
+        />
       </SheetContent>
     </Sheet>
   );

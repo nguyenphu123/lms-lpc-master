@@ -12,16 +12,22 @@ interface CourseNavbarProps {
   };
   progressCount: number;
   userId: any;
+  isLocked: boolean;
 }
 
 export const CourseNavbar = ({
   course,
   progressCount,
   userId,
+  isLocked,
 }: CourseNavbarProps) => {
   return (
     <div className="p-4 border-b h-full flex items-center bg-white dark:bg-slate-950 shadow-sm">
-      <CourseMobileSidebar course={course} progressCount={progressCount} />
+      <CourseMobileSidebar
+        isLocked={isLocked}
+        course={course}
+        progressCount={progressCount}
+      />
       <NavbarRoutes userId={userId} />
     </div>
   );

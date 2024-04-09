@@ -476,7 +476,7 @@ const Exam = ({
           <ul className="list-disc pl-5 mb-4">
             {chapter.Category.map((item: any) => {
               return (
-                <li>
+                <li key={item.id}>
                   {item.title}:
                   {Math.floor(
                     (parseInt(item.numOfAppearance) /
