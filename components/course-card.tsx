@@ -16,6 +16,8 @@ interface CourseCardProps {
   bookmark: any[];
   progress: string | null;
   chapters: any;
+  isLocked: boolean;
+  description: string;
 }
 
 export const CourseCard = ({
@@ -26,12 +28,12 @@ export const CourseCard = ({
   bookmark,
   progress,
   chapters,
+  isLocked,
+  description,
 }: CourseCardProps) => {
+  console.log(description);
   const router = useRouter();
-  const [isPopupOpen, setIsPopupOpen] = useState(false);
-  const openPopup = () => {
-    setIsPopupOpen(true);
-  };
+
   const [isUpdating, setIsUpdating] = useState(false);
 
   const toggleUpdating = () => {
@@ -46,9 +48,6 @@ export const CourseCard = ({
     let unbookmark = await axios.delete(`/api/courses/${id}/bookmark`);
     toggleUpdating();
     router.refresh();
-  };
-  const closePopup = () => {
-    setIsPopupOpen(false);
   };
 
   return (
@@ -87,17 +86,20 @@ export const CourseCard = ({
           )}
         </div>
         <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition">
-          <Link href={`/courses/${id}`}>
-            <button className="bg-gray-500 text-white px-4 py-2 rounded-md mr-2 hover:bg-gray-600 transition">
-              <BookOpenText />
-            </button>
-          </Link>
-          <button
-            onClick={openPopup}
-            className="bg-gray-500 text-white px-4 py-2 rounded-md mr-2 hover:bg-gray-600 transition"
-          >
-            <Eye />
-          </button>
+          {isLocked ? (
+            <Link href={`/courses/${id}`}>
+              <button className="bg-gray-500 text-white px-4 py-2 rounded-md mr-2 hover:bg-gray-600 transition">
+                <Eye />
+              </button>
+            </Link>
+          ) : (
+            <Link href={`/courses/${id}`}>
+              <button className="bg-gray-500 text-white px-4 py-2 rounded-md mr-2 hover:bg-gray-600 transition">
+                <BookOpenText />
+              </button>
+            </Link>
+          )}
+
           {bookmark?.map((item) => item.courseId).indexOf(id) > -1 ? (
             <button
               onClick={onUnBookMark}
@@ -114,33 +116,6 @@ export const CourseCard = ({
             </button>
           )}
         </div>
-        {isPopupOpen && (
-          <div className="fixed inset-0 flex items-center justify-center z-10">
-            <div className="absolute inset-0 bg-black bg-opacity-50 backdrop-blur-lg"></div>
-            <div className=" p-8 max-w-md rounded-md relative">
-              <button
-                onClick={closePopup}
-                className="absolute top-4 right-4 text-gray-500 hover:text-gray-700"
-              >
-                <X />
-              </button>
-              <div className="text-2xl font-bold mb-4">Popup Title</div>
-              {/* Your customized popup content goes here */}
-              <p className="text-gray-700">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit...
-              </p>
-              <div className="mt-6 flex justify-end">
-                <button
-                  onClick={closePopup}
-                  className="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600 transition"
-                >
-                  Close
-                </button>
-                {/* Add additional buttons or actions as needed */}
-              </div>
-            </div>
-          </div>
-        )}
       </div>
     </div>
   );

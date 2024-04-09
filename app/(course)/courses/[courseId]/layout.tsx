@@ -36,6 +36,7 @@ const CourseLayout = async ({
           position: "asc",
         },
       },
+      ClassSessionRecord: true,
     },
   });
 
@@ -55,7 +56,17 @@ const CourseLayout = async ({
         />
       </div>
       <div className="hidden md:flex h-full w-64 flex-col fixed inset-y-0 z-50">
-        <CourseSidebar progressCount={progressCount} course={course} />
+        <CourseSidebar
+          progressCount={progressCount}
+          course={course}
+          isLocked={
+            course.ClassSessionRecord.map(
+              (item: { userId: any }) => item.userId
+            ).indexOf(userId) == -1
+              ? true
+              : false
+          }
+        />
       </div>
       <main className="md:pl-80 pt-[80px] h-full">{children}</main>
     </div>

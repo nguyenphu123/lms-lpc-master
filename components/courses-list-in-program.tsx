@@ -1,5 +1,6 @@
 import { Program, Course } from "@prisma/client";
 import { CourseCard } from "@/components/course-card";
+import { useAuth } from "@clerk/nextjs";
 
 type CourseWithProgressWithCategory = Course & {
   programs: Program | null;
@@ -9,10 +10,11 @@ type CourseWithProgressWithCategory = Course & {
 };
 
 interface CoursesListInProgramProps {
-  items: CourseWithProgressWithCategory[];
+  items: any[];
 }
 
 export const CoursesListInProgram = ({ items }: CoursesListInProgramProps) => {
+  const { userId }: any = useAuth();
   return (
     <div>
       <div className="grid sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-4 gap-4">
@@ -25,8 +27,16 @@ export const CoursesListInProgram = ({ items }: CoursesListInProgramProps) => {
             chapters={item?.Module}
             chaptersLength={item.Module.length}
             bookmark={item.BookMark}
+            isLocked={
+              item?.ClassSessionRecord.map(
+                (item: { userId: any }) => item.userId
+              ).indexOf(userId) == -1
+                ? true
+                : false
+            }
             // price={item.price!}
             progress={item.progress}
+            description={item?.description}
             // category={item?.category?.name!}
           />
         ))}

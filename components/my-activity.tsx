@@ -15,6 +15,7 @@ type CourseWithProgressWithCategory = Course & {
   progress: string | null;
   course: any;
   BookMark: { length: number; id: string };
+  description:string
 };
 
 interface MyActivityProps {
@@ -61,6 +62,8 @@ export const MyActivity = ({ items }: MyActivityProps) => {
                 chapters={item?.course.Module}
                 bookmark={item?.course.BookMark}
                 progress={item?.progress}
+                isLocked={false}
+                description={item?.description}
               />
             </CarouselItem>
           ))}

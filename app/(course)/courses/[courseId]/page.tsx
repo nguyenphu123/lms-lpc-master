@@ -36,7 +36,7 @@ const CourseIdPage = async ({ params }: { params: { courseId: string } }) => {
       (item: { userId: any }) => item.userId
     ).indexOf(userId) == -1
   ) {
-    return redirect("/");
+    return redirect(`/courses/${course.id}/description`);
   }
   const user: any = await db.user.findUnique({
     where: {

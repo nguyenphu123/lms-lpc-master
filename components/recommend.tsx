@@ -24,7 +24,7 @@ interface RecommendProps {
 
 export const Recommend = ({ items }: RecommendProps) => {
   const { userId }: any = auth();
-  
+
   return items.length == 0 ? (
     <>
       <h2 className="font-semibold text-2xl text-blue-700 mb-4 flex items-center">
@@ -61,10 +61,18 @@ export const Recommend = ({ items }: RecommendProps) => {
                     ? "/istockphoto-936681148-612x612.jpg"
                     : item.course.imageUrl!
                 }
+                isLocked={
+                  item?.course.ClassSessionRecord.map(
+                    (item: { userId: any }) => item.userId
+                  ).indexOf(userId) == -1
+                    ? true
+                    : false
+                }
                 chaptersLength={item.course.Module.length}
                 chapters={item?.course.Module}
                 bookmark={item.course.BookMark}
-                progress={item.progress}
+                progress={item?.progress}
+                description={item?.course.description}
               />
             </CarouselItem>
           ))}

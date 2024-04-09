@@ -56,10 +56,18 @@ export const Bookmark = ({ items }: BookmarkProps) => {
                     ? "/istockphoto-936681148-612x612.jpg"
                     : item.imageUrl!
                 }
+                isLocked={
+                  item?.ClassSessionRecord.map(
+                    (item: { userId: any }) => item.userId
+                  ).indexOf(userId) == -1
+                    ? true
+                    : false
+                }
                 chaptersLength={item?.Module.length}
                 chapters={item?.Module}
                 bookmark={item?.BookMark}
                 progress={item?.progress}
+                description={item?.description}
               />
             </CarouselItem>
           ))}

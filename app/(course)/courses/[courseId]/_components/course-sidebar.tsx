@@ -8,10 +8,11 @@ interface CourseSidebarProps {
     Module: any[];
   };
   progressCount: number;
+  isLocked: boolean;
 }
 
 export const CourseSidebar = async (
-  { course, progressCount }: CourseSidebarProps,
+  { course, progressCount, isLocked }: CourseSidebarProps,
 
   params: {
     chapterId: any;
@@ -38,23 +39,27 @@ export const CourseSidebar = async (
         <h1 className="font-semibold">{course.title}</h1>
       </div>
       <div className="flex flex-col w-full dark:text-gray-50">
-        {course.Module.map((module: any, index: any) => (
-          <CourseSidebarItem
-            key={module.id}
-            id={module.id}
-            label={module.title}
-            isCompleted={module.UserProgress[0]?.status}
-            courseId={course.id}
-            isLocked={
-              (course.Module[index - 1]?.UserProgress[0]?.status !=
-                "finished" &&
-                index > 0) ||
-              module.id == params?.chapterId
-                ? true
-                : false
-            }
-          />
-        ))}
+        {isLocked ? (
+          <></>
+        ) : (
+          course.Module.map((module: any, index: any) => (
+            <CourseSidebarItem
+              key={module.id}
+              id={module.id}
+              label={module.title}
+              isCompleted={module.UserProgress[0]?.status}
+              courseId={course.id}
+              isLocked={
+                (course.Module[index - 1]?.UserProgress[0]?.status !=
+                  "finished" &&
+                  index > 0) ||
+                module.id == params?.chapterId
+                  ? true
+                  : false
+              }
+            />
+          ))
+        )}
       </div>
     </div>
   );
