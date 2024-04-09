@@ -81,14 +81,14 @@ const Exam = ({
               : "Bạn đã không vượt qua bài test"
           }`
       );
-      if (chapter.status != "finished" && !finishedExam) {
-        const year = new Date();
-        const date = new Date(year.getFullYear(), 6, 1).toISOString();
+      if (!finishedExam) {
+        setMaxAsset(maxAsset - 1);
+        const date = new Date().toISOString();
         await axios.put(
           `/api/courses/${courseId}/chapters/${chapter.id}/progress`,
           {
             status: totalScore >= chapter.scoreLimit ? "finished" : "failed",
-            score: finalScore,
+            score: parseInt(finalScore),
             progress: "100%",
             endDate: date,
           }
@@ -155,7 +155,6 @@ const Exam = ({
                 "%",
               startDate: date,
             });
-            setMaxAsset(maxAsset - 1);
             //router.push(`/courses/${courseId}/chapters/${nextChapterId}`);
           } else {
             await axios.put(`/api/courses/${courseId}/progress`, {
@@ -183,28 +182,39 @@ const Exam = ({
   //   loadQuestion();
   // }, []);
   const accept = async () => {
-    setFinalScore(0);
-    setTimeLimit(chapter.timeLimit);
-    setCurrentQuestion(0);
-    setSelectedAnswers([]);
-    if (chapter.status != "finished") {
-      let questionList = await axios.get(
-        `/api/courses/${chapter.courseId}/chapters/${chapter.id}/category/exam/shuffle`
+    if (maxAsset == 0) {
+      alert(
+        `Sorry but you have no asset left! please wait for ${
+          chapter.waitTime
+        } day${chapter.waitTime > 1 ? "s" : ""} to get a reset!`
       );
-
-      setQuestions(shuffleArray(questionList.data.ExamList));
     } else {
-      let getLatestTestResult: any = await axios.get(
-        `/api/courses/${courseId}/chapters${chapter.id}/category/exam`
-      );
-      setMaxAsset(
-        maxAsset - getLatestTestResult.data?.UserProgress[0]?.attempt
-      );
-      let questionList = await axios.get(
-        `/api/courses/${chapter.courseId}/chapters/${chapter.id}/category/exam/shuffle`
-      );
+      setFinalScore(0);
+      setFinishedExam(false);
+      setTimeLimit(chapter.timeLimit);
+      setCurrentQuestion(0);
+      setSelectedAnswers([]);
+      if (!finishedExam) {
+        let getLatestTestResult: any = await axios.get(
+          `/api/courses/${courseId}/chapters/${chapter.id}/category/exam`
+        );
+        setFinishedExam(
+          getLatestTestResult.data?.UserProgress[0]?.status == "finished"
+            ? true
+            : false
+        );
+        let questionList = await axios.get(
+          `/api/courses/${chapter.courseId}/chapters/${chapter.id}/category/exam/shuffle`
+        );
 
-      setQuestions(shuffleArray(questionList.data.ExamList));
+        setQuestions(shuffleArray(questionList.data.ExamList));
+      } else {
+        let questionList = await axios.get(
+          `/api/courses/${chapter.courseId}/chapters/${chapter.id}/category/exam/shuffle`
+        );
+
+        setQuestions(shuffleArray(questionList.data.ExamList));
+      }
     }
   };
   // const cancel = () => {
@@ -260,14 +270,16 @@ const Exam = ({
               : "Bạn đã không vượt qua bài test"
           }`
       );
-      if (chapter.status != "finished" && !finishedExam) {
-        const year = new Date();
-        const date = new Date(year.getFullYear(), 6, 1).toISOString();
+
+      if (!finishedExam) {
+        setMaxAsset(maxAsset - 1);
+        const date = new Date().toISOString();
+
         await axios.put(
           `/api/courses/${courseId}/chapters/${chapter.id}/progress`,
           {
             status: totalScore >= chapter.scoreLimit ? "finished" : "failed",
-            score: finalScore.toString(),
+            score: parseInt(finalScore),
             progress: "100%",
             endDate: date,
           }
@@ -333,7 +345,7 @@ const Exam = ({
                 "%",
               startDate: date,
             });
-            setMaxAsset(maxAsset - 1);
+
             //router.push(`/courses/${courseId}/chapters/${nextChapterId}`);
           } else {
             await axios.put(`/api/courses/${courseId}/progress`, {
@@ -456,7 +468,7 @@ const Exam = ({
             You will have a limited time to complete the exam.
           </li>
           <li className="mb-2">
-            Make sure you are in a quiet environment to avoid distractions.
+            Make sure you are in a quiet environment to avoid distractions .
           </li>
         </ul>
         <div>
@@ -494,7 +506,10 @@ const Exam = ({
           ></DoughnutChart>
         </>
       ) : (
-        <></>
+        <DoughnutChart
+          score={finalScore}
+          maxScore={examMaxScore}
+        ></DoughnutChart>
       )}
       <AlertDialog>
         <AlertDialogTrigger className="flex justify-center items-center">
@@ -510,7 +525,7 @@ const Exam = ({
               <>Do you want to retake this exam?</>
             ) : (
               <>
-                Do you want to do the exam? You have
+                Do you want to do the exam? You have{" "}
                 {maxAsset > 5 ? "Infinite" : maxAsset} time to do this test
               </>
             )}
