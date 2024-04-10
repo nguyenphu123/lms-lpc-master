@@ -54,6 +54,7 @@
     "firebase": "^10.8.1",
     "framer-motion": "^10.18.0",
     "fs": "^0.0.1-security",
+    "gsap": "^3.12.5",
     "ldap-authentication": "^3.0.3",
     "ldapjs": "^3.0.7",
     "ldapjs-client": "^0.1.2",

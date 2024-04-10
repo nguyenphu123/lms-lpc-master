@@ -38,19 +38,26 @@ const CourseIdPage = async ({ params }: { params: { courseId: string } }) => {
   ) {
     return redirect(`/courses/${course.id}/description`);
   }
-  const user: any = await db.user.findUnique({
-    where: {
-      id: userId,
-    },
-  });
-  // if (
-  //   course.CourseOnDepartment.map((item: { id: any }) => item.id).indexOf(
-  //     user.departmentId
-  //   )
-  // ) {
-  //   return redirect("/");
-  // }
-  return redirect(`/courses/${course.id}/chapters/${course.Module[0].id}`);
+
+  let currentPos = 0;
+  for (let i = 0; i < course.Module.length; i++) {
+    if (
+      course.Module[i].UserProgress.map((item: any) => item.userId).indexOf(
+        userId
+      ) != -1 &&
+      course.Module[i].UserProgress[
+        course.Module[i].UserProgress.map((item: any) => item.userId).indexOf(
+          userId
+        )
+      ].status == "studying"
+    ) {
+      currentPos = i;
+      break;
+    }
+  }
+  return redirect(
+    `/courses/${course.id}/chapters/${course.Module[currentPos].id}`
+  );
 };
 
 export default CourseIdPage;

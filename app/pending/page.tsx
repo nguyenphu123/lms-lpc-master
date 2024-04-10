@@ -1,13 +1,19 @@
 import { auth } from "@clerk/nextjs";
 import { redirect } from "next/navigation";
 import { BasicNavbar } from "./_component/course-navbar";
+import { db } from "@/lib/db";
 
 const StepTwo = async () => {
   const { sessionClaims }: any = auth();
   if (!sessionClaims?.userId) {
-    return redirect("/");
+    return redirect("/sign-in");
   }
-
+  let userInfo = await db.user.findUnique({
+    where: { id: sessionClaims.userId },
+  });
+  if (userInfo == undefined) {
+    return redirect("/sign-in");
+  }
   return (
     <>
       <div className="h-[80px] fixed inset-y-0 w-full z-50">

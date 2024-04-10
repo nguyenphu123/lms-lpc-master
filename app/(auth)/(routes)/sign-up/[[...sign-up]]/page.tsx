@@ -4,11 +4,12 @@ import { useSignUp } from "@clerk/nextjs";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 
 import dynamic from "next/dynamic";
 import { ModeToggle } from "@/components/ui/theme-button";
+import { animatePageIn } from "@/app/utils/animations";
 const Logo = dynamic(() => import("@/app/(auth)/_component/logo" as string), {
   ssr: false,
 });
@@ -27,7 +28,9 @@ export default function Page() {
     // Handle loading state
     return null;
   }
-
+  useEffect(() => {
+    animatePageIn();
+  }, []);
   const handleSubmit = async (e: any) => {
     e.preventDefault();
     if (!emailAddress.includes("@lp.com.vn")) {
@@ -101,6 +104,22 @@ export default function Page() {
   };
   return (
     <div className="max-w-md mx-auto mt-8 border border-gray-300 p-6 rounded-lg">
+      <div
+        id="banner-1"
+        className="min-h-screen bg-neutral-950 z-10 fixed top-0 left-0 w-1/4"
+      />
+      <div
+        id="banner-2"
+        className="min-h-screen bg-neutral-950 z-10 fixed top-0 left-1/4 w-1/4"
+      />
+      <div
+        id="banner-3"
+        className="min-h-screen bg-neutral-950 z-10 fixed top-0 left-2/4 w-1/4"
+      />
+      <div
+        id="banner-4"
+        className="min-h-screen bg-neutral-950 z-10 fixed top-0 left-3/4 w-1/4"
+      />
       <div className="relative">
         <div className="absolute mt-1 top-0 right-0">
           <ModeToggle />
@@ -109,8 +128,14 @@ export default function Page() {
       <div className="mb-4 flex justify-center">
         <Logo />
       </div>
-      <h1 className="text-2xl font-semibold mb-4">
-        Please link your Lien Phat account
+      <h1
+        className="text-2xl font-semibold mb-4 text-center  
+        bg-gradient-to-r bg-clip-text  text-transparent 
+        dark:from-indigo-500 dark:via-green-500 dark:to-indigo-500
+        from-blue-800 via-indigo-900 to-gray-900
+        animate-text"
+      >
+        Slot registration page
       </h1>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
