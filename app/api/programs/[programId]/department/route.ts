@@ -36,7 +36,7 @@ export async function PATCH(
 
     return NextResponse.json("");
   } catch (error) {
-    console.log("COURSE_ID_ATTACHMENTS", error);
+    console.log("DEPARTMENT_ERROR", error);
     return new NextResponse("Internal Error", { status: 500 });
   }
 }

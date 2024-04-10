@@ -24,13 +24,14 @@ export default function Page() {
   const [pendingVerification, setPendingVerification] = useState(false);
   const [department, setDepartment] = useState("");
   const router = useRouter();
+  useEffect(() => {
+    animatePageIn();
+  }, []);
   if (!isLoaded) {
     // Handle loading state
     return null;
   }
-  useEffect(() => {
-    animatePageIn();
-  }, []);
+
   const handleSubmit = async (e: any) => {
     e.preventDefault();
     if (!emailAddress.includes("@lp.com.vn")) {

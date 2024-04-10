@@ -47,7 +47,7 @@ export async function GET(
     }
     return NextResponse.json(newList);
   } catch (error) {
-    console.log("COURSE_ID_ATTACHMENTS", error);
+    console.log("DEPARTMENT ERROR", error);
     return new NextResponse("Internal Error", { status: 500 });
   }
 }

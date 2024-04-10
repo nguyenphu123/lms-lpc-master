@@ -23,7 +23,7 @@ export async function POST(
 
     return NextResponse.json(bookmark);
   } catch (error) {
-    console.log("COURSE_ID_ATTACHMENTS", error);
+    console.log("BOOKMARK_COURSE_ID_ATTACHMENTS", error);
     return new NextResponse("Internal Error", { status: 500 });
   }
 }
@@ -49,7 +49,7 @@ export async function DELETE(
 
     return NextResponse.json(bookmark);
   } catch (error) {
-    console.log("COURSE_ID_ATTACHMENTS", error);
+    console.log("BOOKMARK_COURSE_ID_DETACHMENTS", error);
     return new NextResponse("Internal Error", { status: 500 });
   }
 }
