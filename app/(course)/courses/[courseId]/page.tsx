@@ -53,6 +53,17 @@ const CourseIdPage = async ({ params }: { params: { courseId: string } }) => {
     ) {
       currentPos = i;
       break;
+    } else if (
+      course.Module[i].UserProgress.map((item: any) => item.userId).indexOf(
+        userId
+      ) != -1 &&
+      course.Module[i].UserProgress[
+        course.Module[i].UserProgress.map((item: any) => item.userId).indexOf(
+          userId
+        )
+      ].status == "finished"
+    ) {
+      currentPos = i;
     }
   }
   return redirect(
