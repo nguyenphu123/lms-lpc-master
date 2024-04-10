@@ -49,7 +49,7 @@ export default function Page() {
       // password,
       // department,
     });
-
+    console.log(user);
     if (!user.data) {
       setError("User not found.");
       return;
