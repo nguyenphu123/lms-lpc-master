@@ -24,9 +24,9 @@ export default function Page() {
   const [pendingVerification, setPendingVerification] = useState(false);
   const [department, setDepartment] = useState("");
   const router = useRouter();
-  useEffect(() => {
-    animatePageIn();
-  }, []);
+  // useEffect(() => {
+  //   animatePageIn();
+  // }, []);
   if (!isLoaded) {
     // Handle loading state
     return null;
@@ -105,7 +105,7 @@ export default function Page() {
   };
   return (
     <div className="max-w-md mx-auto mt-8 border border-gray-300 p-6 rounded-lg">
-      <div
+      {/* <div
         id="banner-1"
         className="min-h-screen bg-neutral-950 z-10 fixed top-0 left-0 w-1/4"
       />
@@ -120,7 +120,7 @@ export default function Page() {
       <div
         id="banner-4"
         className="min-h-screen bg-neutral-950 z-10 fixed top-0 left-3/4 w-1/4"
-      />
+      /> */}
       <div className="relative">
         <div className="absolute mt-1 top-0 right-0">
           <ModeToggle />
