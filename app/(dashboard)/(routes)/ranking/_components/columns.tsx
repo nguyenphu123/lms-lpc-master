@@ -1,5 +1,5 @@
 "use client";
-
+import Image from "next/image";
 import { User } from "@prisma/client";
 import { ColumnDef } from "@tanstack/react-table";
 
@@ -38,9 +38,11 @@ export const columns: ColumnDef<User>[] = [
 
       return (
         <div className="flex items-center">
-          <img
+          <Image
             src={imageUrl}
             alt={username}
+            height={32}
+            width={32}
             className="w-8 h-8 rounded-full mr-2"
           />
           <div>{username}</div>

@@ -2,7 +2,7 @@ import { auth } from "@clerk/nextjs";
 import { redirect } from "next/navigation";
 import { BasicNavbar } from "./_component/course-navbar";
 import { db } from "@/lib/db";
-
+import Image from "next/image";
 const StepTwo = async () => {
   const { sessionClaims }: any = auth();
   if (!sessionClaims?.userId) {
@@ -45,11 +45,11 @@ const StepTwo = async () => {
           /> */}
 
           <div className="relative w-full h-90 flex items-center justify-center rounded overflow-hidden mt-4">
-            <img
+            <Image
               src="https://media.giphy.com/media/pFZTlrO0MV6LoWSDXd/giphy.gif"
               alt="blog"
-              // layout="fill"
-              // objectFit="cover"
+              height={32}
+              width={32}
               className="select-none object-cover rounded-md border-2 border-white shadow-md drop-shadow-md w-150 h-full"
             />
           </div>

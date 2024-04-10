@@ -4,9 +4,8 @@ import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 
 export async function GET(req: Request) {
+  const { userId } = auth();
   try {
-    const { userId } = auth();
-
     if (!userId) {
       return new NextResponse("Unauthorized", { status: 401 });
     }

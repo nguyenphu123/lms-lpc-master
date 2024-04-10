@@ -4,7 +4,7 @@ import { Sidebar } from "./_components/sidebar";
 import { redirect } from "next/navigation";
 
 const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
-  const { userId, sessionClaims }: any = auth();
+  const { userId }: any = auth();
 
   if (!userId) {
     return redirect("/");

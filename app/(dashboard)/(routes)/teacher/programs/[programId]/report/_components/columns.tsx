@@ -1,20 +1,10 @@
 "use client";
- 
+
 import { Program } from "@prisma/client";
 import { ColumnDef } from "@tanstack/react-table";
-import { ArrowUpDown, MoreHorizontal, Pencil, ClipboardList } from "lucide-react";
-import Link from "next/link";
- 
-import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Badge } from "@/components/ui/badge";
-import { cn } from "@/lib/utils";
- 
+import { ArrowUpDown } from "lucide-react";
+import Image from "next/image";
+
 export const columns: ColumnDef<Program>[] = [
   {
     accessorKey: "username",
@@ -23,12 +13,14 @@ export const columns: ColumnDef<Program>[] = [
     },
     cell: ({ row }) => {
       const { username, imageUrl }: any = row.original;
- 
+
       return (
         <div className="flex items-center">
-          <img
+          <Image
             src={imageUrl}
             alt={username}
+            height={32}
+            width={32}
             className="w-8 h-8 rounded-full mr-2"
           />
           <div>{username}</div>
@@ -93,7 +85,7 @@ export const columns: ColumnDef<Program>[] = [
   //   },
   //   cell: ({ row }) => {
   //     const isPublished = row.getValue("isPublished") || false;
- 
+
   //     return (
   //       <Badge className={cn("bg-slate-500", isPublished && "bg-sky-700")}>
   //         {isPublished ? "Published" : "Draft"}
@@ -106,7 +98,7 @@ export const columns: ColumnDef<Program>[] = [
   //   accessorKey: "Action",
   //   cell: ({ row }) => {
   //     const { id } = row.original;
- 
+
   //     return (
   //       <DropdownMenu>
   //         <DropdownMenuTrigger asChild>

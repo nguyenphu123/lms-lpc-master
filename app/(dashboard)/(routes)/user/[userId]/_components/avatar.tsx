@@ -1,10 +1,13 @@
 "use client";
+import Image from "next/image";
 const Avatar = ({ imageUrl }: any) => {
   return (
-    <img
-      className="inline object-cover w-16 h-16 mr-2 rounded-full"
+    <Image
       src={imageUrl}
-      alt="Profile image"
+      height={32}
+      width={32}
+      className="w-8 h-8 rounded-full mr-2"
+      alt={""}
     />
   );
 };

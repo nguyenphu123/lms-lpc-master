@@ -5,8 +5,8 @@ import { db } from "@/lib/db";
 
 import axios from "axios";
 export async function GET(req: Request) {
+  const { userId }: any = auth();
   try {
-    const { userId, sessionClaims }: any = auth();
     let userInfo: any = await db.user.findUnique({
       where: { id: userId, status: "approved" },
     });
@@ -51,7 +51,7 @@ export async function GET(req: Request) {
 
     return NextResponse.json(getToken.headers);
   } catch (error) {
-    console.log("[PROGRAMS]", error);
+    console.log("TOKEN ERROR", error);
     return new NextResponse("Internal Error", { status: 500 });
   }
 }

@@ -11,7 +11,7 @@ const Avatar = (userId: any) => {
       setCourses(courseList.data);
     }
     loadCourses();
-  }, [courses]);
+  });
   return courses.length == 0 ? (
     <div className="text-black dark:text-white">
       You have not finished any course.

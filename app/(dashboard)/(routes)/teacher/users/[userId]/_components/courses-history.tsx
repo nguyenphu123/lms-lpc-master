@@ -19,7 +19,7 @@ const CourseHistory = ({ userId }: any) => {
       // setCourses(courseList.data.ClassSessionRecord);
     }
     loadCourses();
-  }, [completedCourses]);
+  });
 
   return (
     <div className="my-8 text-black dark:text-white">

@@ -17,7 +17,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import axios from "axios";
-import { useAuth } from "@clerk/nextjs";
+import Image from "next/image";
 import { getAuth } from "@/actions/get-auth";
 
 export const columns: ColumnDef<User>[] = [
@@ -31,9 +31,11 @@ export const columns: ColumnDef<User>[] = [
 
       return (
         <div className="flex items-center">
-          <img
+          <Image
             src={imageUrl}
             alt={username}
+            height={32}
+            width={32}
             className="w-8 h-8 rounded-full mr-2"
           />
           <div>{username}</div>

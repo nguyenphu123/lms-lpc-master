@@ -16,7 +16,7 @@ export async function POST(req: Request) {
 
     return NextResponse.json(userCheck.mail == emailAddress);
   } catch (error) {
-    console.log("[PROGRAMS]", error);
+    console.log("AD Error:", error);
     return NextResponse.json(false);
   }
 }
