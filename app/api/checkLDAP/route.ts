@@ -14,9 +14,9 @@ export async function POST(req: Request) {
     let ad = new ActiveDirectory.promiseWrapper(config);
     const userCheck = await ad.findUser(emailAddress);
 
-    return NextResponse.json(userCheck);
+    return NextResponse.json(userCheck + " 1");
   } catch (error) {
     console.log("AD Error:", error);
-    return NextResponse.json(error);
+    return NextResponse.json(error + " 2");
   }
 }
