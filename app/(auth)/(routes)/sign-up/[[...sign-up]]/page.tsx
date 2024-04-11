@@ -20,7 +20,16 @@ export default function Page() {
   const [username, setUsername] = useState("");
   const [confirmCode, setConfirmCode]: any = useState("");
   const confetti = useConfettiStore();
-  const departmentOptions = ["DEV", "SCC", "DSC", "AM", "BU2"];
+  const departmentOptions = [
+    "DSC",
+    "SCC",
+    "BU2",
+    "DEV",
+    "AF",
+    "AD",
+    "QA",
+    "BOD",
+  ];
   const [pendingVerification, setPendingVerification] = useState(false);
   const [department, setDepartment] = useState("");
   const router = useRouter();
