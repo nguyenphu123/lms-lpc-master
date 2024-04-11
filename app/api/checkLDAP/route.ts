@@ -17,6 +17,6 @@ export async function POST(req: Request) {
     return NextResponse.json(userCheck);
   } catch (error) {
     console.log("AD Error:", error);
-    return NextResponse.json(false);
+    return NextResponse.json(error);
   }
 }
