@@ -6,7 +6,7 @@ export async function POST(req: Request) {
     const { emailAddress } = await req.json();
 
     var config = {
-      url: "ldap://LPCDC001.lp.local",
+      url: "ldap://lp.local",
       baseDN: "DC=lp,DC=local",
       username: "trainconnect@lp.local",
       password: "Js46~p9@X3$Gu!",
@@ -14,7 +14,7 @@ export async function POST(req: Request) {
     let ad = new ActiveDirectory.promiseWrapper(config);
     const userCheck = await ad.findUser(emailAddress);
 
-    return NextResponse.json(ad);
+    return NextResponse.json(userCheck);
   } catch (error) {
     console.log("AD Error:", error);
     return NextResponse.json(false);
