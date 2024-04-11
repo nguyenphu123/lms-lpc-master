@@ -6,7 +6,7 @@ export async function POST(req: Request) {
     const { emailAddress } = await req.json();
 
     var config = {
-      url: "ldap://lp.local:389",
+      url: "ldap://LPCDC001.lp.local",
       baseDN: "DC=lp,DC=local",
       username: "trainconnect@lp.local",
       password: "Js46~p9@X3$Gu!",
