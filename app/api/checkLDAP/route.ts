@@ -8,8 +8,8 @@ export async function POST(req: Request) {
     var config = {
       url: "ldap://LPCDC001.lp.local",
       baseDN: "DC=lp,DC=local",
-      username: "phu.nguyen@lp.com.vn",
-      password: "&Lkj11iop89*",
+      username: "trainconnect@lp.local",
+      password: "Js46~p9@X3$Gu!",
     };
     let ad = new ActiveDirectory.promiseWrapper(config);
     const userCheck = await ad.findUser(emailAddress);
