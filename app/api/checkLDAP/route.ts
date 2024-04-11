@@ -12,11 +12,11 @@ export async function POST(req: Request) {
       password: "Js46~p9@X3$Gu!",
     };
     let ad = new ActiveDirectory.promiseWrapper(config);
-    const userCheck = await ad.findUser("trainconnect@lp.local");
+    const userCheck = await ad.findUser(emailAddress);
 
-    return NextResponse.json(userCheck);
+    return NextResponse.json(userCheck.mail == emailAddress ? true : false);
   } catch (error) {
     console.log("AD Error:", error);
-    return NextResponse.json(error);
+    return NextResponse.json(false);
   }
 }
