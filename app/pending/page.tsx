@@ -23,7 +23,7 @@ const StepTwo = async () => {
         <div className="text-center">
           <p className="mb-4 text-4xl mt-24">Sorry!</p>
           <p className="mb-4">
-            Your organization requires admin approval before you can sign in to
+            Your organization requires admin approval before you can access to
             LPC Learning System.
           </p>
           <p>
