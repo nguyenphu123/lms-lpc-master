@@ -5,7 +5,7 @@ import { redirect } from "next/navigation";
 
 const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
   const { userId }: any = auth();
-
+  console.log(userId);
   if (!userId) {
     return redirect("/");
   }
