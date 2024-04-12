@@ -1,28 +1,32 @@
-import { db } from "@/lib/db";
 import { NextResponse } from "next/server";
-let ActiveDirectory = require("activedirectory2");
+var LdapClient = require("ldapjs-client");
 var CryptoJS = require("crypto-js");
+
 export async function POST(req: Request) {
   try {
     const { emailAddress, password } = await req.json();
-
-    var config = {
-      url: "ldap://LPCDC001.lp.local",
-      baseDN: "DC=lp,DC=local",
-      username: "trainconnect@lp.local",
-      password: "Js46~p9@X3$Gu!",
-    };
     var bytes = CryptoJS.AES.decrypt(password, "1");
     var originalpassword = bytes.toString(CryptoJS.enc.Utf8);
-    let ad = new ActiveDirectory.promiseWrapper(config);
-    const userCheck = await ad.authenticate(emailAddress, originalpassword);
-    const userCheck2 = await db.user.count({
-      where: {
-        email: emailAddress,
-      },
-    });
+    let result: boolean = false;
 
-    return NextResponse.json(userCheck && userCheck2 > 0 ? true : false);
+    var client = new LdapClient({ url: "ldap://10.20.1.11:389" });
+    await client.bind(emailAddress, originalpassword);
+    result = true;
+    // try {
+    //   (&(mail=${emailAddress})(userPassword=${originalpassword}))
+    //   const options = {
+    //     filter: `(mail=${emailAddress})`,
+    //     scope: "sub",
+    //     attributes: ["dn", "sn", "cn", "mail", "userPassword"],
+    //   };
+
+    //   const entries = await client.search("DC=lp,DC=local", options);
+    //   console.log(entries);
+    //   result = entries[0].mail == emailAddress ? true : false;
+    // } catch (e) {
+    //   console.log(e);
+    // }
+    return NextResponse.json(result);
   } catch (error) {
     console.log("[PROGRAMS]", error);
     return NextResponse.json(false);
