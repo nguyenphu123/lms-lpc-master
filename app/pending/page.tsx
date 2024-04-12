@@ -32,8 +32,9 @@ const StepTwo = async () => {
               href={`mailto:khoa.nguyendang@lp.com.vn,phu.nguyen@lp.com.vn?cc=huy.nguyen@lp.com.vn&subject=Request%20for%20LPC%20Learning%20System%20Access&body=Dear%20Administrator,%0A%0AI%20am%20writing%20to%20request%20access%20to%20the%20LPC%20Learning%20System.%20Please%20approve%20my%20request%20so%20that%20I%20can%20begin%20using%20the%20system.%0A%0AThank%20you.`}
               className="text-blue-500"
             >
+              {" "}
               administrator
-            </a>
+            </a>{" "}
             for permission.
           </p>
           {/* <Image
@@ -48,8 +49,8 @@ const StepTwo = async () => {
             <Image
               src="https://media.giphy.com/media/pFZTlrO0MV6LoWSDXd/giphy.gif"
               alt="blog"
-              height={32}
-              width={32}
+              height={500}
+              width={500}
               className="select-none object-cover rounded-md border-2 border-white shadow-md drop-shadow-md w-150 h-full"
             />
           </div>
