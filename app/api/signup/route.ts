@@ -1,9 +1,9 @@
-import { auth } from "@clerk/nextjs";
 import { NextResponse } from "next/server";
 
 import { db } from "@/lib/db";
 import { clerkClient } from "@clerk/nextjs";
-
+const nodemailer = require("nodemailer");
+const smtpTransport = require("nodemailer-smtp-transport");
 export async function POST(req: Request) {
   try {
     const { createdUserId, department, emailAddress, username } =
@@ -45,7 +45,42 @@ export async function POST(req: Request) {
         },
       },
     });
+    const mess = {
+      from: emailAddress,
+      to: "phu.nguyen@lp.com.vn, khoa.nguyendang@lp.com.vn ",
+      subject: `${emailAddress} have requested to be approved into the system with`,
+      text: `<p dir="ltr">&nbsp;</p>
+      <p dir="ltr">username: 
+      ${username} 
+      and email: 
+      ${emailAddress} `,
+      html: `<p dir="ltr">&nbsp;</p>
+      <p dir="ltr">username: 
+      ${username} 
+      and email: 
+      ${emailAddress} `,
+    };
+    let transporter = nodemailer.createTransport(
+      smtpTransport({
+        host: "smtp-mail.outlook.com",
+        secureConnection: false, // TLS requires secureConnection to be false
+        port: 587, // port for secure SMTP
+        auth: {
+          user: "trainconnect@lp.local",
+          pass: "Js46~p9@X3$Gu!",
+        },
+        tls: {
+          ciphers: "SSLv3",
+        },
+      })
+    );
 
+    try {
+      //send email
+      const res = await transporter.sendMail(mess);
+
+      // return res.status(200).json({ success: true });
+    } catch (err) {}
     return NextResponse.json(creatUser);
   } catch (error) {
     console.log("[PROGRAMS]", error);
