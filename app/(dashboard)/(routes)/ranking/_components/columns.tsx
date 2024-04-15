@@ -53,7 +53,11 @@ export const columns: ColumnDef<User>[] = [
   {
     accessorKey: "department",
     header: ({ column }) => {
-      return <span>Department</span>;
+      return (
+        <span className="flex items-center">
+          <span className="mr-2">Department</span>
+        </span>
+      );
     },
   },
   {
