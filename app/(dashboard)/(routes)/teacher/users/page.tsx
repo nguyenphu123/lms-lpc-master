@@ -22,6 +22,7 @@ const UsersPage = async () => {
     return redirect("/pending");
   }
   const users: any = await getUser();
+
   return (
     <div className="p-6">
       {userInfo.role == "ADMIN" ? (

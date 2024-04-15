@@ -13,7 +13,7 @@ export const getUser = async (): Promise<any> => {
 
     return users;
   } catch (error) {
-    console.log("[GET_PROGRESS]", error);
+    console.log("[GET_USER]", error);
     return 0;
   }
 };

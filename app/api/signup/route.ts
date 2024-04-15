@@ -57,11 +57,13 @@ export async function POST(req: Request) {
       cc: adminEmail.toString(),
       subject: `${emailAddress} have requested to be approved into the system`,
       text: `<p dir="ltr">&nbsp;</p>
+      Please check and approved this user into the system.<br/>
       <p dir="ltr">username: 
       ${username} 
       <br/>email: 
       ${emailAddress} `,
       html: `<p dir="ltr">&nbsp;</p>
+      Please check and approved this user into the system.<br/>
       <p dir="ltr">username: 
       ${username} 
       <br/>email: 

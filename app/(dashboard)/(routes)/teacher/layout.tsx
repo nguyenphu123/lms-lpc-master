@@ -7,6 +7,7 @@ const TeacherLayout = async ({ children }: { children: React.ReactNode }) => {
   let userInfo: any = await db.user.findUnique({
     where: { id: userId, status: "approved" },
   });
+
   if (userInfo.role.toUpperCase() == "STAFF") {
     return redirect("/");
   }

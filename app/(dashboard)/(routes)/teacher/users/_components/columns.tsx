@@ -18,7 +18,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 import axios from "axios";
 import Image from "next/image";
-import { getAuth } from "@/actions/get-auth";
+
+import { useAuth, useUser } from "@clerk/nextjs";
 
 export const columns: ColumnDef<User>[] = [
   {
@@ -32,7 +33,7 @@ export const columns: ColumnDef<User>[] = [
       return (
         <div className="flex items-center">
           <Image
-            src={imageUrl}
+            src={imageUrl === null ? "/figure_605.png" : imageUrl}
             alt={username}
             height={32}
             width={32}
@@ -120,7 +121,9 @@ export const columns: ColumnDef<User>[] = [
     accessorKey: "Action",
     cell: ({ row }) => {
       const { id, status, role } = row.original;
-      const userId: any = getAuth();
+
+      const { userId }: any = useAuth();
+
       async function onChangeStatus(id: string, status: string): Promise<void> {
         let values = {
           status: status == "approved" ? "pending" : "approved",

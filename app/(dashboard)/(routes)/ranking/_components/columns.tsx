@@ -39,7 +39,7 @@ export const columns: ColumnDef<User>[] = [
       return (
         <div className="flex items-center">
           <Image
-            src={imageUrl}
+            src={imageUrl === null ? "/figure_605.png" : imageUrl}
             alt={username}
             height={32}
             width={32}

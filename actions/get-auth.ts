@@ -7,7 +7,7 @@ export const getAuth = async (): Promise<any> => {
 
     return userId;
   } catch (error) {
-    console.log("[GET_PROGRESS]", error);
+    console.log("[GET_AUTH]", error);
     return 0;
   }
 };

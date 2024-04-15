@@ -1,5 +1,5 @@
 "use client";
-import { useSignIn } from "@clerk/clerk-react";
+import { useAuth, useSignIn } from "@clerk/clerk-react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -7,7 +7,7 @@ import { EmailCodeFactor, SignInFirstFactor } from "@clerk/types";
 import Link from "next/link";
 import dynamic from "next/dynamic";
 import { ModeToggle } from "@/components/ui/theme-button";
-import { animatePageIn } from "@/app/utils/animations";
+import { Loader2 } from "lucide-react";
 const Logo = dynamic(() => import("@/app/(auth)/_component/logo" as string), {
   ssr: false,
 });
@@ -20,6 +20,11 @@ export default function Page() {
   const [pendingVerification, setPendingVerification] = useState(false);
   const [code, setCode] = useState("");
   const router = useRouter();
+  const [verificationChecking, setVerificationChecking] = useState(false);
+  const { isSignedIn }: any = useAuth();
+  if (isSignedIn) {
+    router.push("/");
+  }
   // useEffect(() => {
   //   animatePageIn();
   // }, []);
@@ -84,6 +89,7 @@ export default function Page() {
   };
   const onPressVerify = async (e: any) => {
     e.preventDefault();
+    setVerificationChecking(true);
     if (!isLoaded) {
       return;
     }
@@ -99,6 +105,8 @@ export default function Page() {
         setTimeout(function () {
           // function code goes here
         }, 2000);
+        // setVerificationChecking(false);
+
         router.push("/");
       } else {
         /*Investigate why the sign-in hasn't completed */
@@ -228,9 +236,10 @@ export default function Page() {
               </div>
               <button
                 onClick={onPressVerify}
-                className="bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600 transition duration-300"
+                className="bg-blue-500 justify-center text-white inline-flex py-2 rounded-md hover:bg-blue-600 transition duration-300"
               >
-                Confirm
+                <span>Confirm</span>
+                {verificationChecking ? <Loader2 /> : <></>}
               </button>
             </form>
           </div>

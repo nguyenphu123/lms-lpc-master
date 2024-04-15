@@ -1,6 +1,6 @@
 "use client";
 import { useConfettiStore } from "@/hooks/use-confetti-store";
-import { useSignUp } from "@clerk/nextjs";
+import { useAuth, useSignUp } from "@clerk/nextjs";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 
@@ -9,7 +9,8 @@ import Link from "next/link";
 
 import dynamic from "next/dynamic";
 import { ModeToggle } from "@/components/ui/theme-button";
-import { animatePageIn } from "@/app/utils/animations";
+
+import { Loader2 } from "lucide-react";
 const Logo = dynamic(() => import("@/app/(auth)/_component/logo" as string), {
   ssr: false,
 });
@@ -34,6 +35,10 @@ export default function Page() {
   const [department, setDepartment] = useState("");
   const [verificationChecking, setVerificationChecking] = useState(false);
   const router = useRouter();
+  const { isSignedIn }: any = useAuth();
+  if (isSignedIn) {
+    router.push("/");
+  }
   // useEffect(() => {
   //   animatePageIn();
   // }, []);
@@ -108,8 +113,8 @@ export default function Page() {
         setTimeout(function () {
           // function code goes here
         }, 2000);
+
         router.push("/pending");
-        setVerificationChecking(false);
       }
     } catch (err: any) {
       setError(err.errors[0].longMessage);
@@ -252,18 +257,11 @@ export default function Page() {
                 }}
               />
               <button
-                onClick={(e) => onPressVerify(e)}
-                className="bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600 transition duration-300"
+                onClick={onPressVerify}
+                className="bg-blue-500 justify-center text-white inline-flex py-2 rounded-md hover:bg-blue-600 transition duration-300"
               >
-                Confirm{" "}
-                {verificationChecking ? (
-                  <svg
-                    className="animate-spin h-5 w-5 mr-3"
-                    viewBox="0 0 24 24"
-                  ></svg>
-                ) : (
-                  <></>
-                )}
+                <span>Confirm</span>
+                {verificationChecking ? <Loader2 /> : <></>}
               </button>
             </form>
           </div>
