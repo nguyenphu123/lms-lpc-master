@@ -34,12 +34,11 @@ export async function PATCH(
 
     if (
       !program.title ||
-      !program.description ||
       !program.imageUrl
       // !program.programId ||
       // !hasPublishedChapter
     ) {
-      return new NextResponse("Missing required fields", { status: 401 });
+      return new NextResponse("Missing required fields", { status: 404 });
     }
 
     const publishedProgram = await db.program.update({
