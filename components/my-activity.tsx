@@ -15,7 +15,7 @@ type CourseWithProgressWithCategory = Course & {
   progress: string | null;
   course: any;
   BookMark: { length: number; id: string };
-  description:string
+  description: string;
 };
 
 interface MyActivityProps {
@@ -30,7 +30,7 @@ export const MyActivity = ({ items }: MyActivityProps) => {
         My Activity
       </h2>
       <p className="mb-4">
-        Start studying now:
+        Start studying now:{" "}
         <Link href="/search" className="text-blue-700 hover:underline">
           Browse courses
         </Link>

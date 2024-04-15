@@ -28,7 +28,7 @@ export const CompletedCourse = ({ items }: CompletedCourseProps) => {
         <Focus className="mr-2" />
         Completed Course
       </h2>
-      <p className="text-center text-2xl ">No history</p>
+      <p className=" text-2xl ">No history</p>
     </>
   ) : (
     <div>
