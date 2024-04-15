@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "next dev",
     "build": "prisma generate && next build",
-    "start": "HTTPS: true SSL_CRT_FILE=./ssl/lms.lp.local.pem SSL_KEY_FILE=./ssl/lms.lp.local-key.pem next start",
+    
+    "start": "next start",
     "lint": "next lint",
     "postinstall": "prisma generate"
   },
