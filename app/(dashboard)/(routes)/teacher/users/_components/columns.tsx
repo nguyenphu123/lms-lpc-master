@@ -7,6 +7,7 @@ import {
   Pencil,
   BadgeCheck,
   Ban,
+  BadgeX,
 } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -151,25 +152,29 @@ export const columns: ColumnDef<User>[] = [
               </DropdownMenuItem>
             </Link>
             {userId != id && role != "ADMIN" ? (
-              <DropdownMenuItem>
-                {status == "approved" ? (
+              status == "approved" ? (
+                <DropdownMenuItem>
                   <div onClick={() => onChangeStatus(id, status)}>
                     <Ban className="h-4 w-4 mr-2" />
                     Ban
                   </div>
-                ) : (
-                  <div>
+                </DropdownMenuItem>
+              ) : (
+                <div>
+                  <DropdownMenuItem>
                     <div onClick={() => onChangeStatus(id, status)}>
                       <BadgeCheck className="h-4 w-4 mr-2" />
                       Approved
                     </div>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem>
                     <div onClick={() => onDelete(id)}>
-                      <BadgeCheck className="h-4 w-4 mr-2" />
+                      <BadgeX className="h-4 w-4 mr-2" />
                       Delete
                     </div>
-                  </div>
-                )}
-              </DropdownMenuItem>
+                  </DropdownMenuItem>
+                </div>
+              )
             ) : (
               <></>
             )}
