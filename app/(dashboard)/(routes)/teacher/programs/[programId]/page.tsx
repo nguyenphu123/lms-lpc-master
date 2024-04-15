@@ -54,7 +54,7 @@ const ProgramIdPage = async ({ params }: { params: { programId: string } }) => {
 
   const requiredFields = [
     program.title,
-    program.description,
+    program.imageUrl,
     // program.startDate,
     // Add more fields as needed for your program
   ];
