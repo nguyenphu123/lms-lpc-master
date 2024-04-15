@@ -33,14 +33,14 @@ export const ImageForm = ({ initialData, programId }: ImageFormProps) => {
 
   const onSubmit = async () => {
     let getToken = await axios.get("/api/getToken");
-    if (initialData.imageUrl != null && initialData.imageUrl != "") {
-      await axios.delete(initialData?.imageUrl, {
-        headers: {
-          "Access-Control-Allow-Origin": "*",
-          "X-Auth-Token": getToken.data["x-subject-token"],
-        },
-      });
-    }
+    // if (initialData.imageUrl != null && initialData.imageUrl != "") {
+    //   await axios.delete(initialData?.imageUrl, {
+    //     headers: {
+    //       "Access-Control-Allow-Origin": "*",
+    //       "X-Auth-Token": getToken.data["x-subject-token"],
+    //     },
+    //   });
+    // }
 
     try {
       await axios.put(
@@ -121,7 +121,12 @@ export const ImageForm = ({ initialData, programId }: ImageFormProps) => {
       {isEditing && (
         <div className="mt-4 flex flex-col">
           <div className="flex justify-between mb-2 ">
-            <input type="file" name="myImage" onChange={handleFileChange} className="dark:text-slate-50" />
+            <input
+              type="file"
+              name="myImage"
+              onChange={handleFileChange}
+              className="dark:text-slate-50"
+            />
             <button
               className="bg-blue-500 hover:bg-blue-700 text-white py-2 px-4 rounded"
               onClick={() => onSubmit()}
