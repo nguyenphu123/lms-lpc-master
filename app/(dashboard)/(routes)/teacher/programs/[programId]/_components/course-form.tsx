@@ -39,7 +39,7 @@ const CourseForm = (
 
     loadProgramOwnCourses();
     loadAvailibleCourses();
-  });
+  }, []);
   const router = useRouter();
   async function addToProgram(item: any) {
     let newItem = { ...item };
