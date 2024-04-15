@@ -20,6 +20,7 @@ import axios from "axios";
 import Image from "next/image";
 
 import { useAuth, useUser } from "@clerk/nextjs";
+import getAuth from "@/actions/get-auth";
 
 export const columns: ColumnDef<User>[] = [
   {
@@ -122,7 +123,7 @@ export const columns: ColumnDef<User>[] = [
     cell: ({ row }) => {
       const { id, status, role } = row.original;
 
-      const { userId }: any = useAuth();
+      const { userId }: any = getAuth();
 
       async function onChangeStatus(id: string, status: string): Promise<void> {
         let values = {

@@ -1,13 +1,13 @@
-import { auth } from "@clerk/nextjs";
+"use client";
+import { auth, useAuth } from "@clerk/nextjs";
 
-
-export const getAuth = async (): Promise<any> => {
+export default function getAuth() {
   try {
-    const {userId} = auth()
+    const { userId }: any = useAuth();
 
     return userId;
   } catch (error) {
     console.log("[GET_AUTH]", error);
     return 0;
   }
-};
+}
