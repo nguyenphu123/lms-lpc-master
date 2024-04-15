@@ -32,6 +32,7 @@ export default function Page() {
   ];
   const [pendingVerification, setPendingVerification] = useState(false);
   const [department, setDepartment] = useState("");
+  const [verificationChecking, setVerificationChecking] = useState(false);
   const router = useRouter();
   // useEffect(() => {
   //   animatePageIn();
@@ -58,7 +59,6 @@ export default function Page() {
       // password,
       // department,
     });
-    console.log(user);
     if (!user.data) {
       setError("User not found.");
       return;
@@ -83,6 +83,7 @@ export default function Page() {
   // This verifies the user using email code that is delivered.
   const onPressVerify = async (e: any) => {
     e.preventDefault();
+    setVerificationChecking(true);
     if (!isLoaded) {
       return;
     }
@@ -95,6 +96,7 @@ export default function Page() {
         /*  investigate the response, to see if there was an error
          or if the user needs to complete more steps.*/
         console.log(JSON.stringify(completeSignUp, null, 2));
+        setVerificationChecking(false);
       }
       if (completeSignUp.status === "complete") {
         completeSignUp["department"] = department;
@@ -107,6 +109,7 @@ export default function Page() {
           // function code goes here
         }, 2000);
         router.push("/pending");
+        setVerificationChecking(false);
       }
     } catch (err: any) {
       setError(err.errors[0].longMessage);
@@ -252,7 +255,15 @@ export default function Page() {
                 onClick={(e) => onPressVerify(e)}
                 className="bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600 transition duration-300"
               >
-                Confirm
+                Confirm{" "}
+                {verificationChecking ? (
+                  <svg
+                    className="animate-spin h-5 w-5 mr-3"
+                    viewBox="0 0 24 24"
+                  ></svg>
+                ) : (
+                  <></>
+                )}
               </button>
             </form>
           </div>

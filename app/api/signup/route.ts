@@ -45,19 +45,26 @@ export async function POST(req: Request) {
         },
       },
     });
+    const adminList = await db.user.findMany({
+      where: {
+        role: "ADMIN",
+      },
+    });
+    const adminEmail = adminList.map((item) => item.email);
     const mess = {
-      from: emailAddress,
-      to: "phu.nguyen@lp.com.vn, khoa.nguyendang@lp.com.vn ",
-      subject: `${emailAddress} have requested to be approved into the system with`,
+      from: "Webmaster@lp.com.vn",
+      to: adminEmail.toString(),
+      cc: adminEmail.toString(),
+      subject: `${emailAddress} have requested to be approved into the system`,
       text: `<p dir="ltr">&nbsp;</p>
       <p dir="ltr">username: 
       ${username} 
-      and email: 
+      <br/>email: 
       ${emailAddress} `,
       html: `<p dir="ltr">&nbsp;</p>
       <p dir="ltr">username: 
       ${username} 
-      and email: 
+      <br/>email: 
       ${emailAddress} `,
     };
     let transporter = nodemailer.createTransport(
@@ -67,7 +74,7 @@ export async function POST(req: Request) {
         port: 587, // port for secure SMTP
         auth: {
           user: "Webmaster@lp.com.vn",
-          pass: "srxgpdfvzykxykkn",
+          pass: "Lpc@236238$",
         },
         tls: {
           ciphers: "SSLv3",
@@ -80,10 +87,12 @@ export async function POST(req: Request) {
       const res = await transporter.sendMail(mess);
 
       // return res.status(200).json({ success: true });
-    } catch (err) {}
+    } catch (err) {
+      console.log("Mail send: ", err);
+    }
     return NextResponse.json(creatUser);
   } catch (error) {
-    console.log("[PROGRAMS]", error);
+    console.log("create user: ", error);
     return new NextResponse("Internal Error", { status: 500 });
   }
 }
