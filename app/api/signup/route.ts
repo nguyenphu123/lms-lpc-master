@@ -55,19 +55,18 @@ export async function POST(req: Request) {
       from: "Webmaster@lp.com.vn",
       to: adminEmail.toString(),
       cc: adminEmail.toString(),
-      subject: `${emailAddress} have requested to be approved into the system`,
-      text: `<p dir="ltr">&nbsp;</p>
-      Please check and approved this user into the system.<br/>
-      <p dir="ltr">username: 
-      ${username} 
-      <br/>email: 
-      ${emailAddress} `,
-      html: `<p dir="ltr">&nbsp;</p>
-      Please check and approved this user into the system.<br/>
-      <p dir="ltr">username: 
-      ${username} 
-      <br/>email: 
-      ${emailAddress} `,
+      subject: `${emailAddress} has requested approval to access the system`,
+      text: `
+        Please review and approve this user's request to access the system.
+   
+        Username: ${username}
+        Email: ${emailAddress}
+      `,
+      html: `
+        <p>Please review and approve this user's request to access the system.</p>
+        <p><strong>Username:</strong> ${username}</p>
+        <p><strong>Email:</strong> ${emailAddress}</p>
+      `,
     };
     let transporter = nodemailer.createTransport(
       smtpTransport({
