@@ -1,13 +1,12 @@
-"use client";
-import { auth, useAuth } from "@clerk/nextjs";
+import { useAuth, useUser } from "@clerk/nextjs";
 
-export default function getAuth() {
+export const getAuth = () => {
   try {
-    const { userId }: any = useAuth();
-
-    return userId;
+    const { user }: any = useUser();
+    console.log(user);
+    return user;
   } catch (error) {
     console.log("[GET_AUTH]", error);
     return 0;
   }
-}
+};

@@ -30,9 +30,13 @@ export const CoursesList = ({ items }: CoursesListProps) => {
             chapters={item?.Module}
             chaptersLength={item.Module.length}
             bookmark={item.BookMark}
-            isLocked={item?.ClassSessionRecord.map(
-              (item: { userId: any }) => item.userId
-            ).indexOf(userId) == -1?true:false}
+            isLocked={
+              item?.ClassSessionRecord.map(
+                (item: { userId: any }) => item.userId
+              ).indexOf(userId) == -1
+                ? true
+                : false
+            }
             // price={item.price!}
             progress={item.progress}
             description={item?.description}

@@ -11,6 +11,9 @@ export const IsTeacher = ({ userId }: any) => {
   };
   const { data, error, isLoading } = useQuery("userRole", fetchUserRole);
 
+  if (error) {
+    return <></>;
+  }
   if (isLoading) {
     return <></>;
   } else {

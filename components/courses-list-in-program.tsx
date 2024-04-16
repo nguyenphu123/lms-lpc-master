@@ -1,20 +1,12 @@
-import { Program, Course } from "@prisma/client";
 import { CourseCard } from "@/components/course-card";
-import { useAuth } from "@clerk/nextjs";
-
-type CourseWithProgressWithCategory = Course & {
-  programs: Program | null;
-  Module: { id: string }[];
-  progress: string | null;
-  BookMark: { length: number; id: string };
-};
+import { auth, useAuth } from "@clerk/nextjs";
 
 interface CoursesListInProgramProps {
   items: any[];
 }
 
 export const CoursesListInProgram = ({ items }: CoursesListInProgramProps) => {
-  const { userId }: any = useAuth();
+  const { userId }: any = auth();
   return (
     <div>
       <div className="grid sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-4 gap-4">

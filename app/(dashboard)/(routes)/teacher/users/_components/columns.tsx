@@ -21,7 +21,7 @@ import axios from "axios";
 import Image from "next/image";
 
 import { useAuth, useUser } from "@clerk/nextjs";
-import getAuth from "@/actions/get-auth";
+import { getAuth } from "@/actions/get-auth";
 
 export const columns: ColumnDef<User>[] = [
   {
@@ -124,7 +124,12 @@ export const columns: ColumnDef<User>[] = [
     cell: ({ row }) => {
       const { id, status, role } = row.original;
 
-      const { userId }: any = getAuth();
+      const { userId, isLoaded } = useAuth();
+
+      if (!isLoaded) {
+        // Handle loading state however you like
+        return <div></div>;
+      }
 
       async function onChangeStatus(id: string, status: string): Promise<void> {
         let values = {

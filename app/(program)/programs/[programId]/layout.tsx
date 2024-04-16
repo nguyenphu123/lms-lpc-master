@@ -62,7 +62,7 @@ const ProgramLayout = async ({
   return (
     <div className="h-full">
       <div className="h-[80px] fixed inset-y-0 w-full z-50">
-        <CourseNavbar />
+        <CourseNavbar userId={userId} />
       </div>
 
       <main className="md:pl-20 pr-20 pt-[80px] h-full">{children}</main>
