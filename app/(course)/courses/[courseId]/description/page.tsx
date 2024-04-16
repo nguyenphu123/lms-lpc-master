@@ -4,6 +4,8 @@ import { getChapter } from "@/actions/get-chapter";
 import { Banner } from "@/components/banner";
 import { Preview } from "@/components/preview";
 import { db } from "@/lib/db";
+import Link from "next/link";
+import { ArrowLeft } from "lucide-react";
 
 const CourseDescriptionPage = async ({
   params,
@@ -37,6 +39,13 @@ const CourseDescriptionPage = async ({
 
   return (
     <div className="p-10">
+      <Link
+        href="javascript:history.back()"
+        className="flex items-center text-sm hover:opacity-75 transition mb-6"
+      >
+        <ArrowLeft className="h-4 w-4 mr-2" />
+        Go back
+      </Link>
       <h1 className="text-4xl font-bold">{course.title}</h1>
 
       <div className="border border-blue-800 border-l-8 shadow-lg rounded-lg mt-8 mb-8">
