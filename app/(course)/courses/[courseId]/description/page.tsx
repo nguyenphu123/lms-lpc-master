@@ -37,23 +37,28 @@ const CourseDescriptionPage = async ({
 
   return (
     <div className="p-10">
-      <h1 className="text-5xl">{course.title}</h1>
+      <h1 className="text-4xl font-bold">{course.title}</h1>
 
-      <div className="border border-l-8 border-blue-800 shadow rounded-lg mt-8 mb-8">
-        <h5 className="text-3xl font-bold m-5">What is this course about?</h5>
+      <div className="border border-blue-800 border-l-8 shadow-lg rounded-lg mt-8 mb-8">
+        <h5 className="text-2xl font-bold p-5">Overview</h5>
         <div
-          dangerouslySetInnerHTML={{ __html: course.description + "" }}
+          className="px-5 py-3 mb-3"
+          dangerouslySetInnerHTML={{ __html: course.description }}
         ></div>
       </div>
-      <div className="border border-l-8 border-blue-800 shadow rounded-lg mt-8 mb-8">
-        <h5 className="text-3xl font-bold m-5">Course content:</h5>
-        <p className="text-gray-700 text-sm ml-5 mr-5 mb-8 dark:text-white">
-          <ul className="list-disc">
-            {course.Module.map((module: any) => (
-              <li key={module.id}>{module.title}</li>
-            ))}
-          </ul>
-        </p>
+
+      <div className="border border-blue-800 border-l-8 shadow-lg rounded-lg mt-8 mb-8">
+        <h5 className="text-2xl font-bold p-5">Modules</h5>
+        <ul className="list-disc ml-5 mr-5 mb-8">
+          {course.Module.map((module: any) => (
+            <li
+              key={module.id}
+              className="text-gray-700 text-base ml-3 dark:text-white mb-2"
+            >
+              {module.title}
+            </li>
+          ))}
+        </ul>
       </div>
     </div>
   );
