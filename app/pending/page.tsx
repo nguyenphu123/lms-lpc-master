@@ -52,10 +52,10 @@ const StepTwo = async () => {
 
           <div className="relative w-full h-90 flex items-center justify-center rounded overflow-hidden mt-4">
             <Image
-              src="https://media.giphy.com/media/yJFeycRK2DB4c/giphy.gif"
+              src="https://media.giphy.com/media/l3vR1tvIhCrrZsty0/giphy.gif"
               alt="blog"
-              height={500}
-              width={500}
+              height={400}
+              width={400}
               className="select-none object-cover rounded-md border-2 border-white shadow-md drop-shadow-md w-150 h-full"
             />
           </div>
