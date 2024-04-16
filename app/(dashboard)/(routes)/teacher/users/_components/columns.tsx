@@ -20,8 +20,7 @@ import {
 import axios from "axios";
 import Image from "next/image";
 
-import { useAuth, useUser } from "@clerk/nextjs";
-import { getAuth } from "@/actions/get-auth";
+import { useRouter } from "next/navigation";
 
 export const columns: ColumnDef<User>[] = [
   {
@@ -123,16 +122,18 @@ export const columns: ColumnDef<User>[] = [
     accessorKey: "Action",
     cell: ({ row }) => {
       const { id, status, role } = row.original;
-
+      const router = useRouter();
       async function onChangeStatus(id: string, status: string): Promise<void> {
         let values = {
           status: status == "approved" ? "pending" : "approved",
         };
 
         await axios.patch(`/api/user/${id}/status`, values);
+        router.refresh();
       }
       async function onDelete(id: string): Promise<void> {
         await axios.delete(`/api/user/${id}`);
+        router.refresh();
       }
       return (
         <DropdownMenu>
@@ -152,21 +153,30 @@ export const columns: ColumnDef<User>[] = [
             {role != "ADMIN" ? (
               status == "approved" ? (
                 <DropdownMenuItem>
-                  <div onClick={() => onChangeStatus(id, status)}>
+                  <div
+                    onClick={() => onChangeStatus(id, status)}
+                    className="flex items-center"
+                  >
                     <Ban className="h-4 w-4 mr-2" />
-                    Ban
+                    <span>Ban</span>
                   </div>
                 </DropdownMenuItem>
               ) : (
                 <div>
                   <DropdownMenuItem>
-                    <div onClick={() => onChangeStatus(id, status)}>
+                    <div
+                      onClick={() => onChangeStatus(id, status)}
+                      className="flex items-center"
+                    >
                       <BadgeCheck className="h-4 w-4 mr-2" />
                       Approved
                     </div>
                   </DropdownMenuItem>
                   <DropdownMenuItem>
-                    <div onClick={() => onDelete(id)}>
+                    <div
+                      onClick={() => onDelete(id)}
+                      className="flex items-center"
+                    >
                       <BadgeX className="h-4 w-4 mr-2" />
                       Delete
                     </div>

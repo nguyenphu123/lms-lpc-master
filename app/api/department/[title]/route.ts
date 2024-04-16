@@ -21,6 +21,7 @@ export async function GET(
           include: {
             course: {
               include: {
+                ClassSessionRecord: true,
                 Module: true,
               },
             },
