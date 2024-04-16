@@ -31,7 +31,7 @@ export const Recommend = ({ items }: RecommendProps) => {
         <Focus className="mr-2" />
         Recommend Course
       </h2>
-      <p className="mb-4">No recommend course</p>
+      <p className="mb-4 italic">No recommend course</p>
     </>
   ) : (
     <div>

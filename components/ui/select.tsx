@@ -6,7 +6,6 @@ export interface InputProps
   extends React.InputHTMLAttributes<HTMLInputElement> {}
 
 const Select: any = ({ options, ...props }: any) => {
-  console.log(options.length);
   return (
     <select name="option">
       {options.length != 0 ? (

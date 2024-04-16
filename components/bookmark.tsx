@@ -29,7 +29,7 @@ export const Bookmark = ({ items }: BookmarkProps) => {
         <BookmarkPlus className="mr-2" />
         Bookmark
       </h2>
-      <p className="mb-4">No bookmark</p>
+      <p className="mb-4 italic">No bookmark</p>
     </>
   ) : (
     <div>

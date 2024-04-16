@@ -34,7 +34,7 @@ const SearchPage = async ({ searchParams }: SearchPageProps) => {
           course: {
             isPublished: true,
             ClassSessionRecord: {
-              every: {
+              some: {
                 userId: sessionClaims.userId,
                 status: { not: "finnish" },
                 progress: { not: "100%" },
@@ -86,7 +86,7 @@ const SearchPage = async ({ searchParams }: SearchPageProps) => {
   });
   // console.log(recommendCourses);
   // console.log(allCourses);
-  let courses = recommendCourses.CourseOnDepartment;
+  let courses = recommendCourses?.CourseOnDepartment || [];
   for (let i = 0; i < allCourses.length; i++) {
     let newItem = {
       course: allCourses[i],

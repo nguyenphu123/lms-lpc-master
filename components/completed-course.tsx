@@ -25,10 +25,10 @@ export const CompletedCourse = ({ items }: CompletedCourseProps) => {
   return items.length == 0 ? (
     <>
       <h2 className="font-semibold text-2xl text-blue-700 mb-4 flex items-center">
-        <Focus className="mr-2" />
+        <CheckCircle className="mr-2" />
         Completed Course
       </h2>
-      <p className="mb-4">No history</p>
+      <p className="mb-4 italic">No history</p>
     </>
   ) : (
     <div>

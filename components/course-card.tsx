@@ -31,7 +31,6 @@ export const CourseCard = ({
   isLocked,
   description,
 }: CourseCardProps) => {
-  console.log(description);
   const router = useRouter();
 
   const [isUpdating, setIsUpdating] = useState(false);
