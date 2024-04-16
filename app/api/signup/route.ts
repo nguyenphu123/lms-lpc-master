@@ -15,7 +15,7 @@ export async function POST(req: Request) {
         department: department,
       },
     });
-    let creatUser = await db.user.create({
+    let createUser = await db.user.create({
       data: {
         id: createdUserId,
         role: "STAFF",
@@ -91,7 +91,7 @@ export async function POST(req: Request) {
     } catch (err) {
       console.log("Mail send: ", err);
     }
-    return NextResponse.json(creatUser);
+    return NextResponse.json(createUser);
   } catch (error) {
     console.log("create user: ", error);
     return new NextResponse("Internal Error", { status: 500 });
