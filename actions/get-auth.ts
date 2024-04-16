@@ -1,10 +1,11 @@
+"use client";
 import { useAuth, useUser } from "@clerk/nextjs";
 
 export const getAuth = () => {
   try {
-    const { user }: any = useUser();
-    console.log(user);
-    return user;
+    const { userId }: any = useAuth();
+
+    return userId;
   } catch (error) {
     console.log("[GET_AUTH]", error);
     return 0;

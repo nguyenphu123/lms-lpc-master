@@ -124,13 +124,6 @@ export const columns: ColumnDef<User>[] = [
     cell: ({ row }) => {
       const { id, status, role } = row.original;
 
-      const { userId, isLoaded } = useAuth();
-
-      if (!isLoaded) {
-        // Handle loading state however you like
-        return <div></div>;
-      }
-
       async function onChangeStatus(id: string, status: string): Promise<void> {
         let values = {
           status: status == "approved" ? "pending" : "approved",
@@ -156,7 +149,7 @@ export const columns: ColumnDef<User>[] = [
                 Edit
               </DropdownMenuItem>
             </Link>
-            {userId != id && role != "ADMIN" ? (
+            {role != "ADMIN" ? (
               status == "approved" ? (
                 <DropdownMenuItem>
                   <div onClick={() => onChangeStatus(id, status)}>
