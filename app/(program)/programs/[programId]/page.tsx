@@ -46,9 +46,7 @@ const ProgramIdPage = async ({ params }: { params: { programId: string } }) => {
       <h1 className="font-bold text-3xl text-blue-700 mb-4 text-center">
         {program.title}
       </h1>
-      <p className="text-black dark:text-white mb-8 overflow-y-hidden">
-        {program.description}
-      </p>
+      <p className="text-black dark:text-white mb-8">{program.description}</p>
 
       <CoursesListInProgram items={coursesWithProgress} />
     </div>

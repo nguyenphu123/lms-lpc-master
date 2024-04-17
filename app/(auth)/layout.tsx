@@ -5,7 +5,7 @@ import { animatePageIn } from "../utils/animations";
 const AuthLayout = ({ children }: { children: React.ReactNode }) => {
   return (
     <div className="h-full">
-      <main className=" pt-[80px] h-full overflow-y-hidden"> {children}</main>
+      <main className=" pt-[80px] h-full overflow-x-hidden"> {children}</main>
     </div>
   );
 };

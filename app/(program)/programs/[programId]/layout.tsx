@@ -65,7 +65,7 @@ const ProgramLayout = async ({
         <CourseNavbar userId={userId} />
       </div>
 
-      <main className="md:pl-20 pr-20 pt-[80px] h-full">{children}</main>
+      <main className="md:pl-20 pr-20 pt-[80px] h-full overflow-x-hidden">{children}</main>
     </div>
   );
 };

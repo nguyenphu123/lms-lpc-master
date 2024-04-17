@@ -75,7 +75,9 @@ const CourseLayout = async ({
           }
         />
       </div>
-      <main className="md:pl-80 pt-[80px] h-full overflow-y-hidden">{children}</main>
+      <main className="md:pl-80 pt-[80px] h-full overflow-x-hidden">
+        {children}
+      </main>
     </div>
   );
 };
