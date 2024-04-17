@@ -118,7 +118,7 @@ const Slide = ({
       await axios.patch(`/api/user/${currentUser.data.id}/score`, {
         star: parseInt(currentUser.data.star) + parseInt(course.creadit),
       });
-      // router.push(`/search`);
+      router.push(`/`);
     }
   };
 
