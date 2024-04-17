@@ -43,17 +43,17 @@ export const AttacthmentForm = ({
     let objIndex = contents.findIndex((obj: any, index: any) => obj.id == id);
 
     let getToken = await axios.get("/api/getToken");
-    if (
-      contents[objIndex].attachment != null &&
-      contents[objIndex].attachment != ""
-    ) {
-      await axios.delete(contents[objIndex].attachment, {
-        headers: {
-          "Access-Control-Allow-Origin": "*",
-          "X-Auth-Token": getToken.data["x-subject-token"],
-        },
-      });
-    }
+    // if (
+    //   contents[objIndex].attachment != null &&
+    //   contents[objIndex].attachment != ""
+    // ) {
+    //   await axios.delete(contents[objIndex].attachment, {
+    //     headers: {
+    //       "Access-Control-Allow-Origin": "*",
+    //       "X-Auth-Token": getToken.data["x-subject-token"],
+    //     },
+    //   });
+    // }
 
     let getCourse: any = await axios.get(`/api/courses/${courseId}`);
     let getChapter: any = await axios.get(

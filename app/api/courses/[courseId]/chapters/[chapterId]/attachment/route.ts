@@ -16,17 +16,6 @@ export async function PATCH(
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
-    const ownCourse = await db.course.findUnique({
-      where: {
-        id: params.courseId,
-        userId,
-      },
-    });
-
-    if (!ownCourse) {
-      return new NextResponse("Unauthorized", { status: 401 });
-    }
-
     const createAttachment = await db.resource.createMany({
       data: contents,
     });

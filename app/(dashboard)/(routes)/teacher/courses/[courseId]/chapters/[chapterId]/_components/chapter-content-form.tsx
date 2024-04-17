@@ -74,7 +74,7 @@ export const ContentForm = ({ courseId, moduleId }: AttachmentFormProps) => {
       // }
     }
     loadData();
-  });
+  }, []);
   const router = useRouter();
 
   const onSubmit = async () => {

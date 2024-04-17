@@ -116,7 +116,7 @@ const Slide = ({
       confetti.onOpen();
       let currentUser = await axios.get(`/api/user`);
       await axios.patch(`/api/user/${currentUser.data.id}/score`, {
-        star: parseInt(currentUser.data.star) + parseInt(course.creadit),
+        star: parseInt(currentUser.data.star) + parseInt(course.credit),
       });
       router.push(`/`);
     }

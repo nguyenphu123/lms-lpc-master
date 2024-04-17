@@ -5,7 +5,7 @@ import { redirect } from "next/navigation";
 
 const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
   const { userId }: any = auth();
-  
+
   if (!userId) {
     return redirect("/");
   }
@@ -17,7 +17,9 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
       <div className="hidden md:flex h-full w-56 flex-col fixed inset-y-0 z-50">
         <Sidebar userId={userId} />
       </div>
-      <main className="md:pl-56 pt-[80px] h-full">{children}</main>
+      <main className="md:pl-56 pt-[80px] h-full overflow-y-hidden">
+        {children}
+      </main>
     </div>
   );
 };

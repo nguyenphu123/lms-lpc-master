@@ -34,7 +34,7 @@ const SearchPage = async ({ searchParams }: SearchPageProps) => {
           course: {
             isPublished: true,
             ClassSessionRecord: {
-              some: {
+              every: {
                 userId: sessionClaims.userId,
                 status: { not: "finnish" },
                 progress: { not: "100%" },

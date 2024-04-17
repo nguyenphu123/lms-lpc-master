@@ -14,32 +14,9 @@ export async function PATCH(
     //   return new NextResponse("Unauthorized", { status: 401 });
     // }
 
-    const course = await db.course.findUnique({
-      where: {
-        id: params.courseId,
-        userId,
-      },
-      include: {
-        Module: {},
-      },
-    });
-
-    if (!course) {
-      return new NextResponse("Not found", { status: 404 });
-    }
-
-    const hasPublishedChapter = course.Module.some(
-      (module: { isPublished: any }) => module.isPublished
-    );
-
-    if (!course.title || !course.imageUrl || !hasPublishedChapter) {
-      return new NextResponse("Missing required fields", { status: 401 });
-    }
-
     const publishedCourse = await db.course.update({
       where: {
         id: params.courseId,
-        userId,
       },
       data: {
         isPublished: true,

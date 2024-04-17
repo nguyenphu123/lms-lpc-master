@@ -76,6 +76,7 @@ export default async function Dashboard() {
       },
     },
   });
+  
   let recommendCourses: any = await db.department.findUnique({
     where: {
       id: userInfo.departmentId + "",
