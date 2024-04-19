@@ -25,39 +25,36 @@ export async function POST(
     //   return new NextResponse("Unauthorized", { status: 401 });
     // }
 
-    const chapter = await db.module.findUnique({
-      where: {
-        id: params.chapterId,
-        courseId: params.courseId,
-      },
+    const removeSlide = await db.slide.deleteMany({
+      where: { moduleId: params.chapterId },
+    });
+    const createSlide = await db.slide.createMany({
+      data: contents.map((content: any, i: any) => ({
+        moduleId: params.chapterId,
+        title: content.title,
+        position: i,
+        content: content.content,
+        contentType: content.contentType,
+        videoUrl: content.videoUrl,
+        fileUrl: content.fileUrl,
+        description: content.description,
+      })),
     });
 
-    if (!chapter || !chapter.title) {
-      return new NextResponse("Missing required fields", { status: 400 });
-    }
-    for (let i = 0; i < contents.length; i++) {
-      const createSlide = await db.slide.upsert({
-        where: { id: contents[i].id || "" },
-        update: {
-          title: contents[i].title,
-          content: contents[i].content,
-          contentType: contents[i].contentType,
-          videoUrl: contents[i].videoUrl,
-          fileUrl: contents[i].fileUrl,
-          description: contents[i].description,
-        },
-        create: {
-          moduleId: chapter.id,
-          title: contents[i].title,
-          position: i,
-          content: contents[i].content,
-          contentType: contents[i].contentType,
-          videoUrl: contents[i].videoUrl,
-          fileUrl: contents[i].fileUrl,
-          description: contents[i].description,
-        },
-      });
-    }
+    // for (let i = 0; i < contents.length; i++) {
+    //   const createSlide = await db.slide.create({
+    //     data: {
+    //       moduleId: chapter.id,
+    //       title: contents[i].title,
+    //       position: i,
+    //       content: contents[i].content,
+    //       contentType: contents[i].contentType,
+    //       videoUrl: contents[i].videoUrl,
+    //       fileUrl: contents[i].fileUrl,
+    //       description: contents[i].description,
+    //     },
+    //   });
+    // }
 
     return NextResponse.json("success");
   } catch (error) {
