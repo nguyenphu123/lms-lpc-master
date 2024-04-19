@@ -31,6 +31,7 @@ export const ContentForm = ({ courseId, moduleId }: AttachmentFormProps) => {
   >([]);
   const [currentTab, setCurrentTab] = useState("");
   const [edit, setEdit] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   function getRandomInt(max: number) {
     return Math.floor(Math.random() * max);
   }
@@ -120,7 +121,7 @@ export const ContentForm = ({ courseId, moduleId }: AttachmentFormProps) => {
 
   const onChangeFileUrl = async (e: any, id: any) => {
     e.preventDefault();
-
+    setIsLoading(true);
     const file = e.target.files?.[0];
     let objIndex = contents.findIndex((obj: any, index: any) => obj.id == id);
 
@@ -158,10 +159,11 @@ export const ContentForm = ({ courseId, moduleId }: AttachmentFormProps) => {
       objIndex
     ].fileUrl = `${process.env.NEXT_PUBLIC_ACCOUNT_URL}/Course/${getCourse.data.title}/${getChapter.data.title}/${file.name}`;
     setContents([...contents]);
+    setIsLoading(false);
   };
   const onChangeVideoUrl = async (e: any, id: any) => {
     e.preventDefault();
-
+    setIsLoading(true);
     const file = e.target.files?.[0];
     let objIndex = contents.findIndex((obj: any, index: any) => obj.id == id);
     let getToken = await axios.get("/api/getToken");
@@ -198,6 +200,7 @@ export const ContentForm = ({ courseId, moduleId }: AttachmentFormProps) => {
       objIndex
     ].videoUrl = `${process.env.NEXT_PUBLIC_ACCOUNT_URL}/Course/${getCourse.data.title}/${getChapter.data.title}/${file.name}`;
     setContents([...contents]);
+    setIsLoading(false);
   };
   return (
     <div className="mt-6 border dark:text-white rounded-md p-4">
@@ -374,12 +377,21 @@ export const ContentForm = ({ courseId, moduleId }: AttachmentFormProps) => {
       {contents.length > 0 && (
         <div className="flex items-center justify-between">
           {/* <div className="font-medium">Course content</div> */}
-          <button
-            onClick={() => onSubmit()}
-            className="bg-black text-white px-4 py-2 rounded-md ml-auto"
-          >
-            Submit
-          </button>
+          {isLoading ? (
+            <button
+              disabled
+              className="bg-black text-white px-4 py-2 rounded-md ml-auto"
+            >
+              Waiting...
+            </button>
+          ) : (
+            <button
+              onClick={() => onSubmit()}
+              className="bg-black text-white px-4 py-2 rounded-md ml-auto"
+            >
+              Submit
+            </button>
+          )}
         </div>
       )}
     </div>
