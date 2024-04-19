@@ -30,28 +30,21 @@ export default async function Dashboard() {
     },
   });
 
-  const examList = await db.module.findMany({
+  const examList: any = await db.module.findMany({
     where: {
       type: "Exam",
     },
   });
   for (let i = 0; i < examList.length; i++) {
-    let date = 24;
-    if (examList[i].waitTime == 3) {
-      date = 72;
-    }
-    if (examList[i].waitTime == 7) {
-      date = 168;
-    }
-    var tsYesterday: Date = new Date(
-      Date.UTC(2012, 5, 17, 22, 34) - date * 3600 * 1000
-    );
+    const yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - examList[i].waitTime);
+    const yesterdayIsoString = yesterday.toISOString();
 
     await db.userProgress.updateMany({
       where: {
         userId: sessionClaims.userId,
         status: "studying",
-        endDate: tsYesterday,
+        endDate: yesterdayIsoString,
       },
 
       data: {
@@ -76,7 +69,7 @@ export default async function Dashboard() {
       },
     },
   });
-  
+
   let recommendCourses: any = await db.department.findUnique({
     where: {
       id: userInfo.departmentId + "",

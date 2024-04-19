@@ -67,6 +67,9 @@ export const getChapter = async ({
     const nextChapter = course.Module.map((item: { id: any }) => item.id)[
       currentChapterPos + 1
     ];
+    const preChapter = course.Module.map((item: { id: any }) => item.id)[
+      currentChapterPos > 0 ? currentChapterPos - 1 : -1
+    ];
     if (!chapter || !course) {
       throw new Error("Chapter or course not found");
     }
@@ -85,13 +88,14 @@ export const getChapter = async ({
       course,
       nextChapter,
       userProgress,
+      preChapter,
     };
   } catch (error) {
     console.log("[GET_CHAPTER]", error);
     return {
       chapter: null,
       course: null,
-
+      preChapter: null,
       attachments: [],
       nextChapter: null,
       userProgress: null,

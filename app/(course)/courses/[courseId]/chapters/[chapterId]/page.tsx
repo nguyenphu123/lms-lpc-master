@@ -18,7 +18,7 @@ const ChapterIdPage = async ({
   const {
     chapter,
     course,
-
+    preChapter,
     nextChapter,
     userProgress,
     purchase,
@@ -54,6 +54,7 @@ const ChapterIdPage = async ({
             slide={chapter.Slide}
             chapter={chapter}
             nextChapterId={nextChapter}
+            preChapter={preChapter}
             courseId={params.courseId}
             course={course}
             isCompleted={userProgress?.status}

@@ -39,6 +39,7 @@ CustomFileRenderer.weight = 10;
 
 const Slide = ({
   slide,
+  preChapter,
   nextChapterId,
   courseId,
   isCompleted,
@@ -56,69 +57,82 @@ const Slide = ({
     return supportedFileTypes.includes(extension!) ? extension : "default";
   };
   const onClickNextSlide = async () => {
-    const year = new Date();
-    const date = new Date(year.getFullYear(), 6, 1).toISOString();
-
-    await axios.put(
-      `/api/courses/${courseId}/chapters/${chapter.id}/progress`,
-      {
-        status: "studying",
-        progress: (currentSlide / (slide.length - 1)) * 100 + "%",
-        endDate: date,
-      }
-    );
-    setCurrentSlide(currentSlide + 1);
-    setDoc(slide[currentSlide].fileUrl.replace(" ", "%20"));
-  };
-
-  const onClick = async () => {
-    const year = new Date();
-    const date = new Date(year.getFullYear(), 6, 1).toISOString();
-    if (chapter.title == "intro") {
+    if (isCompleted == "finished") {
+      setCurrentSlide(currentSlide + 1);
+      setDoc(slide[currentSlide].fileUrl.replace(" ", "%20"));
     } else {
+      const date = new Date().toISOString();
+
       await axios.put(
         `/api/courses/${courseId}/chapters/${chapter.id}/progress`,
         {
-          status: "finished",
-          progress: "100%",
+          status: "studying",
+          progress: (currentSlide / (slide.length - 1)) * 100 + "%",
           endDate: date,
         }
       );
+      setCurrentSlide(currentSlide + 1);
+      setDoc(slide[currentSlide].fileUrl.replace(" ", "%20"));
     }
-
-    if (nextChapterId != null) {
-      await axios.put(
-        `/api/courses/${courseId}/chapters/${nextChapterId}/progress`,
-        {
-          status: "studying",
-          progress: "0%",
-          startDate: date,
-        }
-      );
-      await axios.put(`/api/courses/${courseId}/progress`, {
-        status: "studying",
-        progress:
-          (course.Module.map((item: { id: any }) => item.id).indexOf(
-            nextChapterId
-          ) /
-            course.Module.length) *
-            100 +
-          "%",
-        startDate: date,
-      });
-      router.push(`/courses/${courseId}/chapters/${nextChapterId}`);
+  };
+  const onClickPre = async () => {
+    router.push(`/courses/${courseId}/chapters/${preChapter}`);
+  };
+  const onClick = async () => {
+    if (isCompleted == "finished") {
+      if (nextChapterId != null) {
+        router.push(`/courses/${courseId}/chapters/${nextChapterId}`);
+      } else {
+        router.push(`/`);
+      }
     } else {
-      await axios.put(`/api/courses/${courseId}/progress`, {
-        status: "finished",
-        progress: "100%",
-        endDate: date,
-      });
-      confetti.onOpen();
-      let currentUser = await axios.get(`/api/user`);
-      await axios.patch(`/api/user/${currentUser.data.id}/score`, {
-        star: parseInt(currentUser.data.star) + parseInt(course.credit),
-      });
-      router.push(`/`);
+      const date = new Date().toISOString();
+      if (chapter.title == "intro") {
+      } else {
+        await axios.put(
+          `/api/courses/${courseId}/chapters/${chapter.id}/progress`,
+          {
+            status: "finished",
+            progress: "100%",
+            endDate: date,
+          }
+        );
+      }
+
+      if (nextChapterId != null) {
+        await axios.put(
+          `/api/courses/${courseId}/chapters/${nextChapterId}/progress`,
+          {
+            status: "studying",
+            progress: "0%",
+            startDate: date,
+          }
+        );
+        await axios.put(`/api/courses/${courseId}/progress`, {
+          status: "studying",
+          progress:
+            (course.Module.map((item: { id: any }) => item.id).indexOf(
+              nextChapterId
+            ) /
+              course.Module.length) *
+              100 +
+            "%",
+          startDate: date,
+        });
+        router.push(`/courses/${courseId}/chapters/${nextChapterId}`);
+      } else {
+        await axios.put(`/api/courses/${courseId}/progress`, {
+          status: "finished",
+          progress: "100%",
+          endDate: date,
+        });
+        confetti.onOpen();
+        let currentUser = await axios.get(`/api/user`);
+        await axios.patch(`/api/user/${currentUser.data.id}/score`, {
+          star: parseInt(currentUser.data.star) + parseInt(course.credit),
+        });
+        router.push(`/`);
+      }
     }
   };
 
@@ -194,37 +208,64 @@ const Slide = ({
             />
           )}
           Extra resources
-          {currentSlide == 0 ? (
-            <></>
-          ) : (
-            <button onClick={() => setCurrentSlide(currentSlide - 1)}>
-              Previous
-            </button>
-          )}
-          {currentSlide === slide.length - 1 ? (
-            nextChapterId !== undefined ? (
-              <button
-                onClick={() => onClick()}
-                className="bg-blue-500 hover:bg-blue-700 text-white py-2 px-4 rounded mt-4 ml-4"
-              >
-                Next module
-              </button>
+          <div className="items-end">
+            {currentSlide == 0 ? (
+              <></>
             ) : (
               <button
-                onClick={() => onClick()}
                 className="bg-gray-500 hover:bg-gray-700 text-white py-2 px-4 rounded mt-4 ml-4"
+                onClick={() => setCurrentSlide(currentSlide - 1)}
               >
-                Finish Course
+                Previous
               </button>
-            )
-          ) : (
-            <button
-              onClick={() => onClickNextSlide()}
-              className="bg-blue-500 hover:bg-blue-700 text-white py-2 px-4 rounded mt-4 ml-4"
-            >
-              Next
-            </button>
-          )}
+            )}
+            {currentSlide === slide.length - 1 ? (
+              nextChapterId !== undefined ? (
+                <div>
+                  {preChapter && (
+                    <button
+                      onClick={() => onClickPre()}
+                      className="bg-gray-500 hover:bg-gray-700 text-white py-2 px-4 rounded mt-4 ml-4"
+                    >
+                      Previsous Module
+                    </button>
+                  )}
+
+                  <button
+                    onClick={() => onClick()}
+                    className="bg-blue-500 hover:bg-blue-700 text-white py-2 px-4 rounded mt-4 ml-4"
+                  >
+                    Next module
+                  </button>
+                </div>
+              ) : (
+                <div>
+                  {preChapter && (
+                    <button
+                      onClick={() => onClickPre()}
+                      className="bg-gray-500 hover:bg-gray-700 text-white py-2 px-4 rounded mt-4 ml-4"
+                    >
+                      Previsous Module
+                    </button>
+                  )}
+
+                  <button
+                    onClick={() => onClick()}
+                    className="bg-gray-500 hover:bg-gray-700 text-white py-2 px-4 rounded mt-4 ml-4"
+                  >
+                    Finish Course
+                  </button>
+                </div>
+              )
+            ) : (
+              <button
+                onClick={() => onClickNextSlide()}
+                className="bg-blue-500 hover:bg-blue-700 text-white py-2 px-4 rounded mt-4 ml-4"
+              >
+                Next slide
+              </button>
+            )}
+          </div>
         </div>
         {/* {slide[currentSlide].Resource.map((item: any) => (
           <Link key={item.attachment} href={item.attachment}>
