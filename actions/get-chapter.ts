@@ -19,6 +19,13 @@ export const getChapter = async ({
         id: courseId,
       },
       include: {
+        ClassSessionRecord: {
+          where: {
+            userId,
+            courseId,
+          },
+        },
+
         Module: {
           where: {
             courseId: courseId,
@@ -68,7 +75,7 @@ export const getChapter = async ({
     const nextChapter = course.Module.map((item: { id: any }) => item.id)[
       currentChapterPos + 1
     ];
-    const preChapter = course.Module.map((item: { id: any }) => item.id)[
+    const preChapter: any = course.Module.map((item: { id: any }) => item.id)[
       currentChapterPos > 0 ? currentChapterPos - 1 : -1
     ];
     if (!chapter || !course) {

@@ -58,7 +58,13 @@ const Slide = ({
   const router = useRouter();
   const [onFinish, setOnFinish] = useState(false);
   const [doc, setDoc] = useState(slide[currentSlide]?.fileUrl);
-  const [hasCompleted, setHasCompleted] = useState(isCompleted);
+  const [hasCompleted, setHasCompleted] = useState(
+    isCompleted == "finished" &&
+      course.ClassSessionRecord[0].status == "finished"
+      ? "finished"
+      : "studying"
+  );
+
   const confetti = useConfettiStore();
   const supportedFileTypes = ["pdf", "pptx", "docx"];
   const getFileType = (fileName: string) => {
