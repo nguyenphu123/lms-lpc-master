@@ -131,6 +131,9 @@ const Slide = ({
         await axios.patch(`/api/user/${currentUser.data.id}/score`, {
           star: parseInt(currentUser.data.star) + parseInt(course.credit),
         });
+        setTimeout(function () {
+          // function code goes here
+        }, 2000);
         router.push(`/`);
       }
     }
@@ -208,6 +211,11 @@ const Slide = ({
             />
           )}
           Extra resources
+          {slide[currentSlide].Resource.map((item: any) => (
+            <Link key={item.attachment} href={item.attachment}>
+              {item.attachment.split("/").pop() as string}
+            </Link>
+          ))}
           <div className="items-end">
             {currentSlide == 0 ? (
               <></>
@@ -267,11 +275,6 @@ const Slide = ({
             )}
           </div>
         </div>
-        {/* {slide[currentSlide].Resource.map((item: any) => (
-          <Link key={item.attachment} href={item.attachment}>
-            {item.attachment.split("/").pop() as string}
-          </Link>
-        ))} */}
       </motion.div>
     </AnimatePresence>
   );
