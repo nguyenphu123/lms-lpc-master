@@ -49,7 +49,7 @@ const ChapterIdPage = async ({
         <Banner variant="success" label="You already completed this Module." />
       )}
 
-      <div className="flex flex-col max-w-4xl pb-20">
+      <div className="flex flex-col max-w-4xl pb-20 overflow-x-hidden">
         <div>
           <Slide
             slide={chapter.Slide}

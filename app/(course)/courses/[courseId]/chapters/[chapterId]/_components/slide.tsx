@@ -8,7 +8,15 @@ import { useRouter } from "next/navigation";
 import axios from "axios";
 import { motion, AnimatePresence } from "framer-motion";
 import { useConfettiStore } from "@/hooks/use-confetti-store";
-import Link from "next/link";
+import Image from "next/image";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 const CustomFileRenderer = ({ mainState: { currentDocument } }: any) => {
   if (!currentDocument || !currentDocument.uri) return null;
   const viewerUrl = `https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(
@@ -48,6 +56,7 @@ const Slide = ({
 }: any) => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const router = useRouter();
+  const [onFinish, setOnFinish] = useState(false);
   const [doc, setDoc] = useState(slide[currentSlide]?.fileUrl);
   const confetti = useConfettiStore();
   const supportedFileTypes = ["pdf", "pptx", "docx"];
@@ -131,14 +140,20 @@ const Slide = ({
         await axios.patch(`/api/user/${currentUser.data.id}/score`, {
           star: parseInt(currentUser.data.star) + parseInt(course.credit),
         });
+        setOnFinish(true);
         setTimeout(function () {
           // function code goes here
-        }, 2000);
-        router.push(`/`);
+        }, 10000);
+        if (onFinish) {
+          router.push(`/`);
+        }
       }
     }
   };
-
+  const accept = () => {
+    setOnFinish(false);
+    router.push(`/`);
+  };
   return slide.length < 1 ? (
     <>This module is updating.</>
   ) : (
@@ -149,6 +164,39 @@ const Slide = ({
         exit={{ y: -10, opacity: 0 }}
         transition={{ duration: 0.2 }}
       >
+        <AlertDialog open={onFinish && isCompleted != "finished"}>
+          <AlertDialogContent className="AlertDialogContent">
+            <AlertDialogTitle className="AlertDialogTitle">
+              Congratulation on finishing this Course, Would you like to find
+              another course?
+              <Image
+                src="https://tenor.com/gNieSUS4QOI.gif"
+                alt="blog"
+                height={200}
+                width={200}
+                className="select-none object-cover rounded-md border-2 border-white shadow-md drop-shadow-md w-150 h-full"
+              />
+            </AlertDialogTitle>
+            <AlertDialogDescription className="AlertDialogDescription"></AlertDialogDescription>
+            <div
+              style={{
+                display: "flex",
+                gap: 25,
+                justifyContent: "flex-end",
+              }}
+            >
+              <AlertDialogCancel onClick={() => setOnFinish(false)}>
+                Stay
+              </AlertDialogCancel>
+              <AlertDialogAction asChild>
+                <button className="Button red" onClick={() => accept()}>
+                  Leave
+                </button>
+              </AlertDialogAction>
+            </div>
+          </AlertDialogContent>
+        </AlertDialog>
+
         <div>
           {slide[currentSlide].contentType == "video" ? (
             <div className="ml-4 mt-4">
@@ -181,14 +229,6 @@ const Slide = ({
               theme={{ disableThemeScrollbar: false }}
             />
           ) : (
-            // <iframe
-            //   src={`https://docs.google.com/viewerng/viewer?url=${slide[
-            //     currentSlide
-            //   ].fileUrl.replace(" ", "%20")}&embedded=true`}
-            //   width="500px"
-            //   height="350px"
-            //   type={`${fetchFileType(slide[currentSlide].fileUrl)}`}
-            // ></iframe>
             <DocViewer
               prefetchMethod="GET"
               config={{
@@ -210,7 +250,7 @@ const Slide = ({
               theme={{ disableThemeScrollbar: false }}
             />
           )}
-         
+
           <div className="items-end">
             {currentSlide == 0 ? (
               <></>
@@ -256,7 +296,9 @@ const Slide = ({
                     onClick={() => onClick()}
                     className="bg-gray-500 hover:bg-gray-700 text-white py-2 px-4 rounded mt-4 ml-4"
                   >
-                    Finish Course
+                    {isCompleted != "finished"
+                      ? "Finish Course"
+                      : "Return to Home"}
                   </button>
                 </div>
               )
