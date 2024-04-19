@@ -58,6 +58,7 @@ const Slide = ({
   const router = useRouter();
   const [onFinish, setOnFinish] = useState(false);
   const [doc, setDoc] = useState(slide[currentSlide]?.fileUrl);
+  const [hasCompleted, setHasCompleted] = useState(isCompleted);
   const confetti = useConfettiStore();
   const supportedFileTypes = ["pdf", "pptx", "docx"];
   const getFileType = (fileName: string) => {
@@ -66,7 +67,7 @@ const Slide = ({
     return supportedFileTypes.includes(extension!) ? extension : "default";
   };
   const onClickNextSlide = async () => {
-    if (isCompleted == "finished") {
+    if (hasCompleted == "finished") {
       setCurrentSlide(currentSlide + 1);
       setDoc(slide[currentSlide].fileUrl.replace(" ", "%20"));
     } else {
@@ -88,7 +89,7 @@ const Slide = ({
     router.push(`/courses/${courseId}/chapters/${preChapter}`);
   };
   const onClick = async () => {
-    if (isCompleted == "finished") {
+    if (hasCompleted == "finished") {
       if (nextChapterId != null) {
         router.push(`/courses/${courseId}/chapters/${nextChapterId}`);
       } else {
@@ -141,12 +142,14 @@ const Slide = ({
           star: parseInt(currentUser.data.star) + parseInt(course.credit),
         });
         setOnFinish(true);
+        setHasCompleted("finished");
+        router.push(`/`);
         setTimeout(function () {
           // function code goes here
         }, 10000);
-        if (onFinish) {
-          router.push(`/`);
-        }
+        // if (onFinish) {
+        //   router.push(`/`);
+        // }
       }
     }
   };
@@ -164,16 +167,16 @@ const Slide = ({
         exit={{ y: -10, opacity: 0 }}
         transition={{ duration: 0.2 }}
       >
-        <AlertDialog open={onFinish && isCompleted != "finished"}>
+        <AlertDialog open={onFinish && hasCompleted != "finished"}>
           <AlertDialogContent className="AlertDialogContent">
             <AlertDialogTitle className="AlertDialogTitle">
               Congratulation on finishing this Course, Would you like to find
               another course?
               <Image
-                src="https://tenor.com/gNieSUS4QOI.gif"
+                src="https://tenor.com/view/blue-archive-hoshino-gif-5565505919833568954"
                 alt="blog"
-                height={200}
-                width={200}
+                height={300}
+                width={400}
                 className="select-none object-cover rounded-md border-2 border-white shadow-md drop-shadow-md w-150 h-full"
               />
             </AlertDialogTitle>
@@ -200,7 +203,7 @@ const Slide = ({
         <div>
           {slide[currentSlide].contentType == "video" ? (
             <div className="ml-4 mt-4">
-              <video width="1920" height="1080" controls autoPlay>
+              <video width="1080" height="720" controls autoPlay>
                 <source src={slide[currentSlide].videoUrl} type="video/mp4" />
                 Your browser does not support the video tag.
               </video>
@@ -262,18 +265,10 @@ const Slide = ({
                 Previous
               </button>
             )}
+
             {currentSlide === slide.length - 1 ? (
               nextChapterId !== undefined ? (
                 <div>
-                  {preChapter && (
-                    <button
-                      onClick={() => onClickPre()}
-                      className="bg-gray-500 hover:bg-gray-700 text-white py-2 px-4 rounded mt-4 ml-4"
-                    >
-                      Previsous Module
-                    </button>
-                  )}
-
                   <button
                     onClick={() => onClick()}
                     className="bg-blue-500 hover:bg-blue-700 text-white py-2 px-4 rounded mt-4 ml-4"
@@ -296,7 +291,7 @@ const Slide = ({
                     onClick={() => onClick()}
                     className="bg-gray-500 hover:bg-gray-700 text-white py-2 px-4 rounded mt-4 ml-4"
                   >
-                    {isCompleted != "finished"
+                    {hasCompleted != "finished"
                       ? "Finish Course"
                       : "Return to Home"}
                   </button>

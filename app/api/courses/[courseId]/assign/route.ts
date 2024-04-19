@@ -37,6 +37,8 @@ export async function PATCH(
       } else {
         await db.classSessionRecord.delete({
           where: {
+            progress: "0%",
+            status: "studying",
             courseId_userId: {
               courseId: courseId.toString(),
               userId: student.id,

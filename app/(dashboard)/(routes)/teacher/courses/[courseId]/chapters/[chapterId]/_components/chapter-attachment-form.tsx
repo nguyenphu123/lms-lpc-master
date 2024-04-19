@@ -6,8 +6,9 @@ import axios from "axios";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
-import { Resource } from "@prisma/client";
-import Link from "next/link";
+import dynamic from "next/dynamic";
+
+const Link = dynamic(() => import("next/link"), { ssr: false });
 
 interface AttachmentFormProps {
   initialData: any;
@@ -94,8 +95,12 @@ export const AttacthmentForm = ({
         contents
       );
       toast.success("Attachment created");
-      toggleEdit();
-      router.refresh();
+      let reloadData = await axios.get(
+        `/api/courses/${courseId}/chapters/${moduleId}/attachment`
+      );
+      setContents(reloadData.data);
+      // toggleEdit();
+      // router.refresh();
     } catch {
       toast.error("Something went wrong");
     }
@@ -108,8 +113,8 @@ export const AttacthmentForm = ({
       </div>
 
       <div>
-        {contents.map((item: any) => (
-          <>
+        {contents.map((item: any, index: any) => (
+          <div key={index}>
             {item.attachment != "" && !edit ? (
               <Link
                 suppressHydrationWarning={true}
@@ -140,7 +145,7 @@ export const AttacthmentForm = ({
             ) : (
               <></>
             )}
-          </>
+          </div>
         ))}
       </div>
       <div className="flex items-center justify-between">
