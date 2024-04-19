@@ -44,7 +44,7 @@ export default function Exam({ chapter }: any) {
       setQuizList(questionList.data.Category);
     }
     loadQuestion();
-  });
+  }, []);
   function getRandomInt(max: number) {
     return Math.floor(Math.random() * max);
   }

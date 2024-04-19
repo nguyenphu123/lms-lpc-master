@@ -34,6 +34,7 @@ export const columns: ColumnDef<User>[] = [
       return <div>Name</div>;
     },
     cell: ({ row }) => {
+      const order = row.index + 1;
       const { username, imageUrl }: any = row.original;
 
       return (

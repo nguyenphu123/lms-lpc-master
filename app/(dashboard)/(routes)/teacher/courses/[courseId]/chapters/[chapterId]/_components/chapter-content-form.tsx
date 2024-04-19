@@ -4,12 +4,10 @@ import { Editor } from "@tinymce/tinymce-react";
 import { ChangeEvent, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
-import { IconBadge } from "@/components/icon-badge";
-import Dropzone from "@/components/ui/dropzone";
-import { Video, Trash, PlusCircle } from "lucide-react";
-import Link from "next/link";
-import { AttacthmentForm } from "./chapter-attachment-form";
+import { Trash, PlusCircle } from "lucide-react";
+import dynamic from "next/dynamic";
 
+const Link = dynamic(() => import("next/link"), { ssr: false });
 interface AttachmentFormProps {
   courseId: string;
   moduleId: string;

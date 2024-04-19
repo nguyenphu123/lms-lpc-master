@@ -67,15 +67,14 @@ export const DescriptionForm = ({
         </Button>
       </div>
       {!isEditing && (
-        <p
+        <div
           className={cn(
             "dark:text-slate-50",
             "text-sm mt-2",
             !content && "text-slate-500 italic"
           )}
-        >
-          <div dangerouslySetInnerHTML={{ __html: content + "" }}></div>
-        </p>
+          dangerouslySetInnerHTML={{ __html: content }}
+        ></div>
       )}
       {isEditing && (
         <>

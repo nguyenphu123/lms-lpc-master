@@ -54,7 +54,12 @@ const UserRank = async () => {
   const users: any = await getUser();
   return (
     <div className="p-6">
-      <DataTable columns={columns} data={users} />
+      <DataTable
+        columns={columns}
+        data={users.sort(
+          (a: { star: number }, b: { star: number }) => b.star - a.star
+        )}
+      />
     </div>
   );
 };

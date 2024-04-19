@@ -57,7 +57,6 @@ export default async function Dashboard() {
     where: {
       userId: sessionClaims.userId,
       status: { not: "finished" },
-      progress: { not: "100%" },
     },
     include: {
       course: {
@@ -80,8 +79,7 @@ export default async function Dashboard() {
             ClassSessionRecord: {
               every: {
                 userId: sessionClaims.userId,
-                status: { not: "finnish" },
-                progress: { not: "100%" },
+                status: { not: "finished" },
               },
             },
           },
@@ -120,7 +118,6 @@ export default async function Dashboard() {
         every: {
           userId: sessionClaims.userId,
           status: { not: "finnish" },
-          progress: { not: "100%" },
         },
       },
       isPublished: true,
@@ -132,7 +129,6 @@ export default async function Dashboard() {
         where: {
           userId: sessionClaims.userId,
           status: { not: "finnish" },
-          progress: { not: "100%" },
         },
       },
     },
@@ -168,7 +164,6 @@ export default async function Dashboard() {
     where: {
       userId: sessionClaims.userId,
       status: "finished",
-      progress: "100%",
     },
     include: {
       course: {

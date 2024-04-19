@@ -13,17 +13,6 @@ export async function POST(
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
-    const ownCourse = await db.course.findUnique({
-      where: {
-        id: params.courseId,
-        userId,
-      },
-    });
-
-    if (!ownCourse) {
-      return new NextResponse("Unauthorized", { status: 401 });
-    }
-
     const chapter = await db.module.findUnique({
       where: {
         id: params.chapterId,

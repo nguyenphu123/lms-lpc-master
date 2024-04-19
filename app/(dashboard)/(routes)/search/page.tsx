@@ -36,8 +36,7 @@ const SearchPage = async ({ searchParams }: SearchPageProps) => {
             ClassSessionRecord: {
               every: {
                 userId: sessionClaims.userId,
-                status: { not: "finnish" },
-                progress: { not: "100%" },
+                status: { not: "finished" },
               },
             },
           },
@@ -67,7 +66,6 @@ const SearchPage = async ({ searchParams }: SearchPageProps) => {
         every: {
           userId: sessionClaims.userId,
           status: { not: "finished" },
-          progress: { not: "100%" },
         },
       },
       isPublished: true,
@@ -79,7 +77,6 @@ const SearchPage = async ({ searchParams }: SearchPageProps) => {
         where: {
           userId: sessionClaims.userId,
           status: { not: "finished" },
-          progress: { not: "100%" },
         },
       },
     },

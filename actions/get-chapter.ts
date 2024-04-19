@@ -22,6 +22,7 @@ export const getChapter = async ({
         Module: {
           where: {
             courseId: courseId,
+            isPublished: true,
           },
           orderBy: {
             position: "asc",
