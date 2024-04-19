@@ -210,12 +210,7 @@ const Slide = ({
               theme={{ disableThemeScrollbar: false }}
             />
           )}
-          Extra resources
-          {slide[currentSlide].Resource.map((item: any) => (
-            <Link key={item.attachment} href={item.attachment}>
-              {item.attachment.split("/").pop() as string}
-            </Link>
-          ))}
+         
           <div className="items-end">
             {currentSlide == 0 ? (
               <></>

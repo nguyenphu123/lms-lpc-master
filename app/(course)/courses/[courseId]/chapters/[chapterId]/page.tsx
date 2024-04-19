@@ -5,6 +5,7 @@ import { Banner } from "@/components/banner";
 import { Preview } from "@/components/preview";
 import Exam from "./_components/exam";
 import Slide from "./_components/slide";
+import Link from "next/link";
 const ChapterIdPage = async ({
   params,
 }: {
@@ -59,6 +60,12 @@ const ChapterIdPage = async ({
             course={course}
             isCompleted={userProgress?.status}
           ></Slide>
+          Extra resources:{" "}
+          {chapter.Resource.map((item: any) => (
+            <Link key={item.attachment} href={item.attachment}>
+              {item.attachment.split("/").pop() as string}
+            </Link>
+          ))}
         </div>
         <div>
           <div>
