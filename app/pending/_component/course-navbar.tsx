@@ -1,3 +1,4 @@
+"use client"
 import { NavbarRoutesPending } from "@/components/navbar-routes-pending";
 import { useChannel } from "ably/react";
 import { useRouter } from "next/navigation";
