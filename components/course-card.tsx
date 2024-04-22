@@ -65,7 +65,7 @@ export const CourseCard = ({
             {title}
           </div>
           <div className="my-3 flex items-center gap-x-2 text-sm md:text-xs">
-            <div className="flex items-center gap-x-1 text-slate-500">
+            <div className="flex items-center gap-x-1 text-slate-500 dark:text-white">
               <IconBadge size="sm" icon={BookOpen} />
               <span>
                 {chaptersLength} {chaptersLength === 1 ? "Chapter" : "Chapters"}
@@ -87,13 +87,13 @@ export const CourseCard = ({
         <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition">
           {isLocked ? (
             <Link href={`/courses/${id}`}>
-              <button className="bg-gray-500 text-white px-4 py-2 rounded-md mr-2 hover:bg-gray-600 transition">
+              <button className="bg-gradient-to-r from-pink-600 to-red-700 text-white px-4 py-2 rounded-md mr-2 hover:bg-blue-600 transition">
                 <Eye />
               </button>
             </Link>
           ) : (
             <Link href={`/courses/${id}`}>
-              <button className="bg-gray-500 text-white px-4 py-2 rounded-md mr-2 hover:bg-gray-600 transition">
+              <button className="bg-gradient-to-r from-pink-600 to-red-700 text-white px-4 py-2 rounded-md mr-2 hover:bg-blue-600 transition">
                 <BookOpenText />
               </button>
             </Link>
@@ -102,14 +102,14 @@ export const CourseCard = ({
           {bookmark?.map((item) => item.courseId).indexOf(id) > -1 ? (
             <button
               onClick={onUnBookMark}
-              className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-gray-600 transition"
+              className="bg-gradient-to-r from-pink-600 to-red-700 text-white px-4 py-2 rounded-md hover:bg-gray-600 transition"
             >
               <Bookmark />
             </button>
           ) : (
             <button
               onClick={onBookMark}
-              className="bg-gray-500 text-white px-4 py-2 rounded-md hover:bg-gray-600 transition"
+              className="bg-gradient-to-r from-white to-gray-500 text-black px-4 py-2 rounded-md hover:bg-gray-300 transition"
             >
               <Bookmark />
             </button>

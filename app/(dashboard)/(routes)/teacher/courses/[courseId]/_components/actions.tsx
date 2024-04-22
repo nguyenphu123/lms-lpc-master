@@ -26,7 +26,7 @@ export const Actions = ({
   const router = useRouter();
   const confetti = useConfettiStore();
   const [isLoading, setIsLoading] = useState(false);
-  const { channel, ably } = useChannel("chat-demo", (message) => {});
+  const { channel, ably } = useChannel("course:sendCourse", (message) => {});
   const onClick = async () => {
     try {
       setIsLoading(true);
@@ -40,6 +40,7 @@ export const Actions = ({
         channel.publish({
           name: "chat-message",
           data: {
+            type: "course-publish",
             message: `<div style="border: 1px solid #ccc; border-radius: 10px; padding: 10px;"><strong>${title}</strong> has been published 🎉🎉🎉</div><br/>`,
             link: `http://localhost:3000/courses/${courseId}`,
           },

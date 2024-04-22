@@ -79,7 +79,7 @@ export function DataTable<TData, TValue>({
           </Button>
         </Link> */}
       </div>
-      <div className="rounded-md border">
+      <div className="rounded-md border dark:border-slate-600 border-slate-400">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
@@ -88,7 +88,7 @@ export function DataTable<TData, TValue>({
                   return (
                     <TableHead
                       key={header.id}
-                      className="bg-slate-200 dark:bg-slate-900"
+                      className="bg-slate-200 dark:bg-slate-900 dark:text-white text-black"
                     >
                       {header.isPlaceholder
                         ? null
@@ -102,14 +102,14 @@ export function DataTable<TData, TValue>({
               </TableRow>
             ))}
           </TableHeader>
-          <TableBody className="bg-gray-100 dark:bg-slate-800">
+          <TableBody className="bg-gray-100 dark:bg-slate-800 border-slate-800 dark:border-slate-300">
             {table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
                 <TableRow
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
                   className={cn(
-                    "border-2",
+                    "border-slate-400 dark:border-slate-600 ",
                     row.index === 0
                       ? "bg-diamond"
                       : row.index === 1
