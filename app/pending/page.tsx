@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import { BasicNavbar } from "./_component/course-navbar";
 import { db } from "@/lib/db";
 import "@/css/clock.css";
-import Image from "next/image";
+import { useChannel } from "ably/react";
 const StepTwo = async () => {
   const { sessionClaims }: any = auth();
   if (!sessionClaims?.userId) {
@@ -15,6 +15,10 @@ const StepTwo = async () => {
   if (userInfo == undefined) {
     return redirect("/sign-in");
   }
+  if (userInfo != undefined && userInfo.status == "approved") {
+    return redirect("/");
+  }
+
   return (
     <>
       <div className="h-[80px] fixed inset-y-0 w-full z-50">

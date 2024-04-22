@@ -18,6 +18,7 @@ import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "@clerk/nextjs";
+
 export const Cell = ({ row }: any) => {
   const { id, status, role } = row.original;
   const router = useRouter();
@@ -28,6 +29,7 @@ export const Cell = ({ row }: any) => {
     };
 
     await axios.patch(`/api/user/${id}/status`, values);
+
     router.refresh();
   }
   async function onDelete(id: string): Promise<void> {

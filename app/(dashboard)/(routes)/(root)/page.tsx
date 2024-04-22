@@ -170,6 +170,7 @@ export default async function Dashboard() {
         include: {
           Module: true,
           ClassSessionRecord: true,
+          BookMark: true,
         },
       },
     },
