@@ -156,15 +156,17 @@ const Slide = ({
           // function code goes here
         }, 10000);
         router.refresh();
-        // if (onFinish) {
-        //   router.push(`/`);
-        // }
+        if (onFinish) {
+          router.push(`/`);
+          router.refresh();
+        }
       }
     }
   };
   const accept = () => {
     setOnFinish(false);
     router.push(`/`);
+    router.refresh();
   };
   return slide.length < 1 ? (
     <>This module is updating.</>
