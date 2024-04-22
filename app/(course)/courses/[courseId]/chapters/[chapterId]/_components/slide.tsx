@@ -155,7 +155,6 @@ const Slide = ({
         setTimeout(function () {
           // function code goes here
         }, 10000);
-        router.refresh();
         if (onFinish) {
           router.push(`/`);
           router.refresh();

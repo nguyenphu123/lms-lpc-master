@@ -12,7 +12,7 @@ import {
   AlertDialogCancel,
   AlertDialogAction,
 } from "@/components/ui/alert-dialog";
-import { redirect, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useConfettiStore } from "@/hooks/use-confetti-store";
 import shuffleArray from "@/lib/shuffle";
 import DoughnutChart from "@/components/ui/doughnut-chart";
@@ -23,6 +23,7 @@ const Exam = ({
   course,
   isCompleted,
 }: any) => {
+  const router = useRouter();
   const [maxAsset, setMaxAsset] = useState(chapter.maxAsset);
   const [categoryList, setCategoryList]: any = useState([...chapter.Category]);
   const [finishedExam, setFinishedExam] = useState(false);
@@ -94,47 +95,6 @@ const Exam = ({
           }
         );
         if (totalScore >= chapter.scoreLimit) {
-          if (totalScore > chapter.scoreLimit) {
-            // let currentUser = await axios.get(`/api/user`);
-            // switch (chapter.scoreLimit) {
-            //   case 60:
-            //     await axios.patch(`/api/user/${currentUser.data.id}/score`, {
-            //       star:
-            //         parseInt(currentUser.data.star) +
-            //         Math.floor(totalScore - chapter.scoreLimit) / 4,
-            //     });
-            //     break;
-            //   case 70:
-            //     await axios.patch(`/api/user/${currentUser.data.id}/score`, {
-            //       star:
-            //         parseInt(currentUser.data.star) +
-            //         Math.floor(totalScore - chapter.scoreLimit) / 3,
-            //     });
-            //     break;
-            //   case 80:
-            //     await axios.patch(`/api/user/${currentUser.data.id}/score`, {
-            //       star:
-            //         parseInt(currentUser.data.star) +
-            //         Math.floor(totalScore - chapter.scoreLimit) / 2,
-            //     });
-            //     break;
-            //   case 90:
-            //     await axios.patch(`/api/user/${currentUser.data.id}/score`, {
-            //       star:
-            //         parseInt(currentUser.data.star) +
-            //         Math.floor(totalScore - chapter.scoreLimit),
-            //     });
-            //     break;
-            //   case 100:
-            //     await axios.patch(`/api/user/${currentUser.data.id}/score`, {
-            //       star: parseInt(currentUser.data.star) + totalScore,
-            //     });
-            //     break;
-            //   default:
-            //     break;
-            // }
-          }
-
           if (nextChapterId != null) {
             await axios.put(
               `/api/courses/${courseId}/chapters/${nextChapterId}/progress`,
@@ -172,6 +132,15 @@ const Exam = ({
       }
       setFinishedExam(true);
       setQuestions([]);
+      if (totalScore >= chapter.scoreLimit) {
+        if (nextChapterId != null) {
+          setTimeout(function () {
+            // function code goes here
+          }, 10000);
+          router.push(`/`);
+          router.refresh();
+        }
+      }
     }
   };
 
@@ -285,46 +254,6 @@ const Exam = ({
           }
         );
         if (totalScore >= chapter.scoreLimit) {
-          if (totalScore > chapter.scoreLimit) {
-            // let currentUser = await axios.get(`/api/user`);
-            // switch (chapter.scoreLimit) {
-            //   case 60:
-            //     await axios.patch(`/api/user/${currentUser.data.id}/score`, {
-            //       star:
-            //         parseInt(currentUser.data.star) +
-            //         Math.floor(totalScore - chapter.scoreLimit) / 4,
-            //     });
-            //     break;
-            //   case 70:
-            //     await axios.patch(`/api/user/${currentUser.data.id}/score`, {
-            //       star:
-            //         parseInt(currentUser.data.star) +
-            //         Math.floor(totalScore - chapter.scoreLimit) / 3,
-            //     });
-            //     break;
-            //   case 80:
-            //     await axios.patch(`/api/user/${currentUser.data.id}/score`, {
-            //       star:
-            //         parseInt(currentUser.data.star) +
-            //         Math.floor(totalScore - chapter.scoreLimit) / 2,
-            //     });
-            //     break;
-            //   case 90:
-            //     await axios.patch(`/api/user/${currentUser.data.id}/score`, {
-            //       star:
-            //         parseInt(currentUser.data.star) +
-            //         Math.floor(totalScore - chapter.scoreLimit),
-            //     });
-            //     break;
-            //   case 100:
-            //     await axios.patch(`/api/user/${currentUser.data.id}/score`, {
-            //       star: parseInt(currentUser.data.star) + totalScore,
-            //     });
-            //     break;
-            //   default:
-            //     break;
-            // }
-          }
           if (nextChapterId != null) {
             await axios.put(
               `/api/courses/${courseId}/chapters/${nextChapterId}/progress`,
@@ -364,6 +293,15 @@ const Exam = ({
       }
       setFinishedExam(true);
       setQuestions([]);
+      if (totalScore >= chapter.scoreLimit) {
+        if (nextChapterId != null) {
+          setTimeout(function () {
+            // function code goes here
+          }, 10000);
+          router.push(`/`);
+          router.refresh();
+        }
+      }
     }
   };
   const setBookmark = (item: any) => {
