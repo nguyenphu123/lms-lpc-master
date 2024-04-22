@@ -108,7 +108,6 @@ export function DataTable<TData, TValue>({
                 <TableRow
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
-                  
                   className={cn(
                     "border-2",
                     row.index === 0
