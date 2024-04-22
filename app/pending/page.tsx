@@ -2,6 +2,7 @@ import { auth } from "@clerk/nextjs";
 import { redirect } from "next/navigation";
 import { BasicNavbar } from "./_component/course-navbar";
 import { db } from "@/lib/db";
+import "@/css/clock.css";
 import Image from "next/image";
 const StepTwo = async () => {
   const { sessionClaims }: any = auth();
@@ -13,9 +14,6 @@ const StepTwo = async () => {
   });
   if (userInfo == undefined) {
     return redirect("/sign-in");
-  }
-  if (userInfo != undefined && userInfo.status == "approved") {
-    return redirect("/");
   }
   return (
     <>
@@ -33,7 +31,7 @@ const StepTwo = async () => {
             Thank you for your submission. Your request is currently under
             review.
           </p>
-          <p>Please come back later.🫰</p>
+          <p className="mb-10">Please come back later.</p>
           {/* <p>
             Please contact your
             <a
@@ -52,8 +50,10 @@ const StepTwo = async () => {
             width={200}
             height={200}
           /> */}
-
-          <div className="relative w-full h-90 flex items-center justify-center rounded overflow-hidden mt-4">
+          <div className="flex justify-center items-center">
+            <div className="loader"></div>
+          </div>
+          {/* <div className="relative w-full h-90 flex items-center justify-center rounded overflow-hidden mt-4">
             <Image
               src="https://media.giphy.com/media/l3vR1tvIhCrrZsty0/giphy.gif"
               alt="blog"
@@ -61,7 +61,7 @@ const StepTwo = async () => {
               width={400}
               className="select-none object-cover rounded-md border-2 border-white shadow-md drop-shadow-md w-150 h-full"
             />
-          </div>
+          </div> */}
           {/* <SignOutButton /> */}
         </div>
       </div>
