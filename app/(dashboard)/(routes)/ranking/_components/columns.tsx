@@ -32,7 +32,7 @@ export const columns: ColumnDef<User>[] = [
             className="w-8 h-8 rounded-full mr-2"
           />
 
-          <div>{username}</div>
+          {order == 1 ? <div>{username}</div> : <div>{username}</div>}
         </div>
       );
     },
@@ -49,8 +49,14 @@ export const columns: ColumnDef<User>[] = [
   },
   {
     accessorKey: "star",
-    header: ({ column }) => {
-      return <span>Star</span>;
+    header: () => {
+      return <div>Star</div>;
+    },
+    cell: ({ row }) => {
+      const stars = row.original.star || 0;
+      const starString = stars + " ⭐";
+
+      return <div>{starString}</div>;
     },
   },
   // {
