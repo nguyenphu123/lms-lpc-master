@@ -136,6 +136,7 @@ const Slide = ({
           startDate: date,
         });
         router.push(`/courses/${courseId}/chapters/${nextChapterId}`);
+        router.refresh();
       } else {
         await axios.put(`/api/courses/${courseId}/progress`, {
           status: "finished",
@@ -149,10 +150,12 @@ const Slide = ({
         });
         setOnFinish(true);
         setHasCompleted("finished");
-        router.push(`/`);
+        // router.push(`/`);
+
         setTimeout(function () {
           // function code goes here
         }, 10000);
+        router.refresh();
         // if (onFinish) {
         //   router.push(`/`);
         // }
