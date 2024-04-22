@@ -109,7 +109,7 @@ export function DataTable<TData, TValue>({
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
                   className={cn(
-                    "border-slate-400 dark:border-slate-600 ",
+                    "border-slate-400 dark:border-slate-600",
                     row.index === 0
                       ? "bg-diamond"
                       : row.index === 1

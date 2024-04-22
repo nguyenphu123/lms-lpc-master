@@ -9,8 +9,23 @@ export const columns: ColumnDef<User>[] = [
     header: "Top",
     cell: ({ row }) => {
       const order = row.index + 1;
+      let colorClass = "";
 
-      return <div className={`font-bold`}>{order}</div>;
+      switch (order) {
+        case 1:
+          colorClass = "Blazing";
+          break;
+        case 2:
+          colorClass = "text-white";
+          break;
+        case 3:
+          colorClass = "text-white";
+          break;
+        default:
+          colorClass = "text-black dark:text-white";
+      }
+
+      return <div className={`font-bold ${colorClass}`}>{order}</div>;
     },
   },
   {
