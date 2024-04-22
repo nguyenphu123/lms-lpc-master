@@ -15,7 +15,7 @@ export async function PUT(
       return new NextResponse("Unauthorized", { status: 401 });
     }
     const year = new Date();
-    const date = new Date(year.getFullYear(), 6, 1).toISOString();
+    const date = new Date().toISOString();
     const userProgress = await db.classSessionRecord.upsert({
       where: {
         courseId_userId: {
