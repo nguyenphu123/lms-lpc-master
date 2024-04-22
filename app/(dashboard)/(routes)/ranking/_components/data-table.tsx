@@ -1,5 +1,7 @@
 "use client";
 
+import "@/css/ranking.css";
+
 import * as React from "react";
 import {
   ColumnDef,
@@ -25,6 +27,7 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { classNames } from "uploadthing/client";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -82,7 +85,10 @@ export function DataTable<TData, TValue>({
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
                   return (
-                    <TableHead key={header.id}>
+                    <TableHead
+                      key={header.id}
+                      className="bg-slate-200 dark:bg-slate-900"
+                    >
                       {header.isPlaceholder
                         ? null
                         : flexRender(
@@ -95,12 +101,21 @@ export function DataTable<TData, TValue>({
               </TableRow>
             ))}
           </TableHeader>
-          <TableBody>
+          <TableBody className="bg-gray-100 dark:bg-slate-800">
             {table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
                 <TableRow
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
+                  className={
+                    row.index === 0
+                      ? "bg-diamond"
+                      : row.index === 1
+                      ? "bg-gold"
+                      : row.index === 2
+                      ? "bg-silver"
+                      : ""
+                  }
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id}>

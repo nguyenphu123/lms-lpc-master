@@ -9,23 +9,8 @@ export const columns: ColumnDef<User>[] = [
     header: "Top",
     cell: ({ row }) => {
       const order = row.index + 1;
-      let colorClass = "";
 
-      switch (order) {
-        case 1:
-          colorClass = "text-yellow-500";
-          break;
-        case 2:
-          colorClass = "text-gray-500";
-          break;
-        case 3:
-          colorClass = "text-amber-900";
-          break;
-        default:
-          colorClass = "text-black";
-      }
-
-      return <div className={`font-bold ${colorClass}`}>{order}</div>;
+      return <div className={`font-bold`}>{order}</div>;
     },
   },
   {
@@ -47,11 +32,7 @@ export const columns: ColumnDef<User>[] = [
             className="w-8 h-8 rounded-full mr-2"
           />
 
-          {order == 1 ? (
-            <div className="Blazing">{username}</div>
-          ) : (
-            <div>{username}</div>
-          )}
+          <div>{username}</div>
         </div>
       );
     },
