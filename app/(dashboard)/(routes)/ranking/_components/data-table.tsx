@@ -28,6 +28,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { classNames } from "uploadthing/client";
+import { cn } from "@/lib/utils";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -107,7 +108,9 @@ export function DataTable<TData, TValue>({
                 <TableRow
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
-                  className={
+                  
+                  className={cn(
+                    "border-2",
                     row.index === 0
                       ? "bg-diamond"
                       : row.index === 1
@@ -115,7 +118,7 @@ export function DataTable<TData, TValue>({
                       : row.index === 2
                       ? "bg-silver"
                       : ""
-                  }
+                  )}
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id}>
