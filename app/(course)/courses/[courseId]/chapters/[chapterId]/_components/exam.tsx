@@ -60,7 +60,7 @@ const Exam = ({
     return () => {
       window.removeEventListener("beforeunload", alertUser);
     };
-  });
+  }, []);
   const alertUser = (e: any) => {
     if (finishedExam || questions.length == 0) {
     } else {
