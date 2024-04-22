@@ -14,6 +14,9 @@ const StepTwo = async () => {
   if (userInfo == undefined) {
     return redirect("/sign-in");
   }
+  if (userInfo != undefined && userInfo.status == "approved") {
+    return redirect("/");
+  }
   return (
     <>
       <div className="h-[80px] fixed inset-y-0 w-full z-50">
