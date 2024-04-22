@@ -32,7 +32,7 @@ export default function Exam({ chapter }: any) {
   >([]);
   const [textTitle, setTextTitle] = useState(chapter.title);
   const [timeLimit, setTimeLimit]: any = useState(chapter.timeLimit || 0);
-  const [passPercentage, setPassPercentage] = useState(chapter.scoreLimit || 0);
+  const [passPercentage, setPassPercentage] = useState(70);
   const [maxAsset, setMaxAsset] = useState(chapter.maxAsset || 3);
   const [waitTime, setWaitTime] = useState(chapter.waitTime || 1);
   useEffect(() => {
@@ -42,6 +42,7 @@ export default function Exam({ chapter }: any) {
       );
 
       setQuizList(questionList.data.Category);
+      setPassPercentage(chapter.scoreLimit);
     }
     loadQuestion();
   }, []);
