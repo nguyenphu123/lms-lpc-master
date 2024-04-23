@@ -66,7 +66,8 @@ export function DataTable<TData, TValue>({
     XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
     //let buffer = XLSX.write(workbook, { bookType: "xlsx", type: "buffer" });
     //XLSX.write(workbook, { bookType: "xlsx", type: "binary" });
-    XLSX.writeFile(workbook, `${title}.xlsx`);
+    const date = new Date().toISOString();
+    XLSX.writeFile(workbook, `${title}_${date}.xlsx`);
   }
   return (
     <div>

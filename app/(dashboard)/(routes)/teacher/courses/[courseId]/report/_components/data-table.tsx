@@ -58,12 +58,16 @@ export function DataTable<TData, TValue>({
     },
   });
   async function getSheetData() {
+    data.forEach((a: any) => {
+      delete a.imageUrl;
+    });
     const worksheet = XLSX.utils.json_to_sheet(data);
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
     //let buffer = XLSX.write(workbook, { bookType: "xlsx", type: "buffer" });
     //XLSX.write(workbook, { bookType: "xlsx", type: "binary" });
-    XLSX.writeFile(workbook, `${title}.xlsx`);
+    const date = new Date().toISOString();
+    XLSX.writeFile(workbook, `${title}_${date}.xlsx`);
   }
   return (
     <div>
