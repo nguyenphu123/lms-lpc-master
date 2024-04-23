@@ -1,5 +1,5 @@
 "use client";
- 
+
 import * as React from "react";
 import {
   ColumnDef,
@@ -26,13 +26,13 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import axios from "axios";
- 
+
 interface DataTableProps<TData, TValue> {
   title: string;
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
 }
- 
+
 export function DataTable<TData, TValue>({
   title,
   columns,
@@ -42,7 +42,7 @@ export function DataTable<TData, TValue>({
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
   );
- 
+
   const table = useReactTable({
     data,
     columns,
@@ -58,6 +58,9 @@ export function DataTable<TData, TValue>({
     },
   });
   async function getSheetData() {
+    data.forEach((a: any) => {
+      delete a.imageUrl;
+    });
     const worksheet = XLSX.utils.json_to_sheet(data);
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
@@ -78,7 +81,7 @@ export function DataTable<TData, TValue>({
           }
           className="max-w-sm"
         />
- 
+
         <Button onClick={() => getSheetData()}>
           <FileDown className="h-4 w-4 mr-2" />
           Export report

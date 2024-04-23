@@ -38,7 +38,18 @@ const ReportPage = async ({ params }: { params: { programId: string } }) => {
       },
     },
   });
-
+  const numberOfFinishedCourses = async (userId: any) => {
+    let count: number = 0;
+    let progress: any = await db.classSessionRecord.findMany({
+      where: {
+        userId: userId,
+      },
+    });
+    for (let i = 0; i < progress.length; i++) {
+      count = count + parseInt(progress[i].progress?.replace("%", "")) / 100;
+    }
+    return count;
+  };
   let data: any = [];
   for (let i = 0; i < userProgress.courseWithProgram.length; i++) {
     for (
@@ -60,27 +71,34 @@ const ReportPage = async ({ params }: { params: { programId: string } }) => {
           userProgress.courseWithProgram[i].course.ClassSessionRecord[j].user
             .Department.title,
         status:
-          userProgress.courseWithProgram[i].course.ClassSessionRecord.map(
-            (item: { status: string }) => item.status == "finished"
-          ).length == userProgress.courseWithProgram.length
+          (await numberOfFinishedCourses(
+            userProgress.courseWithProgram[i].course.ClassSessionRecord[j].user
+              .id
+          )) == userProgress.courseWithProgram.length
             ? "finished"
             : "studying",
         progress:
-          (userProgress.courseWithProgram[i].course.ClassSessionRecord.map(
-            (item: { status: string }) => item.status == "finished"
-          ).length /
+          ((await numberOfFinishedCourses(
+            userProgress.courseWithProgram[i].course.ClassSessionRecord[j].user
+              .id
+          )) /
             userProgress.courseWithProgram.length) *
-          100,
+            100 +
+          "%",
         // endDate: userProgress.ClassSessionRecord[i].endDate,
       };
 
-      if (data.length < 0 || data.indexOf(item.username) == -1) {
+      if (
+        data.length < 0 ||
+        data.map((item: any) => item.username).indexOf(item.username) == -1
+      ) {
         data.push(item);
       }
     }
 
     // let item = {};
   }
+
   return (
     <div className="p-6">
       <Link

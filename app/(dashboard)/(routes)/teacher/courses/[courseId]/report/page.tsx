@@ -19,7 +19,15 @@ const ReportPage = async ({ params }: { params: { courseId: string } }) => {
       id: params.courseId,
     },
     include: {
-      ClassSessionRecord: { include: { user: true } },
+      ClassSessionRecord: {
+        include: {
+          user: {
+            include: {
+              Department: true,
+            },
+          },
+        },
+      },
     },
   });
   let data: any = [];
@@ -28,7 +36,7 @@ const ReportPage = async ({ params }: { params: { courseId: string } }) => {
       imageUrl: userProgress.ClassSessionRecord[i].user.imageUrl,
       username: userProgress.ClassSessionRecord[i].user.username,
       email: userProgress.ClassSessionRecord[i].user.email,
-      department: userProgress.ClassSessionRecord[i].user.department,
+      department: userProgress.ClassSessionRecord[i].user.Department.title,
       status: userProgress.ClassSessionRecord[i].status,
       progress: userProgress.ClassSessionRecord[i].progress,
       endDate: userProgress.ClassSessionRecord[i].endDate,
