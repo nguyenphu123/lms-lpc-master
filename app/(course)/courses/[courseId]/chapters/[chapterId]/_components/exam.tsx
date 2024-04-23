@@ -197,8 +197,12 @@ const Exam = ({
       "chooseAnswer" in question &&
       question["chooseAnswer"].includes(option)
     ) {
+      const updatedAnswers = [...selectedAnswers];
       let indexOf = question["chooseAnswer"].indexOf(option);
       question["chooseAnswer"].splice(indexOf, 1);
+      updatedAnswers[currentQuestion] = question;
+
+      setSelectedAnswers(updatedAnswers);
     } else {
       // Lưu câu trả lời đã chọn vào state
       if (question.type == "singleChoice") {
@@ -304,12 +308,15 @@ const Exam = ({
       }
     }
   };
-  const setBookmark = (item: any) => {
-    if ("bookmark" in item && item["bookmark"] == true) {
-      item["bookmark"] = false;
+  const setBookmark = (index: any) => {
+    let newArr = [...questions];
+    if ("bookmark" in newArr[index] && newArr[index]["bookmark"] == true) {
+      newArr[index]["bookmark"] = false;
     } else {
-      item["bookmark"] = true;
+      newArr[index]["bookmark"] = true;
     }
+
+    setQuestions(newArr);
   };
   // Hàm xử lý khi người dùng chọn nút "Previous"
   const handlePreviousClick = () => {
@@ -509,7 +516,10 @@ const Exam = ({
                 {currentQuestion +
                   1 +
                   ". " +
-                  questions[currentQuestion].question}
+                  questions[currentQuestion].question}{" "}
+                {questions[currentQuestion].type == "multiChoice"
+                  ? "(Multiple choices)"
+                  : ""}
                 <div className="ml-auto">
                   <BookmarkCheck
                     className={`${
@@ -518,7 +528,7 @@ const Exam = ({
                         : ""
                     }`}
                     cursor={"pointer"}
-                    onClick={() => setBookmark(questions[currentQuestion])}
+                    onClick={() => setBookmark(currentQuestion)}
                   />
                 </div>
               </p>
@@ -579,9 +589,11 @@ const Exam = ({
                       ? "bg-yellow-400"
                       : item?.chooseAnswer?.length > 0 && "chooseAnswer" in item
                       ? "bg-green-600"
-                      : "bg-gray-500"
+                      : ""
                   }
-                    ${currentQuestion === index ? "bg-blue-700" : ""}`}
+                    ${
+                      currentQuestion == index ? "bg-blue-700" : "bg-gray-500"
+                    }`}
                 >
                   {index + 1}
                 </button>
