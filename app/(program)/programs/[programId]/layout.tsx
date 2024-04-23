@@ -21,51 +21,15 @@ const ProgramLayout = async ({
     return redirect("/");
   }
 
-  const program: any = await db.program.findUnique({
-    where: {
-      id: params.programId,
-      courseWithProgram: {
-        every: {
-          programId: params.programId,
-        },
-      },
-    },
-    include: {
-      courseWithProgram: {
-        include: {
-          course: {
-            include: {
-              Module: {
-                where: {
-                  isPublished: true,
-                },
-                include: {
-                  UserProgress: {
-                    where: {
-                      userId,
-                    },
-                  },
-                },
-                orderBy: {
-                  position: "asc",
-                },
-              },
-            },
-          },
-        },
-      },
-    },
-  });
-
-  // const progressCount = await getProgress(userId, course.id);
-
   return (
     <div className="h-full">
       <div className="h-[80px] fixed inset-y-0 w-full z-50">
         <CourseNavbar userId={userId} />
       </div>
 
-      <main className="md:pl-20 pr-20 pt-[80px] h-full overflow-x-hidden">{children}</main>
+      <main className="md:pl-20 pr-20 pt-[80px] h-full overflow-x-hidden">
+        {children}
+      </main>
     </div>
   );
 };

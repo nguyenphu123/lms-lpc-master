@@ -8,7 +8,7 @@ const ProgramIdPage = async ({ params }: { params: { programId: string } }) => {
     where: {
       id: params.programId,
       courseWithProgram: {
-        every: {
+        some: {
           programId: params.programId,
         },
       },
@@ -20,6 +20,7 @@ const ProgramIdPage = async ({ params }: { params: { programId: string } }) => {
             include: {
               ClassSessionRecord: true,
               Module: true,
+              BookMark: true,
             },
           },
         },
