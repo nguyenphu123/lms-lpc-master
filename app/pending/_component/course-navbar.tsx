@@ -9,6 +9,7 @@ interface CourseNavbarProps {
 export const BasicNavbar = ({ userId }: CourseNavbarProps) => {
   const router = useRouter();
   const { channel, ably } = useChannel("user:approval", (message: any) => {
+    console.log(message);
     if (message.data.type == "user-approval") {
       if (message.data.userId == userId && message.data.status == "approved") {
         router.push(`/`);
