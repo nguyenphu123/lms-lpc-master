@@ -14,7 +14,7 @@ export default authMiddleware({
     "/api/authLDAP",
     "/api/notifications",
     "/api/signup",
-    "https://rest.ably.io/**",
+    // "https://rest.ably.io/**",
   ],
   // debug: true,
 });
