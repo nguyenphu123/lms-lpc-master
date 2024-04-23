@@ -22,7 +22,11 @@ export const MyCourse = ({ data }: MyCourseProps) => {
             data.ClassSessionRecord.map((course: any) => (
               <div key={course.course.id}>
                 <h3 className="text-lg font-semibold mb-4">My Course</h3>
-                <div className="flex flex-col md:flex-row md:items-center">
+
+                <Link
+                  className="flex flex-col md:flex-row md:items-center"
+                  href={`/courses/${course.course.id}`}
+                >
                   <div className="relative w-full md:w-1/3 aspect-video rounded-md overflow-hidden">
                     <Image
                       fill
@@ -55,7 +59,7 @@ export const MyCourse = ({ data }: MyCourseProps) => {
                       </p>
                     )}
                   </div>
-                </div>
+                </Link>
               </div>
             ))
           ) : (

@@ -93,7 +93,7 @@ function CreatePage() {
               />
 
               <div className="flex items-center gap-x-2">
-                <Link href="/">
+                <Link href="/teacher/programs">
                   <Button type="button" variant="ghost">
                     Cancel
                   </Button>

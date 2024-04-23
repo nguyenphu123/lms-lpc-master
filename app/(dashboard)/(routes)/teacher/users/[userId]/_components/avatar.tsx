@@ -7,7 +7,7 @@ const Avatar = ({ imageUrl }: any) => {
       width={130}
       height={130}
       className="inline object-cover mr-2 rounded-full"
-      src={imageUrl}
+      src={imageUrl === null ? "/figure_605.png" : imageUrl}
       alt="Profile image"
     />
   );
