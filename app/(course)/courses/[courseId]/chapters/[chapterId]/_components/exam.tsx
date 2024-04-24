@@ -76,14 +76,7 @@ const Exam = ({
     } else {
       const { finalScore }: any = calculateScore();
       const totalScore = finalScore;
-      alert(
-        `Kết thúc bài kiểm tra! Điểm của bạn là ${finalScore}%\n` +
-          `${
-            totalScore >= chapter.scoreLimit
-              ? "Chúc mừng bạn đã pass"
-              : "Bạn đã không vượt qua bài test"
-          }`
-      );
+
       if (!finishedExam) {
         setMaxAsset(maxAsset - 1);
         const date = new Date().toISOString();
@@ -155,14 +148,10 @@ const Exam = ({
   // }, []);
   const accept = async () => {
     if (maxAsset == 0) {
-      alert(
-        `Sorry but you have no asset left! please wait for ${
-          chapter.waitTime
-        } day${chapter.waitTime > 1 ? "s" : ""} to get a reset!`
-      );
     } else {
       setFinalScore(0);
       setFinishedExam(false);
+      setOnFinish(false);
       setTimeLimit(chapter.timeLimit);
       setCurrentQuestion(0);
       setSelectedAnswers([]);
@@ -238,14 +227,6 @@ const Exam = ({
       // Nếu đã là câu hỏi cuối cùng, kiểm tra điểm số và hiển thị kết quả
       const { finalScore }: any = calculateScore();
       const totalScore = finalScore;
-      alert(
-        `Kết thúc bài kiểm tra! Điểm của bạn là ${finalScore}\n` +
-          `${
-            totalScore >= chapter.scoreLimit
-              ? "Chúc mừng bạn đã pass"
-              : "Bạn đã không vượt qua bài test"
-          }`
-      );
 
       if (!finishedExam) {
         setMaxAsset(maxAsset - 1);
@@ -428,22 +409,27 @@ const Exam = ({
             Make sure you are in a quiet environment to avoid distractions .
           </li>
         </ul>
-        <AlertDialog
-          open={onFinish && finishedExam && finalScore >= chapter.scoreLimit}
-        >
+        <AlertDialog open={onFinish && finishedExam}>
           <AlertDialogContent className="AlertDialogContent">
             <AlertDialogTitle className="AlertDialogTitle">
-              {nextChapterId != null
-                ? "Congratulation on finishing this exam and unlocking the next chapter."
-                : "Congratulation on finishing this Course, Would you like to find another course?"}
-
-              <Image
-                src="https://tenor.com/view/blue-archive-hoshino-gif-5565505919833568954"
-                alt="blog"
-                height={300}
-                width={400}
-                className="select-none object-cover rounded-md border-2 border-white shadow-md drop-shadow-md w-150 h-full"
-              />
+              `Your score is ${finalScore}%\n` + `$
+              {finalScore >= chapter.scoreLimit
+                ? nextChapterId != null
+                  ? "Congratulation on finishing this exam and unlocking the next chapter."
+                  : "Congratulation on finishing this Course, Would you like to find another course?"
+                : "Sorry you have failed, please try again"}
+              `
+              {finalScore >= chapter.scoreLimit ? (
+                <Image
+                  src="https://tenor.com/view/blue-archive-hoshino-gif-5565505919833568954"
+                  alt="blog"
+                  height={300}
+                  width={400}
+                  className="select-none object-cover rounded-md border-2 border-white shadow-md drop-shadow-md w-150 h-full"
+                />
+              ) : (
+                <></>
+              )}
             </AlertDialogTitle>
             <AlertDialogDescription className="AlertDialogDescription"></AlertDialogDescription>
             <div
@@ -453,14 +439,31 @@ const Exam = ({
                 justifyContent: "flex-end",
               }}
             >
-              <AlertDialogCancel onClick={() => setOnFinish(false)}>
-                Stay
-              </AlertDialogCancel>
-              <AlertDialogAction asChild>
-                <button className="Button red" onClick={() => onLeaving()}>
-                  {nextChapterId != null ? "To next chapter" : "Leave"}
-                </button>
-              </AlertDialogAction>
+              {finalScore >= chapter.scoreLimit ? (
+                <AlertDialogCancel onClick={() => setOnFinish(false)}>
+                  Stay
+                </AlertDialogCancel>
+              ) : (
+                <AlertDialogCancel onClick={() => accept()}>
+                  Retake
+                  {maxAsset == 0 ? (
+                    <span className="text-red-500">
+                      Sorry, you have reached max asset on this test
+                    </span>
+                  ) : (
+                    <></>
+                  )}
+                </AlertDialogCancel>
+              )}
+              {finalScore >= chapter.scoreLimit ? (
+                <AlertDialogAction asChild>
+                  <button className="Button red" onClick={() => onLeaving()}>
+                    {nextChapterId != null ? "To next chapter" : "Leave"}
+                  </button>
+                </AlertDialogAction>
+              ) : (
+                <></>
+              )}
             </div>
           </AlertDialogContent>
         </AlertDialog>
@@ -506,7 +509,16 @@ const Exam = ({
       )}
       <AlertDialog>
         <AlertDialogTrigger className="flex justify-center items-center">
-          <div className="font-bold ml-2 rounded-lg">👉Take an exam</div>
+          <div className="font-bold ml-2 rounded-lg">
+            👉Take an exam{" "}
+            {maxAsset == 0 ? (
+              <span className="text-red-500">
+                Sorry, you have reached max asset on this test
+              </span>
+            ) : (
+              <></>
+            )}
+          </div>
         </AlertDialogTrigger>
 
         <AlertDialogContent className="AlertDialogContent">
