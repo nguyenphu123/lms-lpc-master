@@ -16,6 +16,7 @@ import { useRouter } from "next/navigation";
 import { useConfettiStore } from "@/hooks/use-confetti-store";
 import shuffleArray from "@/lib/shuffle";
 import DoughnutChart from "@/components/ui/doughnut-chart";
+import Image from "next/image";
 const Exam = ({
   chapter,
   nextChapterId,
@@ -33,6 +34,7 @@ const Exam = ({
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [examMaxScore, setExamMaxSocre] = useState(0);
   const [selectedAnswers, setSelectedAnswers]: Array<any> = useState([]);
+  const [onFinish, setOnFinish] = useState(false);
   const confetti = useConfettiStore();
 
   useEffect(() => {
@@ -131,6 +133,7 @@ const Exam = ({
         }
       }
       setFinishedExam(true);
+      setOnFinish(true);
       setQuestions([]);
       if (totalScore >= chapter.scoreLimit) {
         if (nextChapterId != null) {
@@ -296,6 +299,7 @@ const Exam = ({
         }
       }
       setFinishedExam(true);
+      setOnFinish(true);
       setQuestions([]);
       if (totalScore >= chapter.scoreLimit) {
         if (nextChapterId != null) {
@@ -396,7 +400,15 @@ const Exam = ({
     setExamMaxSocre(maxScore);
     return { finalScore };
   };
-
+  const onLeaving = () => {
+    setOnFinish(false);
+    if (nextChapterId != null) {
+      router.push(`/courses/${courseId}/chapters/${nextChapterId}`);
+    } else {
+      router.push(`/`);
+    }
+    router.refresh();
+  };
   return questions.length == 0 ? (
     <>
       <div className="bg-gray-100 dark:bg-gray-900 p-6 rounded-lg">
@@ -416,6 +428,42 @@ const Exam = ({
             Make sure you are in a quiet environment to avoid distractions .
           </li>
         </ul>
+        <AlertDialog
+          open={onFinish && finishedExam && finalScore >= chapter.scoreLimit}
+        >
+          <AlertDialogContent className="AlertDialogContent">
+            <AlertDialogTitle className="AlertDialogTitle">
+              {nextChapterId != null
+                ? "Congratulation on finishing this exam and unlocking the next chapter."
+                : "Congratulation on finishing this Course, Would you like to find another course?"}
+
+              <Image
+                src="https://tenor.com/view/blue-archive-hoshino-gif-5565505919833568954"
+                alt="blog"
+                height={300}
+                width={400}
+                className="select-none object-cover rounded-md border-2 border-white shadow-md drop-shadow-md w-150 h-full"
+              />
+            </AlertDialogTitle>
+            <AlertDialogDescription className="AlertDialogDescription"></AlertDialogDescription>
+            <div
+              style={{
+                display: "flex",
+                gap: 25,
+                justifyContent: "flex-end",
+              }}
+            >
+              <AlertDialogCancel onClick={() => setOnFinish(false)}>
+                Stay
+              </AlertDialogCancel>
+              <AlertDialogAction asChild>
+                <button className="Button red" onClick={() => onLeaving()}>
+                  {nextChapterId != null ? "To next chapter" : "Leave"}
+                </button>
+              </AlertDialogAction>
+            </div>
+          </AlertDialogContent>
+        </AlertDialog>
         <div>
           <p className="text-lg mb-4">Include:</p>
           <ul className="list-disc pl-5 mb-4">
