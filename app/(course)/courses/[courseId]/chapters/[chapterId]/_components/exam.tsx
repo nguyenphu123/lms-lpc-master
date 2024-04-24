@@ -56,7 +56,6 @@ const Exam = ({
       );
       setFinalScore(getLatestTestResult.data?.UserProgress[0]?.score);
       setCategoryList(getLatestTestResult.data?.Category);
-      // console.log(shuffleArray(getLatestTestResult.data?.ExamList));
     };
     getHistory();
     window.addEventListener("beforeunload", alertUser);
@@ -65,7 +64,7 @@ const Exam = ({
     };
   }, []);
   const alertUser = (e: any) => {
-    if (finishedExam || questions.length == 0) {
+    if (onFinish || questions.length == 0) {
     } else {
       e.preventDefault();
       e.returnValue = "";
@@ -125,7 +124,7 @@ const Exam = ({
           }
         }
       }
-      setFinishedExam(true);
+
       setOnFinish(true);
       setQuestions([]);
       if (totalScore >= chapter.scoreLimit) {
@@ -147,35 +146,27 @@ const Exam = ({
   //   loadQuestion();
   // }, []);
   const accept = async () => {
-    if (maxAsset == 0) {
-    } else {
-      setFinalScore(0);
-      setFinishedExam(false);
-      setOnFinish(false);
-      setTimeLimit(chapter.timeLimit);
-      setCurrentQuestion(0);
-      setSelectedAnswers([]);
-      if (!finishedExam) {
-        let getLatestTestResult: any = await axios.get(
-          `/api/courses/${courseId}/chapters/${chapter.id}/category/exam`
-        );
-        setFinishedExam(
-          getLatestTestResult.data?.UserProgress[0]?.status == "finished"
-            ? true
-            : false
-        );
-        let questionList = await axios.get(
-          `/api/courses/${chapter.courseId}/chapters/${chapter.id}/category/exam/shuffle`
-        );
-
-        setQuestions(shuffleArray(questionList.data.ExamList));
-      } else {
-        let questionList = await axios.get(
-          `/api/courses/${chapter.courseId}/chapters/${chapter.id}/category/exam/shuffle`
-        );
-
-        setQuestions(shuffleArray(questionList.data.ExamList));
+    setFinalScore(0);
+    // setFinishedExam(false);
+    setOnFinish(false);
+    setTimeLimit(chapter.timeLimit);
+    setCurrentQuestion(0);
+    setSelectedAnswers([]);
+    if (!finishedExam) {
+      if (maxAsset == 0) {
+        return;
       }
+      let questionList = await axios.get(
+        `/api/courses/${chapter.courseId}/chapters/${chapter.id}/category/exam/shuffle`
+      );
+
+      setQuestions(shuffleArray(questionList.data.ExamList));
+    } else {
+      let questionList = await axios.get(
+        `/api/courses/${chapter.courseId}/chapters/${chapter.id}/category/exam/shuffle`
+      );
+
+      setQuestions(shuffleArray(questionList.data.ExamList));
     }
   };
   // const cancel = () => {
@@ -279,7 +270,7 @@ const Exam = ({
           }
         }
       }
-      setFinishedExam(true);
+
       setOnFinish(true);
       setQuestions([]);
       if (totalScore >= chapter.scoreLimit) {
@@ -409,23 +400,23 @@ const Exam = ({
             Make sure you are in a quiet environment to avoid distractions .
           </li>
         </ul>
-        <AlertDialog open={onFinish && finishedExam}>
+        <AlertDialog open={onFinish}>
           <AlertDialogContent className="AlertDialogContent">
             <AlertDialogTitle className="AlertDialogTitle">
-              `Your score is ${finalScore}%\n` + `$
-              {finalScore >= chapter.scoreLimit
+              Your score is {finalScore}
+              <br />
+              {finalScore >= chapter.scoreLimit || finishedExam
                 ? nextChapterId != null
-                  ? "Congratulation on finishing this exam and unlocking the next chapter."
-                  : "Congratulation on finishing this Course, Would you like to find another course?"
+                  ? "Congratulation on finishing this exam."
+                  : "Would you like to find another course?"
                 : "Sorry you have failed, please try again"}
-              `
-              {finalScore >= chapter.scoreLimit ? (
+              {finalScore >= chapter.scoreLimit || finishedExam ? (
                 <Image
-                  src="https://tenor.com/view/blue-archive-hoshino-gif-5565505919833568954"
+                  src="/congratulation.jpg"
                   alt="blog"
-                  height={300}
-                  width={400}
-                  className="select-none object-cover rounded-md border-2 border-white shadow-md drop-shadow-md w-150 h-full"
+                  height={200}
+                  width={300}
+                  className="select-none object-cover rounded-md border-2 border-white shadow-md drop-shadow-md"
                 />
               ) : (
                 <></>
@@ -439,7 +430,7 @@ const Exam = ({
                 justifyContent: "flex-end",
               }}
             >
-              {finalScore >= chapter.scoreLimit ? (
+              {finalScore >= chapter.scoreLimit || finishedExam ? (
                 <AlertDialogCancel onClick={() => setOnFinish(false)}>
                   Stay
                 </AlertDialogCancel>
@@ -455,7 +446,7 @@ const Exam = ({
                   )}
                 </AlertDialogCancel>
               )}
-              {finalScore >= chapter.scoreLimit ? (
+              {finalScore >= chapter.scoreLimit || finishedExam ? (
                 <AlertDialogAction asChild>
                   <button className="Button red" onClick={() => onLeaving()}>
                     {nextChapterId != null ? "To next chapter" : "Leave"}

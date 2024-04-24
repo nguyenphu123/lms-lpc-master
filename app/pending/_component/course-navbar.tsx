@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import { NavbarRoutesPending } from "@/components/navbar-routes-pending";
 import { useChannel } from "ably/react";
 import { useRouter } from "next/navigation";
@@ -9,7 +9,6 @@ interface CourseNavbarProps {
 export const BasicNavbar = ({ userId }: CourseNavbarProps) => {
   const router = useRouter();
   const { channel, ably } = useChannel("user:approval", (message: any) => {
-    console.log(message);
     if (message.data.type == "user-approval") {
       if (message.data.userId == userId && message.data.status == "approved") {
         router.push(`/`);

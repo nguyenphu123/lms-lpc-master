@@ -71,8 +71,7 @@ const CourseForm = (
     let availibleCourses = await axios.get(`/api/courses/available`);
     setAvailableCourses(availibleCourses.data);
   }
-  //   console.log(programOwnCourses);
-  //   console.log(availibleCourses);
+
   return (
     <div className="mt-6 border bg-slate-100 rounded-md p-4 grid grid-cols-2 gap-4 text-black dark:bg-slate-950">
       <div>

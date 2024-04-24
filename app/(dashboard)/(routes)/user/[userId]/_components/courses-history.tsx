@@ -7,7 +7,7 @@ const Avatar = (userId: any) => {
   useEffect(() => {
     async function loadCourses() {
       let courseList = await axios.get(`/api/user/${userId}`);
-      // console.log(questionList.data);
+
       setCourses(courseList.data);
     }
     loadCourses();

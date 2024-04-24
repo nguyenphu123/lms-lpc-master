@@ -59,7 +59,7 @@ export const ContentForm = ({ courseId, moduleId }: AttachmentFormProps) => {
       let contentList = await axios.get(
         `/api/courses/${courseId}/chapters/${moduleId}/slide`
       );
-      // console.log(questionList.data);
+
       if (contentList.data.length == 0) {
       } else {
         setCurrentTab(contentList.data[0].id);

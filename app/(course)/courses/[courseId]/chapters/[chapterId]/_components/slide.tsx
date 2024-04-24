@@ -183,7 +183,7 @@ const Slide = ({
               Congratulation on finishing this Course, Would you like to find
               another course?
               <Image
-                src="https://tenor.com/view/blue-archive-hoshino-gif-5565505919833568954"
+                src="/congratulation.jpg"
                 alt="blog"
                 height={300}
                 width={400}

@@ -39,7 +39,7 @@ export const DepartmentForm = ({ initialData, programId, department }: any) => {
   const [departmentList, setDepartmentList] = useState(
     initialData.ProgramOnDepartment
   );
-  // console.log(departmentList);
+
   const toggleEdit = () => setIsEditing((current) => !current);
 
   const router = useRouter();

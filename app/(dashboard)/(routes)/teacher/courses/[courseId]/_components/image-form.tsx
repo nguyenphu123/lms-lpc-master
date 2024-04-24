@@ -58,7 +58,6 @@ export const ImageForm = ({ initialData, courseId }: ImageFormProps) => {
           },
         }
       );
-      console.log(courseId as string);
 
       await axios.patch(`/api/courses/${courseId as string}`, {
         imageUrl: `${process.env.NEXT_PUBLIC_ACCOUNT_URL as string}/Course/${

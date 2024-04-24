@@ -81,8 +81,7 @@ const SearchPage = async ({ searchParams }: SearchPageProps) => {
       },
     },
   });
-  // console.log(recommendCourses);
-  // console.log(allCourses);
+
   let courses = recommendCourses?.CourseOnDepartment || [];
   for (let i = 0; i < allCourses.length; i++) {
     let newItem = {
@@ -147,7 +146,7 @@ const SearchPage = async ({ searchParams }: SearchPageProps) => {
     userId,
     ...searchParams,
   });
-  // console.log(courses);
+
   return (
     <>
       <div className="px-6 pt-6 md:hidden md:mb-0 block">

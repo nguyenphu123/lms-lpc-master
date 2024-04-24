@@ -26,7 +26,7 @@
 // }: ChaptersListProps) => {
 //   const [isMounted, setIsMounted] = useState(false);
 //   const [chapters, setChapters] = useState(items);
-//   console.log(items);
+
 //   useEffect(() => {
 //     setIsMounted(true);
 //   }, []);

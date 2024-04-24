@@ -24,7 +24,7 @@ export const CourseSidebar = async (
   if (!userId) {
     return redirect("/");
   }
-  console.log(course.Module)
+
   // const purchase = await db.purchase.findUnique({
   //   where: {
   //     userId_courseId: {

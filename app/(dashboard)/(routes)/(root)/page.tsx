@@ -157,8 +157,6 @@ export default async function Dashboard() {
       ClassSessionRecord: true,
     },
   });
-  // console.log(myActivity);
-  // console.log(courses);
 
   let completedCourse: any = await db.classSessionRecord.findMany({
     where: {

@@ -21,7 +21,7 @@ export async function POST(req: Request) {
     //   };
 
     //   const entries = await client.search("DC=lp,DC=local", options);
-    //   console.log(entries);
+
     //   result = entries[0].mail == emailAddress ? true : false;
     // } catch (e) {
     //   console.log(e);
