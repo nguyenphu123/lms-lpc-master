@@ -36,8 +36,10 @@ export default async function Dashboard() {
     },
   });
   for (let i = 0; i < examList.length; i++) {
-    const yesterday = new Date();
-    yesterday.setDate(yesterday.getDate() - examList[i].waitTime);
+    const yesterday = new Date(
+      new Date().setDate(new Date().getDate() - examList[i].waitTime)
+    );
+
     const yesterdayIsoString = yesterday.toISOString();
 
     await db.userProgress.updateMany({
