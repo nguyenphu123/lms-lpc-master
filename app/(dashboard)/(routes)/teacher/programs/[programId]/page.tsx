@@ -119,17 +119,17 @@ const ProgramIdPage = async ({ params }: { params: { programId: string } }) => {
               <CourseForm programId={program.id} />
             </div>
 
-            {/* <div>
+            <div>
               <div className="flex items-center gap-x-2">
                 <IconBadge icon={ListChecks} />
-                <h2 className="text-xl">Course chapters</h2>
+                <h2 className="text-xl">Assign department</h2>
               </div>
               <DepartmentForm
                 initialData={program}
                 programId={program.id}
                 department={department}
               />
-            </div> */}
+            </div>
           </div>
         </div>
       </div>

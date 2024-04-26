@@ -8,6 +8,7 @@ export async function PATCH(
   { params }: { params: { programId: string } }
 ) {
   try {
+    const date = new Date().toISOString();
     const { userId } = auth();
     const { departmentList }: any = await req.json();
     if (!userId) {
@@ -30,6 +31,21 @@ export async function PATCH(
             courseId: getAllCourseInProgram[i].courseId,
             departmentId: departmentList[j].id,
           },
+        });
+        const getUserFromDepartment = await db.user.findMany({
+          where: {
+            departmentId: departmentList[j].id,
+          },
+        });
+        await db.classSessionRecord.createMany({
+          data: getUserFromDepartment.map((user) => ({
+            userId: user.id,
+            courseId: getAllCourseInProgram[i].courseId,
+            progress: "0%",
+            status: "studying",
+            startDate: date,
+          })),
+          skipDuplicates: true,
         });
       }
     }
