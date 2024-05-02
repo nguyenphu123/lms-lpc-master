@@ -29,7 +29,7 @@ const ProgramIdPage = async ({ params }: { params: { programId: string } }) => {
       },
     },
   });
-  if (program != null) {
+  if (program == null) {
     return (
       <div className="container mx-auto p-8">
         <Link
