@@ -141,7 +141,11 @@ const SearchPage = async ({ searchParams }: SearchPageProps) => {
   //   },
   // });
 
-  let programs = await db.program.findMany({});
+  let programs = await db.program.findMany({
+    where: {
+      isPublished: true,
+    },
+  });
   const courses1: any = await getCourses({
     userId,
     ...searchParams,
