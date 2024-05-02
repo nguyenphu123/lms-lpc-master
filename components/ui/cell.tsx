@@ -18,26 +18,19 @@ import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "@clerk/nextjs";
-import { useChannel } from "ably/react";
+
 export const Cell = ({ row }: any) => {
   const { id, status, role } = row.original;
   const router = useRouter();
   const { userId }: any = useAuth();
-  const { channel, ably } = useChannel("user:approval", (message) => {});
+
   async function onChangeStatus(id: string, status: string): Promise<void> {
     let values = {
       status: status == "approved" ? "pending" : "approved",
     };
 
     await axios.patch(`/api/user/${id}/status`, values);
-    channel.publish({
-      name: "user-approval",
-      data: {
-        type: "status-change",
-        userId: id,
-        status: status,
-      },
-    });
+
     router.refresh();
   }
   async function onDelete(id: string): Promise<void> {

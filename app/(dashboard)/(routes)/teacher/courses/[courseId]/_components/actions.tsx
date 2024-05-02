@@ -26,7 +26,7 @@ export const Actions = ({
   const router = useRouter();
   const confetti = useConfettiStore();
   const [isLoading, setIsLoading] = useState(false);
-  const { channel, ably } = useChannel("course:sendCourse", (message) => {});
+  const { channel, ably } = useChannel("course", (message) => {});
   const onClick = async () => {
     try {
       setIsLoading(true);
@@ -38,7 +38,7 @@ export const Actions = ({
         await axios.patch(`/api/courses/${courseId}/publish`);
         toast.success("Course published");
         channel.publish({
-          name: "chat-message",
+          name: "course",
           data: {
             type: "course-publish",
             message: `<div style="border: 1px solid #ccc; border-radius: 10px; padding: 10px;"><strong>${title}</strong> has been published 🎉🎉🎉</div><br/>`,

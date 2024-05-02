@@ -11,12 +11,10 @@ import { useChannel } from "ably/react";
 import Link from "next/link";
 export const Notification = () => {
   const [notifications, setNotifications]: any = useState([]);
-  const { channel, ably } = useChannel("course:sendCourse", (message: any) => {
+  const { channel, ably } = useChannel("course", (message: any) => {
     const history = notifications.slice(-199);
 
-    if (message.data.type == "course-publish") {
-      setNotifications([...history, message]);
-    }
+    setNotifications([...history, message]);
   });
   return (
     <div>
