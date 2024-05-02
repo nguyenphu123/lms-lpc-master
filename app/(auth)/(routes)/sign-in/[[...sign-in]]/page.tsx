@@ -161,6 +161,7 @@ export default function Page() {
             id="email"
             name="email"
             type="email"
+            placeholder="@lp.com.vn"
             className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring focus:ring-blue-400"
           />
         </div>
@@ -173,6 +174,7 @@ export default function Page() {
             id="password"
             name="password"
             type="password"
+            placeholder="******"
             className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring focus:ring-blue-400"
           />
         </div>
