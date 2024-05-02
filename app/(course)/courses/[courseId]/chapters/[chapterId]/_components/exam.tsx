@@ -78,7 +78,7 @@ const Exam = ({
 
       if (!finishedExam) {
         setMaxAsset(maxAsset - 1);
-        const date = new Date().toISOString();
+        const date = new Date();
         await axios.put(
           `/api/courses/${courseId}/chapters/${chapter.id}/progress`,
           {
@@ -221,7 +221,7 @@ const Exam = ({
 
       if (!finishedExam) {
         setMaxAsset(maxAsset - 1);
-        const date = new Date().toISOString();
+        const date = new Date();
 
         await axios.put(
           `/api/courses/${courseId}/chapters/${chapter.id}/progress`,

@@ -19,7 +19,7 @@ export async function PATCH(
         courseId: params.courseId,
       },
     });
-    const date = new Date().toISOString();
+    const date = new Date();
     for (let i = 0; i < departmentList.length; i++) {
       if (departmentList[i].isEnrolled) {
         const updateCourse = await db.courseOnDepartment.create({

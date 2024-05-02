@@ -15,7 +15,7 @@ export async function PATCH(
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
-    const date = new Date().toISOString();
+    const date = new Date();
     for (const student of studentList) {
       if (student.isEnrolled) {
         await db.classSessionRecord.upsert({

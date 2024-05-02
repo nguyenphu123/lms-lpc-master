@@ -15,7 +15,7 @@ export async function PUT(
       return new NextResponse("Unauthorized", { status: 401 });
     }
     const year = new Date();
-    const date = new Date().toISOString();
+    const date = new Date();
     const userProgress = await db.userProgress.upsert({
       where: {
         moduleId_userId: {
@@ -59,7 +59,7 @@ export async function GET(
       return new NextResponse("Unauthorized", { status: 401 });
     }
     let lastDay: any = Date.now() - 24 * 60 * 60 * 1000;
-    lastDay = new Date(lastDay).toISOString();
+    lastDay = new Date(lastDay);
     const userProgress = await db.userProgress.findMany({
       where: {
         userId,

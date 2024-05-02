@@ -77,7 +77,7 @@ const Slide = ({
       setCurrentSlide(currentSlide + 1);
       setDoc(slide[currentSlide].fileUrl.replace(" ", "%20"));
     } else {
-      const date = new Date().toISOString();
+      const date = new Date();
 
       await axios.put(
         `/api/courses/${courseId}/chapters/${chapter.id}/progress`,
@@ -102,7 +102,7 @@ const Slide = ({
         router.push(`/`);
       }
     } else {
-      const date = new Date().toISOString();
+      const date = new Date();
       if (chapter.title == "intro") {
       } else {
         await axios.put(

@@ -8,7 +8,7 @@ export async function PATCH(
   { params }: { params: { programId: string } }
 ) {
   try {
-    const date = new Date().toISOString();
+    const date = new Date();
     const { userId } = auth();
     const { departmentList }: any = await req.json();
     if (!userId) {

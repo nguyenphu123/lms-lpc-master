@@ -40,13 +40,13 @@ export default async function Dashboard() {
       new Date().setDate(new Date().getDate() - examList[i].waitTime)
     );
 
-    const yesterdayIsoString = yesterday.toISOString();
-
     await db.userProgress.updateMany({
       where: {
         userId: sessionClaims.userId,
         status: "studying",
-        endDate: yesterdayIsoString,
+        endDate: {
+          gte: yesterday,
+        },
       },
 
       data: {
