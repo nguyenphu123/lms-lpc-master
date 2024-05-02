@@ -13,10 +13,8 @@ import {
   getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
+  PaginationState,
 } from "@tanstack/react-table";
-import Link from "next/link";
-import { PlusCircle } from "lucide-react";
-
 import {
   Table,
   TableBody,
@@ -27,7 +25,6 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { classNames } from "uploadthing/client";
 import { cn } from "@/lib/utils";
 
 interface DataTableProps<TData, TValue> {
@@ -43,7 +40,10 @@ export function DataTable<TData, TValue>({
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
   );
-
+  const [pagination, setPagination] = React.useState<PaginationState>({
+    pageIndex: 0,
+    pageSize: 10,
+  });
   const table = useReactTable({
     data,
     columns,
@@ -53,8 +53,10 @@ export function DataTable<TData, TValue>({
     getSortedRowModel: getSortedRowModel(),
     onColumnFiltersChange: setColumnFilters,
     getFilteredRowModel: getFilteredRowModel(),
+    onPaginationChange: setPagination,
     state: {
       sorting,
+      pagination,
       columnFilters,
     },
   });
