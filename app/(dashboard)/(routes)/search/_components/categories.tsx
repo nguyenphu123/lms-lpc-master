@@ -1,12 +1,11 @@
 "use client";
 
+import { CoursesList } from "@/components/courses-list-category";
 import { CategoryItem } from "./category-item";
 import axios from "axios";
 import { useState } from "react";
 import { useQuery } from "react-query";
-import { useRouter } from "next/navigation";
-import { CoursesList } from "@/components/courses-list";
-import { getProgress } from "@/actions/get-progress";
+
 export const Categories = ({ items, userId }: any) => {
   const [currentTitle, setCurrentTitle] = useState("All");
   const [initialCourseList, setInitialCourseList] = useState(items);
@@ -52,7 +51,7 @@ export const Categories = ({ items, userId }: any) => {
             />
           ))}
       </div>
-      <CoursesList items={initialCourseList} />
+      <CoursesList title={currentTitle} items={initialCourseList} />
     </>
   );
 };
