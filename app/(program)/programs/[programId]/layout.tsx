@@ -2,6 +2,7 @@ import { auth } from "@clerk/nextjs";
 import { redirect } from "next/navigation";
 import { db } from "@/lib/db";
 import { CourseNavbar } from "./_components/course-navbar";
+import { Sidebar } from "./_components/sidebar";
 
 const ProgramLayout = async ({
   children,
@@ -26,8 +27,10 @@ const ProgramLayout = async ({
       <div className="h-[80px] fixed inset-y-0 w-full z-50">
         <CourseNavbar userId={userId} />
       </div>
-
-      <main className="md:pl-20 pr-20 pt-[80px] h-full overflow-x-hidden">
+      <div className="hidden md:flex h-full w-56 flex-col fixed inset-y-0 z-50">
+        <Sidebar userId={userId} />
+      </div>
+      <main className="md:pl-56 pt-[80px] h-full overflow-x-hidden">
         {children}
       </main>
     </div>
