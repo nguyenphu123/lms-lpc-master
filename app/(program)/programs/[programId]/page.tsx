@@ -62,7 +62,7 @@ const ProgramIdPage = async ({ params }: { params: { programId: string } }) => {
     })
   );
   return (
-    <div className="container mx-auto p-8">
+    <div className="container mx-auto p-8 pl-1">
       <Link
         href={`/search`}
         className="flex items-center text-sm hover:opacity-75 transition mb-6"
