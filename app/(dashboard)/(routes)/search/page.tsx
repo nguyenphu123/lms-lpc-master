@@ -145,6 +145,9 @@ const SearchPage = async ({ searchParams }: SearchPageProps) => {
     where: {
       isPublished: true,
     },
+    include:{
+      courseWithProgram:true
+    }
   });
   const courses1: any = await getCourses({
     userId,

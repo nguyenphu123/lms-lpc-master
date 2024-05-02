@@ -59,6 +59,7 @@ export const SlideProgram = ({ items }: SlideProgramProps) => {
                 id={item.id}
                 title={item.title}
                 imageUrl={item.imageUrl!}
+                isClickAble={item.courseWithProgram.length > 0}
               />
             </CarouselItem>
           ))}

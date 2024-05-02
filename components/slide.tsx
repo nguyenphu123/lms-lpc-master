@@ -7,21 +7,31 @@ interface SlideProps {
   id: string;
   title: string;
   imageUrl: string;
+  isClickAble: boolean;
 }
 
-export const Slide = ({ id, title, imageUrl }: SlideProps) => {
+export const Slide = ({ id, title, imageUrl, isClickAble }: SlideProps) => {
   return (
     <div className="group relative">
       <div className="group hover:shadow-sm transition overflow-hidden border rounded-lg h-full relative">
         <div className="relative rounded-md overflow-hidden aspect-video h-60 w-full">
-          <Link href={`/programs/${id}`}>
+          {isClickAble ? (
+            <Link href={`/programs/${id}`}>
+              <Image
+                fill
+                className="object-cover"
+                alt={title}
+                src={imageUrl != null ? imageUrl.replace("public", "") : ""}
+              />
+            </Link>
+          ) : (
             <Image
               fill
               className="object-cover"
               alt={title}
               src={imageUrl != null ? imageUrl.replace("public", "") : ""}
             />
-          </Link>
+          )}
 
           {/* <Link
             href={`/programs/${id}`}
