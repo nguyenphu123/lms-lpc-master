@@ -311,6 +311,34 @@ export const ContentForm = ({ courseId, moduleId }: AttachmentFormProps) => {
                   init={{
                     height: 500,
                     width: "auto",
+                    plugins: [
+                      "advlist",
+                      "autolink",
+                      "lists",
+                      "link",
+                      "image",
+                      "charmap",
+                      "preview",
+                      "anchor",
+                      "searchreplace",
+                      "visualblocks",
+                      "code",
+                      "fullscreen",
+                      "insertdatetime",
+                      "media",
+                      "table",
+                      "code",
+                      "help",
+                      "wordcount",
+                    ],
+                    toolbar:
+                      "undo redo | blocks | " +
+                      "bold italic forecolor | alignleft aligncenter " +
+                      "alignright alignjustify | bullist numlist outdent indent | " +
+                      "removeformat | help | image",
+                    images_file_types: "jpg,svg,webp,png",
+                    paste_data_images: true,
+                    paste_retain_style_properties: "all",
                     // ... (unchanged options)
                   }}
                 />

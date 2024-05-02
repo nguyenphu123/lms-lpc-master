@@ -10,25 +10,13 @@ import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import { Module } from "@prisma/client";
 
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormMessage,
-} from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
-import { Editor } from "@/components/editor";
-import { Preview } from "@/components/preview";
-import { Checkbox } from "@/components/ui/checkbox";
 
 interface ChapterAccessFormProps {
   initialData: Module;
   courseId: string;
   chapterId: string;
-};
+}
 
 const formSchema = z.object({
   isFree: z.boolean().default(false),
@@ -37,7 +25,7 @@ const formSchema = z.object({
 export const ChapterAccessForm = ({
   initialData,
   courseId,
-  chapterId
+  chapterId,
 }: ChapterAccessFormProps) => {
   const [isEditing, setIsEditing] = useState(false);
 
@@ -56,14 +44,17 @@ export const ChapterAccessForm = ({
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      await axios.patch(`/api/courses/${courseId}/chapters/${chapterId}`, values);
+      await axios.patch(
+        `/api/courses/${courseId}/chapters/${chapterId}`,
+        values
+      );
       toast.success("Chapter updated");
       toggleEdit();
       router.refresh();
     } catch {
       toast.error("Something went wrong");
     }
-  }
+  };
 
   return (
     <div className="mt-6 border bg-slate-100 rounded-md p-4">
@@ -129,5 +120,5 @@ export const ChapterAccessForm = ({
         </Form>
       )} */}
     </div>
-  )
-}
+  );
+};
