@@ -7,11 +7,15 @@ import {
   PopoverContent,
 } from "@/components/ui/popover";
 import { useState } from "react";
-import { useChannel } from "ably/react";
+import Ably from "ably/promises";
 import Link from "next/link";
 export const Notification = () => {
   const [notifications, setNotifications]: any = useState([]);
-  const { channel, ably } = useChannel("course", (message: any) => {
+  var ably = new Ably.Realtime({
+    key: "n-gD0A.W4KQCg:GyPm6YTLBQsr4KhgPj1dLCwr0eg4y7OVFrBuyztiiWg",
+  });
+  const channelAbly = ably.channels.get("course-publish");
+  channelAbly.subscribe("course-publish", function (message: any) {
     const history = notifications.slice(-199);
 
     setNotifications([...history, message]);
