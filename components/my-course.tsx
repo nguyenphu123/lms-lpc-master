@@ -18,11 +18,10 @@ export const MyCourse = ({ data }: MyCourseProps) => {
           <div>My course</div>
         </PopoverTrigger>
         <PopoverContent>
+          <h3 className="text-lg font-semibold mb-4">My Course</h3>
           {data.ClassSessionRecord.length > 0 ? (
             data.ClassSessionRecord.map((course: any) => (
               <div key={course.course.id}>
-                <h3 className="text-lg font-semibold mb-4">My Course</h3>
-
                 <Link
                   className="flex flex-col md:flex-row md:items-center"
                   href={`/courses/${course.course.id}`}

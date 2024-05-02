@@ -31,10 +31,10 @@ export default function Exam({ chapter }: any) {
     }>
   >([]);
   const [textTitle, setTextTitle] = useState(chapter.title);
-  const [timeLimit, setTimeLimit]: any = useState(chapter.timeLimit || 0);
+  const [timeLimit, setTimeLimit]: any = useState(0);
   const [passPercentage, setPassPercentage] = useState(70);
-  const [maxAsset, setMaxAsset] = useState(chapter.maxAsset || 3);
-  const [waitTime, setWaitTime] = useState(chapter.waitTime || 1);
+  const [maxAsset, setMaxAsset] = useState(3);
+  const [waitTime, setWaitTime] = useState(1);
   useEffect(() => {
     async function loadQuestion() {
       let questionList = await axios.get(
@@ -43,6 +43,9 @@ export default function Exam({ chapter }: any) {
 
       setQuizList(questionList.data.Category);
       setPassPercentage(chapter.scoreLimit);
+      setMaxAsset(chapter.maxAsset);
+      setWaitTime(chapter.waitTime);
+      setTimeLimit(chapter.timeLimit);
     }
     loadQuestion();
   }, []);

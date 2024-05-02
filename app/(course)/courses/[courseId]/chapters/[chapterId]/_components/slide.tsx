@@ -17,6 +17,7 @@ import {
   AlertDialogDescription,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+
 const CustomFileRenderer = ({ mainState: { currentDocument } }: any) => {
   if (!currentDocument || !currentDocument.uri) return null;
   const viewerUrl = `https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(
@@ -72,6 +73,7 @@ const Slide = ({
 
     return supportedFileTypes.includes(extension!) ? extension : "default";
   };
+
   const onClickNextSlide = async () => {
     if (hasCompleted == "finished") {
       setCurrentSlide(currentSlide + 1);

@@ -44,7 +44,7 @@ const ChapterIdPage = async ({
       />
     </>
   ) : (
-    <div className="pl-2">
+    <div className="pl-6 pt-3">
       {userProgress?.status == "finished" && (
         <Banner variant="success" label="You already completed this Module." />
       )}

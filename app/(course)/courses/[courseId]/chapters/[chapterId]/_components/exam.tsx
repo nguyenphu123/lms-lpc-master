@@ -16,7 +16,6 @@ import { useRouter } from "next/navigation";
 import { useConfettiStore } from "@/hooks/use-confetti-store";
 import shuffleArray from "@/lib/shuffle";
 import DoughnutChart from "@/components/ui/doughnut-chart";
-import Image from "next/image";
 const Exam = ({
   chapter,
   nextChapterId,
@@ -34,7 +33,6 @@ const Exam = ({
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [examMaxScore, setExamMaxSocre] = useState(0);
   const [selectedAnswers, setSelectedAnswers]: Array<any> = useState([]);
-  const [onFinish, setOnFinish] = useState(false);
   const confetti = useConfettiStore();
 
   useEffect(() => {
@@ -56,6 +54,7 @@ const Exam = ({
       );
       setFinalScore(getLatestTestResult.data?.UserProgress[0]?.score);
       setCategoryList(getLatestTestResult.data?.Category);
+      // console.log(shuffleArray(getLatestTestResult.data?.ExamList));
     };
     getHistory();
     window.addEventListener("beforeunload", alertUser);
@@ -64,7 +63,7 @@ const Exam = ({
     };
   }, []);
   const alertUser = (e: any) => {
-    if (onFinish || questions.length == 0) {
+    if (finishedExam || questions.length == 0) {
     } else {
       e.preventDefault();
       e.returnValue = "";
@@ -75,10 +74,17 @@ const Exam = ({
     } else {
       const { finalScore }: any = calculateScore();
       const totalScore = finalScore;
-
+      alert(
+        `Kết thúc bài kiểm tra! Điểm của bạn là ${finalScore}%\n` +
+          `${
+            totalScore >= chapter.scoreLimit
+              ? "Chúc mừng bạn đã pass"
+              : "Bạn đã không vượt qua bài test"
+          }`
+      );
       if (!finishedExam) {
         setMaxAsset(maxAsset - 1);
-        const date = new Date();
+        const date = new Date().toISOString();
         await axios.put(
           `/api/courses/${courseId}/chapters/${chapter.id}/progress`,
           {
@@ -124,8 +130,7 @@ const Exam = ({
           }
         }
       }
-
-      setOnFinish(true);
+      setFinishedExam(true);
       setQuestions([]);
       if (totalScore >= chapter.scoreLimit) {
         if (nextChapterId != null) {
@@ -146,27 +151,39 @@ const Exam = ({
   //   loadQuestion();
   // }, []);
   const accept = async () => {
-    setFinalScore(0);
-    // setFinishedExam(false);
-    setOnFinish(false);
-    setTimeLimit(chapter.timeLimit);
-    setCurrentQuestion(0);
-    setSelectedAnswers([]);
-    if (!finishedExam) {
-      if (maxAsset == 0) {
-        return;
-      }
-      let questionList = await axios.get(
-        `/api/courses/${chapter.courseId}/chapters/${chapter.id}/category/exam/shuffle`
+    if (maxAsset == 0) {
+      alert(
+        `Sorry but you have no asset left! please wait for ${
+          chapter.waitTime
+        } day${chapter.waitTime > 1 ? "s" : ""} to get a reset!`
       );
-
-      setQuestions(shuffleArray(questionList.data.ExamList));
     } else {
-      let questionList = await axios.get(
-        `/api/courses/${chapter.courseId}/chapters/${chapter.id}/category/exam/shuffle`
-      );
+      setFinalScore(0);
+      setFinishedExam(false);
+      setTimeLimit(chapter.timeLimit);
+      setCurrentQuestion(0);
+      setSelectedAnswers([]);
+      if (!finishedExam) {
+        let getLatestTestResult: any = await axios.get(
+          `/api/courses/${courseId}/chapters/${chapter.id}/category/exam`
+        );
+        setFinishedExam(
+          getLatestTestResult.data?.UserProgress[0]?.status == "finished"
+            ? true
+            : false
+        );
+        let questionList = await axios.get(
+          `/api/courses/${chapter.courseId}/chapters/${chapter.id}/category/exam/shuffle`
+        );
 
-      setQuestions(shuffleArray(questionList.data.ExamList));
+        setQuestions(shuffleArray(questionList.data.ExamList));
+      } else {
+        let questionList = await axios.get(
+          `/api/courses/${chapter.courseId}/chapters/${chapter.id}/category/exam/shuffle`
+        );
+
+        setQuestions(shuffleArray(questionList.data.ExamList));
+      }
     }
   };
   // const cancel = () => {
@@ -218,10 +235,18 @@ const Exam = ({
       // Nếu đã là câu hỏi cuối cùng, kiểm tra điểm số và hiển thị kết quả
       const { finalScore }: any = calculateScore();
       const totalScore = finalScore;
+      alert(
+        `Kết thúc bài kiểm tra! Điểm của bạn là ${finalScore}\n` +
+          `${
+            totalScore >= chapter.scoreLimit
+              ? "Chúc mừng bạn đã pass"
+              : "Bạn đã không vượt qua bài test"
+          }`
+      );
 
       if (!finishedExam) {
         setMaxAsset(maxAsset - 1);
-        const date = new Date();
+        const date = new Date().toISOString();
 
         await axios.put(
           `/api/courses/${courseId}/chapters/${chapter.id}/progress`,
@@ -270,8 +295,7 @@ const Exam = ({
           }
         }
       }
-
-      setOnFinish(true);
+      setFinishedExam(true);
       setQuestions([]);
       if (totalScore >= chapter.scoreLimit) {
         if (nextChapterId != null) {
@@ -372,18 +396,10 @@ const Exam = ({
     setExamMaxSocre(maxScore);
     return { finalScore };
   };
-  const onLeaving = () => {
-    setOnFinish(false);
-    if (nextChapterId != null) {
-      router.push(`/courses/${courseId}/chapters/${nextChapterId}`);
-    } else {
-      router.push(`/`);
-    }
-    router.refresh();
-  };
+
   return questions.length == 0 ? (
     <>
-      <div className="bg-gray-100 dark:bg-gray-900 p-6 rounded-lg">
+      <div className=" p-6 rounded-lg">
         <h1 className="text-2xl font-bold mb-4">Welcome to the Exam</h1>
         <p className="text-lg mb-4">
           Before you begin, please take a moment to review the following
@@ -400,64 +416,6 @@ const Exam = ({
             Make sure you are in a quiet environment to avoid distractions .
           </li>
         </ul>
-        <AlertDialog open={onFinish}>
-          <AlertDialogContent className="AlertDialogContent">
-            <AlertDialogTitle className="AlertDialogTitle">
-              Your score is {finalScore}
-              <br />
-              {finalScore >= chapter.scoreLimit || finishedExam
-                ? nextChapterId != null
-                  ? "Congratulation on finishing this exam."
-                  : "Would you like to find another course?"
-                : "Sorry you have failed, please try again"}
-              {finalScore >= chapter.scoreLimit || finishedExam ? (
-                <Image
-                  src="/congratulation.jpg"
-                  alt="blog"
-                  height={200}
-                  width={300}
-                  className="select-none object-cover rounded-md border-2 border-white shadow-md drop-shadow-md"
-                />
-              ) : (
-                <></>
-              )}
-            </AlertDialogTitle>
-            <AlertDialogDescription className="AlertDialogDescription"></AlertDialogDescription>
-            <div
-              style={{
-                display: "flex",
-                gap: 25,
-                justifyContent: "flex-end",
-              }}
-            >
-              {finalScore >= chapter.scoreLimit || finishedExam ? (
-                <AlertDialogCancel onClick={() => setOnFinish(false)}>
-                  Stay
-                </AlertDialogCancel>
-              ) : (
-                <AlertDialogCancel onClick={() => accept()}>
-                  Retake
-                  {maxAsset == 0 ? (
-                    <span className="text-red-500">
-                      Sorry, you have reached max asset on this test
-                    </span>
-                  ) : (
-                    <></>
-                  )}
-                </AlertDialogCancel>
-              )}
-              {finalScore >= chapter.scoreLimit || finishedExam ? (
-                <AlertDialogAction asChild>
-                  <button className="Button red" onClick={() => onLeaving()}>
-                    {nextChapterId != null ? "To next chapter" : "Leave"}
-                  </button>
-                </AlertDialogAction>
-              ) : (
-                <></>
-              )}
-            </div>
-          </AlertDialogContent>
-        </AlertDialog>
         <div>
           <p className="text-lg mb-4">Include:</p>
           <ul className="list-disc pl-5 mb-4">
@@ -500,16 +458,7 @@ const Exam = ({
       )}
       <AlertDialog>
         <AlertDialogTrigger className="flex justify-center items-center">
-          <div className="font-bold ml-2 rounded-lg">
-            👉Take an exam{" "}
-            {maxAsset == 0 ? (
-              <span className="text-red-500">
-                Sorry, you have reached max asset on this test
-              </span>
-            ) : (
-              <></>
-            )}
-          </div>
+          <div className="font-bold ml-2 rounded-lg">👉Take an exam</div>
         </AlertDialogTrigger>
 
         <AlertDialogContent className="AlertDialogContent">
@@ -546,14 +495,14 @@ const Exam = ({
   ) : (
     <main className="min-h-full items-center">
       {/* <br />
-      <label className="block text-3xl font-bold mb-2 text-center">Exam</label> */}
+<label className="block text-3xl font-bold mb-2 text-center">Exam</label> */}
       <div className="flex">
         <div className="w-3/4 p-8 ">
           <div className=" p-6 shadow-md rounded-md border border-blue-500">
             {/* <div className="flex justify-end mb-4">
-            <Timer />
+<Timer />
             {""} {time}
-          </div> */}
+</div> */}
             <div className="flex flex-col">
               <div className="flex flex-row items-center my-2.5">
                 <span>
