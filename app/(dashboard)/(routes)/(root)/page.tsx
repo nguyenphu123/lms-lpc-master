@@ -45,7 +45,7 @@ export default async function Dashboard() {
         userId: sessionClaims.userId,
         status: "studying",
         endDate: {
-          gte: yesterday,
+          lte: yesterday,
         },
       },
 
