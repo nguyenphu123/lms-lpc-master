@@ -54,32 +54,32 @@ export const Cell = ({ row }: any) => {
         </Link>
         {userId != id && role != "ADMIN" ? (
           status == "approved" ? (
-            <DropdownMenuItem>
+            <div
+              onClick={() => onChangeStatus(id, status)}
+              className="flex items-center"
+            >
+              <DropdownMenuItem>
+                <Ban className="h-4 w-4 mr-2" />
+                <span>Ban</span>
+              </DropdownMenuItem>{" "}
+            </div>
+          ) : (
+            <div>
               <div
                 onClick={() => onChangeStatus(id, status)}
                 className="flex items-center"
               >
-                <Ban className="h-4 w-4 mr-2" />
-                <span>Ban</span>
-              </div>
-            </DropdownMenuItem>
-          ) : (
-            <div>
-              <DropdownMenuItem>
-                <div
-                  onClick={() => onChangeStatus(id, status)}
-                  className="flex items-center"
-                >
+                <DropdownMenuItem>
                   <BadgeCheck className="h-4 w-4 mr-2" />
                   Approved
-                </div>
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <div onClick={() => onDelete(id)} className="flex items-center">
+                </DropdownMenuItem>{" "}
+              </div>
+              <div onClick={() => onDelete(id)} className="flex items-center">
+                <DropdownMenuItem>
                   <BadgeX className="h-4 w-4 mr-2" />
                   Delete
-                </div>
-              </DropdownMenuItem>
+                </DropdownMenuItem>
+              </div>
             </div>
           )
         ) : (
