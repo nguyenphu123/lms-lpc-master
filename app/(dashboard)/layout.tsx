@@ -18,7 +18,7 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
         <Sidebar userId={userId} />
       </div>
       <main className="md:pl-56 pt-60 h-full overflow-x-hidden">
-        {children}y
+        {children}
       </main>
     </div>
   );
