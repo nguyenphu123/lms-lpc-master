@@ -53,13 +53,15 @@ model User {
   imageUrl                 String?
   status                   String
   programParticipantRecord ProgramParticipantRecord[]
-  Program                  Program[]
-  Course                   Course[]
+  Course                   Course[]                   @relation("userId")
+  updatedCourse            Course[]                   @relation("updatedBy")
   ClassSessionRecord       ClassSessionRecord[]
   Module                   Module[]
   UserProgress             UserProgress[]
   HistoryRecord            HistoryRecord[]
   BookMark                 BookMark[]
+  Program                  Program[]                  @relation("userId")
+  updatedProgram           Program[]                  @relation("updatedBy")
 
   @@index([departmentId])
 }
@@ -70,8 +72,10 @@ model Program {
 
   description              String?                    @db.Text
   imageUrl                 String?                    @db.Text
-  user                     User                       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user                     User                       @relation("userId", fields: [userId], references: [id], onDelete: Cascade)
   userId                   String
+  updatedUser              User?                      @relation("updatedBy", fields: [updatedBy], references: [id], onDelete: Cascade)
+  updatedBy                String                     @default("")
   startDate                DateTime                   @default(now())
   endDate                  DateTime?
   isPublished              Boolean                    @default(false)
@@ -81,6 +85,7 @@ model Program {
   ProgramOnDepartment ProgramOnDepartment[]
 
   @@index([userId])
+  @@index([updatedBy])
 }
 
 model ProgramParticipantRecord {
@@ -103,8 +108,10 @@ model Course {
   title              String               @db.Text
   description        String?              @db.Text
   imageUrl           String?              @db.Text
-  user               User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user               User                 @relation("userId", fields: [userId], references: [id], onDelete: Cascade)
   userId             String
+  updatedUser        User?                @relation("updatedBy", fields: [updatedBy], references: [id], onDelete: Cascade)
+  updatedBy          String               @default("")
   startDate          DateTime             @default(now())
   endDate            DateTime?
   updateDate         DateTime?
@@ -118,6 +125,7 @@ model Course {
   CourseOnDepartment CourseOnDepartment[]
 
   @@index([userId])
+  @@index([updatedBy])
 }
 
 model ClassSessionRecord {
@@ -126,7 +134,7 @@ model ClassSessionRecord {
   courseId  String
   user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId    String
-  progress  String?    @db.Text
+  progress  String?   @db.Text
   status    String?
   startDate DateTime?
   endDate   DateTime?

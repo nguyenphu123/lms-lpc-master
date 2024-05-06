@@ -55,7 +55,15 @@ export async function POST(
     //     },
     //   });
     // }
-
+    await db.course.update({
+      where: {
+        id: params.courseId,
+      },
+      data: {
+        updateDate: new Date(),
+        updatedBy: userId,
+      },
+    });
     return NextResponse.json("success");
   } catch (error) {
     console.log("[CHAPTER_PUBLISH]", error);

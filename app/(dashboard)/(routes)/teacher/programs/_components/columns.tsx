@@ -35,29 +35,43 @@ export const columns: ColumnDef<Course>[] = [
       );
     },
   },
-  // {
-  //   accessorKey: "price",
-  //   header: ({ column }) => {
-  //     return (
-  //       <Button
-  //         variant="ghost"
-  //         onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-  //       >
-  //         Price
-  //         <ArrowUpDown className="ml-2 h-4 w-4" />
-  //       </Button>
-  //     )
-  //   },
-  //   cell: ({ row }) => {
-  //     const price = parseFloat(row.getValue("price") || "0");
-  //     const formatted = new Intl.NumberFormat("en-US", {
-  //       style: "currency",
-  //       currency: "USD"
-  //     }).format(price);
-
-  //     return <div>{formatted}</div>
-  //   }
-  // },
+  {
+    accessorKey: "user",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Created By
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
+    },
+    cell: ({ row }: any) => {
+      const { user } = row.original;
+      return <div>{user.username}</div>;
+    },
+  },
+  {
+    accessorKey: "updatedUser",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Updated By
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
+    },
+    cell: ({ row }: any) => {
+      const { updatedUser } = row.original;
+      console.log(updatedUser);
+      return <div>{updatedUser?.username} </div>;
+    },
+  },
   {
     accessorKey: "isPublished",
     header: ({ column }) => {

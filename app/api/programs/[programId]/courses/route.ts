@@ -26,7 +26,14 @@ export async function GET(
         courseWithProgram: true,
       },
     });
-
+    await db.program.update({
+      where: {
+        id: programId,
+      },
+      data: {
+        updatedBy: userId,
+      },
+    });
     return NextResponse.json(programOwnCourses);
   } catch (error) {
     console.log("[PROGRAM_ID]", error);

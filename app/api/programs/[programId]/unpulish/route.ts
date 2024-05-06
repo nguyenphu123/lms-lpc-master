@@ -14,17 +14,6 @@ export async function PATCH(
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
-    const program = await db.program.findUnique({
-      where: {
-        id: params.programId,
-        userId,
-      },
-    });
-
-    if (!program) {
-      return new NextResponse("Not found", { status: 404 });
-    }
-
     const unpublishedProgram = await db.program.update({
       where: {
         id: params.programId,
@@ -32,6 +21,8 @@ export async function PATCH(
       },
       data: {
         isPublished: false,
+
+        updatedBy: userId,
       },
     });
 

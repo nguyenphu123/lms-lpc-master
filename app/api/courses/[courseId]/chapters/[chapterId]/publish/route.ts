@@ -9,7 +9,7 @@ export async function PATCH(
 ) {
   try {
     const { userId } = auth();
-   
+
     if (!userId) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
@@ -45,7 +45,15 @@ export async function PATCH(
         isPublished: true,
       },
     });
-
+    await db.course.update({
+      where: {
+        id: params.courseId,
+      },
+      data: {
+        updateDate: new Date(),
+        updatedBy: userId,
+      },
+    });
     return NextResponse.json(publishedChapter);
   } catch (error) {
     console.log("[CHAPTER_PUBLISH]", error);

@@ -48,7 +48,15 @@ export async function DELETE(
         },
       });
     }
-
+    await db.course.update({
+      where: {
+        id: params.courseId,
+      },
+      data: {
+        updateDate: new Date(),
+        updatedBy: userId,
+      },
+    });
     return NextResponse.json(deletedChapter);
   } catch (error) {
     console.log("[CHAPTER_ID_DELETE]", error);
@@ -77,7 +85,15 @@ export async function PATCH(
         ...values,
       },
     });
-
+    await db.course.update({
+      where: {
+        id: params.courseId,
+      },
+      data: {
+        updateDate: new Date(),
+        updatedBy: userId,
+      },
+    });
     return NextResponse.json(chapter);
   } catch (error) {
     console.log("[COURSES_CHAPTER_ID]", error);

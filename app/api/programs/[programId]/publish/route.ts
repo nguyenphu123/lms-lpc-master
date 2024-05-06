@@ -17,7 +17,6 @@ export async function PATCH(
     const program = await db.program.findUnique({
       where: {
         id: params.programId,
-        userId,
       },
       include: {
         courseWithProgram: {},
@@ -44,10 +43,10 @@ export async function PATCH(
     const publishedProgram = await db.program.update({
       where: {
         id: params.programId,
-        userId,
       },
       data: {
         isPublished: true,
+        updatedBy: userId,
       },
     });
 

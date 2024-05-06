@@ -15,16 +15,6 @@ export async function POST(
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
-    const courseOwner = await db.course.findUnique({
-      where: {
-        id: params.courseId,
-        userId: userId,
-      },
-    });
-
-    if (!courseOwner) {
-      return new NextResponse("Unauthorized", { status: 401 });
-    }
     const getModuleCount = await db.module.count({
       where: {
         courseId: params.courseId,
@@ -83,6 +73,15 @@ export async function POST(
     //     },
     //   });
     // }
+    await db.course.update({
+      where: {
+        id: params.courseId,
+      },
+      data: {
+        updateDate: new Date(),
+        updatedBy: userId,
+      },
+    });
     return NextResponse.json(chapter);
   } catch (error) {
     console.log("[CHAPTERS]", error);

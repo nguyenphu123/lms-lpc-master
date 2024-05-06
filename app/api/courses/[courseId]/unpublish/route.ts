@@ -20,6 +20,8 @@ export async function PATCH(
       },
       data: {
         isPublished: false,
+        updateDate: new Date(),
+        updatedBy: userId,
       },
     });
 

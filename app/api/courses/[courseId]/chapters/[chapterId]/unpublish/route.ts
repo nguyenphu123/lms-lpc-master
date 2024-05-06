@@ -17,8 +17,8 @@ export async function PATCH(
     const ownCourse = await db.course.findUnique({
       where: {
         id: params.courseId,
-        userId
-      }
+        userId,
+      },
     });
 
     if (!ownCourse) {
@@ -32,14 +32,14 @@ export async function PATCH(
       },
       data: {
         isPublished: false,
-      }
+      },
     });
 
     const publishedChaptersInCourse = await db.module.findMany({
       where: {
         courseId: params.courseId,
         isPublished: true,
-      }
+      },
     });
 
     if (!publishedChaptersInCourse.length) {
@@ -49,13 +49,21 @@ export async function PATCH(
         },
         data: {
           isPublished: false,
-        }
+        },
       });
     }
-
+    await db.course.update({
+      where: {
+        id: params.courseId,
+      },
+      data: {
+        updateDate: new Date(),
+        updatedBy: userId,
+      },
+    });
     return NextResponse.json(unpublishedChapter);
   } catch (error) {
     console.log("[CHAPTER_UNPUBLISH]", error);
-    return new NextResponse("Internal Error", { status: 500 }); 
+    return new NextResponse("Internal Error", { status: 500 });
   }
 }

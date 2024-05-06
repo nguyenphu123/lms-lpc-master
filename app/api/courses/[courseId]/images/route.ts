@@ -50,10 +50,11 @@ export async function POST(
       await db.course.update({
         where: {
           id: courseId,
-          userId,
         },
         data: {
           imageUrl: folderName + "/" + filename,
+          updateDate: new Date(),
+          updatedBy: userId,
         },
       });
       return NextResponse.json("OK");

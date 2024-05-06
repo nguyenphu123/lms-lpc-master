@@ -49,7 +49,14 @@ export async function PATCH(
         });
       }
     }
-
+    await db.program.update({
+      where: {
+        id: params.programId,
+      },
+      data: {
+        updatedBy: userId,
+      },
+    });
     return NextResponse.json("");
   } catch (error) {
     console.log("DEPARTMENT_ERROR", error);

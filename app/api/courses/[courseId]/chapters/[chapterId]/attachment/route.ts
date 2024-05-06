@@ -20,7 +20,15 @@ export async function PATCH(
       data: contents,
       skipDuplicates: true,
     });
-
+    await db.course.update({
+      where: {
+        id: params.courseId,
+      },
+      data: {
+        updateDate: new Date(),
+        updatedBy: userId,
+      },
+    });
     return NextResponse.json(createAttachment);
   } catch (error) {
     console.log("[CHAPTER_PUBLISH]", error);

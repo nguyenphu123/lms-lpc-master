@@ -22,7 +22,9 @@ export async function DELETE(
     });
 
     if (!program) {
-      return new NextResponse("Not found", { status: 404 });
+      return new NextResponse(
+        "Program not found or you don't have permission to delete this program"
+      );
     }
 
     const deletedProgram = await db.program.delete({
@@ -54,10 +56,11 @@ export async function PATCH(
     const program = await db.program.update({
       where: {
         id: programId,
-        userId,
       },
       data: {
         ...values,
+
+        updatedBy: userId,
       },
     });
 

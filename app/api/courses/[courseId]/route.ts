@@ -22,7 +22,9 @@ export async function DELETE(
     });
 
     if (!course) {
-      return new NextResponse("Not found", { status: 404 });
+      return new NextResponse(
+        "Course not found or you don't have permission to delete this course"
+      );
     }
 
     const deletedCourse = await db.course.delete({
@@ -54,10 +56,11 @@ export async function PATCH(
     const course = await db.course.update({
       where: {
         id: courseId,
-        userId,
       },
       data: {
         ...values,
+        updateDate: new Date(),
+        updatedBy: userId,
       },
     });
 

@@ -46,12 +46,17 @@ export const Cell = ({ row }: any) => {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
-        <Link href={`/teacher/users/${id}`}>
-          <DropdownMenuItem>
-            <Pencil className="h-4 w-4 mr-2" />
-            Edit
-          </DropdownMenuItem>
-        </Link>
+        {status != "approved" ? (
+          <></>
+        ) : (
+          <Link href={`/teacher/users/${id}`}>
+            <DropdownMenuItem>
+              <Pencil className="h-4 w-4 mr-2" />
+              Edit
+            </DropdownMenuItem>
+          </Link>
+        )}
+
         {userId != id && (role != "ADMIN" || role != "MANAGER") ? (
           status == "approved" ? (
             <div

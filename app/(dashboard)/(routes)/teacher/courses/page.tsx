@@ -20,6 +20,10 @@ const CoursesPage = async () => {
     orderBy: {
       startDate: "desc",
     },
+    include: {
+      user: true,
+      updatedUser:true,
+    },
   });
 
   return (
