@@ -95,6 +95,15 @@ export async function DELETE(
     const user = await db.user.delete({
       where: { id: params.userId },
     });
+    await db.bookMark.deleteMany({
+      where: { userId: params.userId },
+    });
+    await db.classSessionRecord.deleteMany({
+      where: { userId: params.userId },
+    });
+    await db.userProgress.deleteMany({
+      where: { userId: params.userId },
+    });
     const deleteUser = await clerkClient.users.deleteUser(params.userId);
     return NextResponse.json("success");
   } catch (error) {

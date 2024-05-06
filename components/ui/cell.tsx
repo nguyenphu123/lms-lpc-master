@@ -52,7 +52,7 @@ export const Cell = ({ row }: any) => {
             Edit
           </DropdownMenuItem>
         </Link>
-        {userId != id && role != "ADMIN" ? (
+        {userId != id && (role != "ADMIN" || role != "MANAGER") ? (
           status == "approved" ? (
             <div
               onClick={() => onChangeStatus(id, status)}
@@ -72,7 +72,7 @@ export const Cell = ({ row }: any) => {
                 <DropdownMenuItem>
                   <BadgeCheck className="h-4 w-4 mr-2" />
                   Approved
-                </DropdownMenuItem>{" "}
+                </DropdownMenuItem>
               </div>
               <div onClick={() => onDelete(id)} className="flex items-center">
                 <DropdownMenuItem>
