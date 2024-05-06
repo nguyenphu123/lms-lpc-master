@@ -12,7 +12,11 @@ const TeacherLayout = async ({ children }: { children: React.ReactNode }) => {
     return redirect("/");
   }
 
-  return <div className="overflow-x-hidden">{children}</div>;
+  return (
+    <div className="overflow-x-hidden md:items-center md:justify-center">
+      {children}
+    </div>
+  );
 };
 
 export default TeacherLayout;
