@@ -412,7 +412,7 @@ const Exam = ({
                 : "Sorry you have failed, please try again"}
               {finalScore >= chapter.scoreLimit || finishedExam ? (
                 <Image
-                  src="/congratulation.jpg"
+                  src="/congratulation.png"
                   alt="blog"
                   height={200}
                   width={300}
