@@ -61,7 +61,7 @@ export const Cell = ({ row }: any) => {
           status == "approved" ? (
             <div
               onClick={() => onChangeStatus(id, status)}
-              className="flex items-center"
+              className="flex items-center w-full"
             >
               <DropdownMenuItem>
                 <Ban className="h-4 w-4 mr-2" />
@@ -72,14 +72,17 @@ export const Cell = ({ row }: any) => {
             <div>
               <div
                 onClick={() => onChangeStatus(id, status)}
-                className="flex items-center"
+                className="flex items-center w-full"
               >
                 <DropdownMenuItem>
                   <BadgeCheck className="h-4 w-4 mr-2" />
                   Approved
                 </DropdownMenuItem>
               </div>
-              <div onClick={() => onDelete(id)} className="flex items-center">
+              <div
+                onClick={() => onDelete(id)}
+                className="flex items-center w-full"
+              >
                 <DropdownMenuItem>
                   <BadgeX className="h-4 w-4 mr-2" />
                   Delete
