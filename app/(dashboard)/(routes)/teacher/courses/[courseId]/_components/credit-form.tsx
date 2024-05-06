@@ -29,7 +29,7 @@ interface CreaditFormProps {
 const formSchema = z.object({
   credit: z.preprocess(
     (value: any) => parseInt(value),
-    z.number().gte(0).lte(10).optional()
+    z.number().int().gte(0).lte(10).optional()
   ),
 });
 
