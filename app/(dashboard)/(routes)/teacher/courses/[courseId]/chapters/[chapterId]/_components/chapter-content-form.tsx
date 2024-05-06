@@ -203,13 +203,15 @@ export const ContentForm = ({ courseId, moduleId }: AttachmentFormProps) => {
   return (
     <div className="mt-6 border dark:text-white rounded-md p-4">
       <div className="font-medium flex items-center justify-between mb-4">
-        Course Content
+        <div className="flex items-center">
+          Course Content <Asterisk className="size-4" color="red" />
+        </div>
       </div>
       <button
         onClick={() => addContent()}
         className="bg-black text-white px-4 py-2 rounded-md mb-4 flex items-center"
       >
-        <PlusCircle className="h-4 w-4 mr-2" /> Content <Asterisk color="red" />
+        <PlusCircle className="h-4 w-4 mr-2" /> Content
       </button>
       {contents.map((item: any) => (
         <div

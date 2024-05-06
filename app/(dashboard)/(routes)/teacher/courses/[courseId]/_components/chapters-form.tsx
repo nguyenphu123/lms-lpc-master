@@ -92,7 +92,9 @@ export const ChaptersForm = ({ initialData, courseId }: ChaptersFormProps) => {
         </div>
       )}
       <div className="font-medium flex items-center justify-between text-black dark:text-slate-50">
-        Course chapters <Asterisk color="red" />
+        <div className="flex items-center">
+          Course chapters <Asterisk className="size-4" color="red" />
+        </div>
         <Button onClick={toggleCreating} variant="ghost">
           {isCreating ? (
             <>Cancel</>

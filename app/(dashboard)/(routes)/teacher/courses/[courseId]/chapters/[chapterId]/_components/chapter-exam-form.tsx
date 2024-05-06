@@ -423,7 +423,7 @@ export default function Exam({ chapter }: any) {
       <div className="w-full p-8 " suppressHydrationWarning={true}>
         <div className="pb-3">
           <label className="block text-3xl font-bold mb-2 text-center">
-            Create Exam <Asterisk color="red" />
+            Create Exam
           </label>
 
           <label className="block text-lg mt-2">Click</label>
