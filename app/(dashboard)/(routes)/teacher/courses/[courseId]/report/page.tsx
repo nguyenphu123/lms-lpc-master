@@ -39,7 +39,7 @@ const ReportPage = async ({ params }: { params: { courseId: string } }) => {
       department: userProgress.ClassSessionRecord[i].user.Department.title,
       status: userProgress.ClassSessionRecord[i].status,
       progress: userProgress.ClassSessionRecord[i].progress,
-      endDate: userProgress.ClassSessionRecord[i].endDate,
+      // endDate: userProgress.ClassSessionRecord[i].endDate,
     };
     data.push(item);
   }
