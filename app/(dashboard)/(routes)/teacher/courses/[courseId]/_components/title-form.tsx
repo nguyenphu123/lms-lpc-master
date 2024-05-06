@@ -8,7 +8,7 @@ import { Pencil } from "lucide-react";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
-
+import { Asterisk } from 'lucide-react';
 import {
   Form,
   FormControl,
@@ -60,7 +60,7 @@ export const TitleForm = ({ initialData, courseId }: TitleFormProps) => {
   return (
     <div className="mt-6 border bg-slate-100 rounded-md p-4 text-black dark:bg-slate-950">
       <div className="font-medium flex items-center justify-between dark:text-slate-50">
-        Course title (50 character limit)
+        Course title (50 character limit) <Asterisk color="red" />
         <Button onClick={toggleEdit} variant="ghost">
           {isEditing ? (
             <>Cancel</>

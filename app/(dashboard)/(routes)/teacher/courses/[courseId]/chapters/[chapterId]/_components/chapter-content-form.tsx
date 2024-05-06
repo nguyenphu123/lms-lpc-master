@@ -4,7 +4,7 @@ import { Editor } from "@tinymce/tinymce-react";
 import { ChangeEvent, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
-import { Trash, PlusCircle } from "lucide-react";
+import { Trash, PlusCircle, Asterisk } from "lucide-react";
 import dynamic from "next/dynamic";
 
 const Link = dynamic(() => import("next/link"), { ssr: false });
@@ -209,7 +209,7 @@ export const ContentForm = ({ courseId, moduleId }: AttachmentFormProps) => {
         onClick={() => addContent()}
         className="bg-black text-white px-4 py-2 rounded-md mb-4 flex items-center"
       >
-        <PlusCircle className="h-4 w-4 mr-2" /> Content
+        <PlusCircle className="h-4 w-4 mr-2" /> Content <Asterisk color="red" />
       </button>
       {contents.map((item: any) => (
         <div

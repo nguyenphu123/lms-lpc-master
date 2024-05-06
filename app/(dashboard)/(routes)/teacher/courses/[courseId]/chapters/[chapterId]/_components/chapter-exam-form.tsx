@@ -1,5 +1,13 @@
 "use client";
-import { PlusCircle, Upload, Trash2, X, Save, ArrowLeft } from "lucide-react";
+import {
+  PlusCircle,
+  Upload,
+  Trash2,
+  X,
+  Save,
+  ArrowLeft,
+  Asterisk,
+} from "lucide-react";
 import axios from "axios";
 
 import React, { useCallback, useEffect, useRef, useState } from "react";
@@ -31,7 +39,7 @@ export default function Exam({ chapter }: any) {
     }>
   >([]);
   const [textTitle, setTextTitle] = useState(chapter.title);
-  const [timeLimit, setTimeLimit]: any = useState(0);
+  const [timeLimit, setTimeLimit]: any = useState(60);
   const [passPercentage, setPassPercentage] = useState(70);
   const [maxAsset, setMaxAsset] = useState(3);
   const [waitTime, setWaitTime] = useState(1);
@@ -415,7 +423,7 @@ export default function Exam({ chapter }: any) {
       <div className="w-full p-8 " suppressHydrationWarning={true}>
         <div className="pb-3">
           <label className="block text-3xl font-bold mb-2 text-center">
-            Create Exam
+            Create Exam <Asterisk color="red" />
           </label>
 
           <label className="block text-lg mt-2">Click</label>
