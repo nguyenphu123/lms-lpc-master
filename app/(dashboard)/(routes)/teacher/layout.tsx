@@ -13,7 +13,7 @@ const TeacherLayout = async ({ children }: { children: React.ReactNode }) => {
   }
 
   return (
-    <div className="overflow-x-hidden md:items-center md:justify-center">
+    <div className="overflow-x-hidden items-center justify-center">
       {children}
     </div>
   );
