@@ -234,7 +234,19 @@ export default function Exam({ chapter }: any) {
         return;
       }
       const newQuizsList = [...quizList];
-
+      for (let i = 0; i < newQuizsList.length; i++) {
+        if (newQuizsList[i].question.length < 1) {
+          alert("Sorry, each category must have at least one question");
+          return;
+        } else {
+          for (let j = 0; j < newQuizsList[i].question.length; j++) {
+            if (newQuizsList[i].question[j].answer.length < 2) {
+              alert("Sorry, each question must have at least two answer");
+              return;
+            }
+          }
+        }
+      }
       const checkAnswersList = newQuizsList.map((item) =>
         item.question.map((item: any) =>
           item.answer.map((item: any) => item.isCorrect).indexOf(true)
