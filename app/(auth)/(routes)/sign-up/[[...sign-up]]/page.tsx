@@ -29,6 +29,7 @@ export default function Page() {
     "AF",
     "AD",
     "QA",
+    "BP",
     "BOD",
   ];
   const [pendingVerification, setPendingVerification] = useState(false);
