@@ -76,10 +76,9 @@ export async function GET(
         }
       }
       questionsList.Category[i]["categoryMaxScore"] = categoryMaxScore;
-      questionUnShuffleList = [
-        ...questionUnShuffleList,
-        ...finalListQuestionByCategory,
-      ];
+      questionUnShuffleList = Array.from(
+        new Set([...questionUnShuffleList, ...finalListQuestionByCategory])
+      );
       examMaxScore = examMaxScore + categoryMaxScore;
     }
     const questions = {

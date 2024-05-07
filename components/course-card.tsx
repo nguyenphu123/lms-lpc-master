@@ -7,6 +7,7 @@ import { IconBadge } from "@/components/icon-badge";
 import { CourseProgress } from "@/components/course-progress";
 import axios from "axios";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@clerk/nextjs";
 
 interface CourseCardProps {
   id: string;
@@ -34,7 +35,7 @@ export const CourseCard = ({
   const router = useRouter();
 
   const [isUpdating, setIsUpdating] = useState(false);
-
+  const { userId }: any = useAuth();
   const toggleUpdating = () => {
     setIsUpdating((current) => !current);
   };
@@ -99,7 +100,9 @@ export const CourseCard = ({
             </Link>
           )}
 
-          {bookmark?.map((item) => item.courseId).indexOf(id) > -1 ? (
+          {bookmark?.filter(
+            (item) => item.courseId == id && item.userId == userId
+          ).length > 0 ? (
             <button
               onClick={onUnBookMark}
               className="bg-gradient-to-r from-pink-600 to-red-700 text-white px-4 py-2 rounded-md hover:bg-gray-600 transition"

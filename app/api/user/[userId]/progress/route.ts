@@ -1,6 +1,6 @@
 import { auth } from "@clerk/nextjs";
 import { NextResponse } from "next/server";
-import { clerkClient } from "@clerk/nextjs/server";
+
 import { db } from "@/lib/db";
 
 export async function GET(
