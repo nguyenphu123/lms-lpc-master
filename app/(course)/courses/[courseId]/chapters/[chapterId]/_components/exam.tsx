@@ -415,7 +415,7 @@ const Exam = ({
                   src="/congratulation.png"
                   alt="blog"
                   height={200}
-                  width={300}
+                  width={400}
                   className="select-none object-cover rounded-md border-2 border-white shadow-md drop-shadow-md"
                 />
               ) : (
@@ -427,7 +427,6 @@ const Exam = ({
               style={{
                 display: "flex",
                 gap: 25,
-                justifyContent: "flex-end",
               }}
             >
               {finalScore >= chapter.scoreLimit || finishedExam ? (
