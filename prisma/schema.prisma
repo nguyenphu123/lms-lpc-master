@@ -33,7 +33,7 @@ model CourseOnDepartment {
 
 model ProgramOnDepartment {
   id           String      @id @default(uuid())
-  Department   Department? @relation(fields: [departmentId], references: [id])
+  Department   Department? @relation(fields: [departmentId], references: [id], onDelete: Cascade)
   departmentId String?
   program      Program     @relation(fields: [programId], references: [id], onDelete: Cascade)
   programId    String
@@ -74,7 +74,7 @@ model Program {
   imageUrl                 String?                    @db.Text
   user                     User                       @relation("userId", fields: [userId], references: [id])
   userId                   String
-  updatedUser              User?                      @relation("updatedBy", fields: [updatedBy], references: [id], onDelete: Cascade)
+  updatedUser              User?                      @relation("updatedBy", fields: [updatedBy], references: [id])
   updatedBy                String                     @default("")
   startDate                DateTime                   @default(now())
   endDate                  DateTime?
@@ -110,7 +110,7 @@ model Course {
   imageUrl           String?              @db.Text
   user               User                 @relation("userId", fields: [userId], references: [id])
   userId             String
-  updatedUser        User?                @relation("updatedBy", fields: [updatedBy], references: [id], onDelete: Cascade)
+  updatedUser        User?                @relation("updatedBy", fields: [updatedBy], references: [id])
   updatedBy          String               @default("")
   startDate          DateTime             @default(now())
   endDate            DateTime?
@@ -163,7 +163,7 @@ model Module {
   courseId     String
   title        String         @db.Text
   type         String
-  user         User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user         User           @relation(fields: [userId], references: [id])
   userId       String
   position     Int
   isPublished  Boolean
