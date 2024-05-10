@@ -20,7 +20,21 @@ const UserPage = async ({ params }: { params: { userId: string } }) => {
   if (!userId) {
     return redirect("/");
   }
-
+  const checkUser = await db.userPermission.findMany({
+    where: {
+      userId: userId,
+    },
+    include: {
+      permission: true,
+    },
+  });
+  if (
+    checkUser
+      .map((item: { permission: { title: any } }) => item.permission.title)
+      .indexOf("User personal management permission") == -1
+  ) {
+    return redirect("/");
+  }
   const user: userValue | any = await db.user.findUnique({
     where: {
       id: userId,

@@ -3,6 +3,21 @@ import { auth } from "@clerk/nextjs";
 import { redirect } from "next/navigation";
 const CourseIdPage = async ({ params }: { params: { courseId: string } }) => {
   const { userId }: any = auth();
+  const checkUser = await db.userPermission.findMany({
+    where: {
+      userId: userId,
+    },
+    include: {
+      permission: true,
+    },
+  });
+  if (
+    checkUser
+      .map((item: { permission: { title: any } }) => item.permission.title)
+      .indexOf("Study permission") == -1
+  ) {
+    return redirect("/");
+  }
   const course: any = await db.course.findUnique({
     where: {
       id: params.courseId,

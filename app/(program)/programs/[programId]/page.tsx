@@ -4,8 +4,24 @@ import { db } from "@/lib/db";
 import { auth } from "@clerk/nextjs";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 const ProgramIdPage = async ({ params }: { params: { programId: string } }) => {
   const { sessionClaims }: any = auth();
+  const checkUser = await db.userPermission.findMany({
+    where: {
+      userId: sessionClaims.userId,
+    },
+    include: {
+      permission: true,
+    },
+  });
+  if (
+    checkUser
+      .map((item: { permission: { title: any } }) => item.permission.title)
+      .indexOf("Study permission") == -1
+  ) {
+    return redirect("/");
+  }
   const program: any = await db.program.findUnique({
     where: {
       id: params.programId,
