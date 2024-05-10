@@ -29,7 +29,22 @@ const ProgramIdPage = async ({ params }: { params: { programId: string } }) => {
   if (!userId) {
     return redirect("/");
   }
-  const department: any = await db.department.findMany({});
+  const checkUser = await db.userPermission.findMany({
+    where: {
+      userId: userId,
+    },
+    include: {
+      permission: true,
+    },
+  });
+  if (
+    checkUser
+      .map((item: { permission: { title: any } }) => item.permission.title)
+      .indexOf("Edit program permission") == -1
+  ) {
+    return redirect("/");
+  }
+
   // try {
   const program: any = await db.program.findUnique({
     where: {

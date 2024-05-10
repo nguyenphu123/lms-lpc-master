@@ -12,7 +12,24 @@ const ProgramsPage = async () => {
   if (!userId) {
     return redirect("/");
   }
-
+  const checkUser = await db.userPermission.findMany({
+    where: {
+      userId: userId,
+    },
+    include: {
+      permission: true,
+    },
+  });
+  if (
+    checkUser
+      .map((item: { permission: { title: any } }) => item.permission.title)
+      .indexOf("Edit program permission") == -1 &&
+    checkUser
+      .map((item: { permission: { title: any } }) => item.permission.title)
+      .indexOf("Create program permission") == -1
+  ) {
+    return redirect("/");
+  }
   const programs: any = await db.program.findMany({
     // where: {
     //   userId,
@@ -28,7 +45,24 @@ const ProgramsPage = async () => {
 
   return (
     <div className="p-6">
-      <DataTable columns={columns} data={programs} />
+      <DataTable
+        columns={columns}
+        data={programs}
+        canCreate={
+          checkUser
+            .map(
+              (item: { permission: { title: any } }) => item.permission.title
+            )
+            .indexOf("Create program permission") != -1
+        }
+        canEdit={
+          checkUser
+            .map(
+              (item: { permission: { title: any } }) => item.permission.title
+            )
+            .indexOf("Edit program permission") != -1
+        }
+      />
     </div>
   );
 };

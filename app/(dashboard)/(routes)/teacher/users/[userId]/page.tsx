@@ -8,6 +8,7 @@ import Star from "./_components/star";
 import UserInformation from "./_components/infomation-form";
 import CourseHistory from "./_components/courses-history";
 import { string } from "zod";
+import { PermissionForm } from "./_components/permission-list";
 interface userValue {
   userId: string;
   star: number;
@@ -21,13 +22,45 @@ const UserPage = async ({ params }: { params: { userId: string } }) => {
   if (!sessionClaims.userId) {
     return redirect("/");
   }
-
+  const checkUser = await db.userPermission.findMany({
+    where: {
+      userId: sessionClaims.userId,
+    },
+    include: {
+      permission: true,
+    },
+  });
+  if (
+    checkUser
+      .map((item: { permission: { title: any } }) => item.permission.title)
+      .indexOf("User management permission") == -1
+  ) {
+    return redirect("/");
+  }
   const user: userValue | any = await db.user.findUnique({
     where: {
       id: params.userId,
     },
     include: {
       Department: true,
+      userPermission: true,
+    },
+  });
+  const roles = await db.role.findMany({
+    where: {
+      status: "active",
+    },
+    include: {
+      rolePermission: {
+        include: {
+          permission: true,
+        },
+      },
+    },
+  });
+  const permissions = await db.permission.findMany({
+    where: {
+      status: "active",
     },
   });
   return (
@@ -46,8 +79,15 @@ const UserPage = async ({ params }: { params: { userId: string } }) => {
             Information about {user?.username}
           </p>
         </div>
+
         {/* <Star star={user?.star} /> */}
         <UserInformation user={user} />
+        <PermissionForm
+          initialData={user}
+          userId={user.id}
+          role={roles}
+          permission={permissions}
+        ></PermissionForm>
         <CourseHistory userId={params.userId} />
       </div>
     )

@@ -71,6 +71,11 @@ export async function GET(
             userId: params.userId,
           },
         },
+        userPermission: {
+          include: {
+            permission: true,
+          },
+        },
       },
     });
 

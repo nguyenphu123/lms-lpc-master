@@ -14,6 +14,7 @@ import { Button } from "@/components/ui/button";
 interface PermissionProps {
   id: string;
   title: string;
+  roleId: string;
 }
 interface PermissionFormProps {
   initialData: PermissionProps[];
@@ -26,9 +27,12 @@ const Permission = z.object({
 });
 const formSchema = z.array(Permission);
 
-export const DepartmentForm = ({ initialData, roleId, permission }: any) => {
+export const PermissionForm = ({ initialData, roleId, permission }: any) => {
   const [isEditing, setIsEditing] = useState(false);
-  const [permissionList, setPermissionList] = useState(initialData.permission);
+
+  const [permissionList, setPermissionList] = useState(
+    initialData.rolePermission
+  );
 
   const toggleEdit = () => setIsEditing((current) => !current);
 
@@ -38,23 +42,24 @@ export const DepartmentForm = ({ initialData, roleId, permission }: any) => {
     resolver: zodResolver(formSchema),
     defaultValues: initialData,
   });
-  const onChangeDepartmentList = useCallback(
+  const onChangePermissionList = useCallback(
     (e: any, permission: PermissionProps) => {
       // e.preventDefault();
       setPermissionList((items: PermissionProps[]) => {
-        let checkIndex = items
-          .map((val: PermissionProps) => val.id)
-          .indexOf(permission.id);
         let checkIndex2 = items
           .map((val: any) => val.permissionId)
           .indexOf(permission.id);
-        if (checkIndex > -1 || checkIndex2 > -1) {
+        if (checkIndex2 > -1) {
           let tempList = [...permissionList];
-          tempList.splice(checkIndex, 1);
+          tempList.splice(checkIndex2, 1);
 
           return [...tempList];
         } else {
-          return [...permissionList, permission];
+          let newItem = {
+            permissionId: permission.id,
+            permission,
+          };
+          return [...permissionList, newItem];
         }
       });
     },
@@ -67,7 +72,7 @@ export const DepartmentForm = ({ initialData, roleId, permission }: any) => {
 
   const onSubmit = async () => {
     try {
-      await axios.patch(`/api/role/${roleId}`, {
+      await axios.patch(`/api/role/${roleId}/permission`, {
         permissionList,
       });
       toast.success("Role updated");
@@ -81,7 +86,7 @@ export const DepartmentForm = ({ initialData, roleId, permission }: any) => {
   return (
     <div className="mt-6 border bg-slate-100 rounded-md p-4 text-black dark:bg-slate-950">
       <div className="font-medium flex items-center justify-between dark:text-slate-50">
-        department
+        permission
         <Button onClick={toggleEdit} variant="ghost">
           {isEditing ? (
             <>Cancel</>
@@ -99,15 +104,13 @@ export const DepartmentForm = ({ initialData, roleId, permission }: any) => {
             return (
               <div key={item.id} className="dark:text-slate-50">
                 <input
-                  onChange={(e) => onChangeDepartmentList(e, item)}
+                  onChange={(e) => onChangePermissionList(e, item)}
                   disabled={isEditing ? false : true}
                   value={item.title}
                   type="checkbox"
                   checked={
-                    permissionList.map((val: any) => val.id).indexOf(item.id) !=
-                      -1 ||
                     permissionList
-                      .map((val: any) => val.departmentId)
+                      .map((val: any) => val.permissionId)
                       .indexOf(item.id) != -1
                       ? true
                       : false

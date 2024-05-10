@@ -34,7 +34,21 @@ const CourseIdPage = async ({ params }: { params: { courseId: string } }) => {
   if (!userId) {
     return redirect("/");
   }
-
+  const checkUser = await db.userPermission.findMany({
+    where: {
+      userId: userId,
+    },
+    include: {
+      permission: true,
+    },
+  });
+  if (
+    checkUser
+      .map((item: { permission: { title: any } }) => item.permission.title)
+      .indexOf("Edit course permission") == -1
+  ) {
+    return redirect("/");
+  }
   const course: any = await db.course.findUnique({
     where: {
       id: params.courseId,

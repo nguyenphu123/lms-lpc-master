@@ -8,7 +8,7 @@ export async function PATCH(
 ) {
   try {
     const { userId }: any = auth();
-    const { title, permissionList } = await req.json();
+    const { title } = await req.json();
     const role = await db.role.update({
       where: {
         id: params.roleId,
@@ -17,11 +17,8 @@ export async function PATCH(
         title,
       },
     });
-    const permission = await db.permission.createMany({
-      data: permissionList,
-      skipDuplicates: true,
-    });
-    return NextResponse.json(permission);
+
+    return NextResponse.json(role);
   } catch (error) {
     console.log("[ROLES]", error);
     return new NextResponse("Internal Error", { status: 500 });

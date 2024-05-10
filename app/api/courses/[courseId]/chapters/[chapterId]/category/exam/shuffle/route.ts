@@ -37,50 +37,54 @@ export async function GET(
     });
     let questionUnShuffleList: any = [];
     let examMaxScore = 0;
-    for (let i = 0; i < questionsList.Category.length; i++) {
-      let listQuestionByCategory: any = [];
-      let finalListQuestionByCategory: any = [];
-      let categoryMaxScore = 0;
-      for (let j = 0; j < questionsList.Category[i].Exam.length; j++) {
-        categoryMaxScore =
-          categoryMaxScore + parseInt(questionsList.Category[i].Exam[j].score);
+    while (examMaxScore < 100) {
+      for (let i = 0; i < questionsList.Category.length; i++) {
+        let listQuestionByCategory: any = [];
+        let finalListQuestionByCategory: any = [];
+        let categoryMaxScore = 0;
+        for (let j = 0; j < questionsList.Category[i].Exam.length; j++) {
+          categoryMaxScore =
+            categoryMaxScore +
+            parseInt(questionsList.Category[i].Exam[j].score);
 
-        questionsList.Category[i].Exam[j].answer = shuffleArray(
-          questionsList.Category[i].Exam[j].answer
-        );
-        listQuestionByCategory = [
-          ...listQuestionByCategory,
-          questionsList.Category[i].Exam[j],
-        ];
-      }
-      for (let x = 0; x < listQuestionByCategory.length; x++) {
-        if (listQuestionByCategory[x].compulsory) {
-          finalListQuestionByCategory = [
-            ...finalListQuestionByCategory,
-            listQuestionByCategory[x],
+          questionsList.Category[i].Exam[j].answer = shuffleArray(
+            questionsList.Category[i].Exam[j].answer
+          );
+          listQuestionByCategory = [
+            ...listQuestionByCategory,
+            questionsList.Category[i].Exam[j],
           ];
         }
-      }
-      while (
-        finalListQuestionByCategory.length <
-        questionsList.Category[i].numOfAppearance
-      ) {
-        const random = Math.floor(
-          Math.random() * listQuestionByCategory.length
-        );
-        if (!listQuestionByCategory[random].compulsory) {
-          finalListQuestionByCategory = [
-            ...finalListQuestionByCategory,
-            listQuestionByCategory[random],
-          ];
+        for (let x = 0; x < listQuestionByCategory.length; x++) {
+          if (listQuestionByCategory[x].compulsory) {
+            finalListQuestionByCategory = [
+              ...finalListQuestionByCategory,
+              listQuestionByCategory[x],
+            ];
+          }
         }
+        while (
+          finalListQuestionByCategory.length <
+          questionsList.Category[i].numOfAppearance
+        ) {
+          const random = Math.floor(
+            Math.random() * listQuestionByCategory.length
+          );
+          if (!listQuestionByCategory[random].compulsory) {
+            finalListQuestionByCategory = [
+              ...finalListQuestionByCategory,
+              listQuestionByCategory[random],
+            ];
+          }
+        }
+        questionsList.Category[i]["categoryMaxScore"] = categoryMaxScore;
+        questionUnShuffleList = Array.from(
+          new Set([...questionUnShuffleList, ...finalListQuestionByCategory])
+        );
+        examMaxScore = examMaxScore + categoryMaxScore;
       }
-      questionsList.Category[i]["categoryMaxScore"] = categoryMaxScore;
-      questionUnShuffleList = Array.from(
-        new Set([...questionUnShuffleList, ...finalListQuestionByCategory])
-      );
-      examMaxScore = examMaxScore + categoryMaxScore;
     }
+
     const questions = {
       ...questionsList,
       examMaxScore,

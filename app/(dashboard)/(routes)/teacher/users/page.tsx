@@ -9,21 +9,51 @@ import { getUser } from "@/actions/get-user";
 
 const UsersPage = async () => {
   const { userId, sessionClaims }: any = auth();
-  let userInfo: any = await db.user.findUnique({
-    where: { id: userId },
-  });
+
   if (!userId) {
     return redirect("/");
   }
-
-  if (userInfo.status == "pending") {
-    return redirect("/pending");
+  const checkUser = await db.userPermission.findMany({
+    where: {
+      userId: userId,
+    },
+    include: {
+      permission: true,
+    },
+  });
+  if (
+    checkUser
+      .map((item: { permission: { title: any } }) => item.permission.title)
+      .indexOf("User approval permission") == -1 &&
+    checkUser
+      .map((item: { permission: { title: any } }) => item.permission.title)
+      .indexOf("User management permission") == -1
+  ) {
+    return redirect("/");
   }
+
   const users: any = await getUser();
 
   return (
     <div className="p-6">
-      <DataTable columns={columns} data={users} />
+      <DataTable
+        columns={columns}
+        data={users}
+        canCreate={
+          checkUser
+            .map(
+              (item: { permission: { title: any } }) => item.permission.title
+            )
+            .indexOf("User approval permission") != -1
+        }
+        canEdit={
+          checkUser
+            .map(
+              (item: { permission: { title: any } }) => item.permission.title
+            )
+            .indexOf("User management permission") != -1
+        }
+      />
     </div>
   );
 };

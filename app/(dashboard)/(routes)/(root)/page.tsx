@@ -16,13 +16,15 @@ export default async function Dashboard() {
   if (!sessionClaims?.userId) {
     return redirect("/sign-in");
   }
-  let userInfo = await db.user.findUnique({
-    where: { id: sessionClaims.userId, status: "approved" },
+  let userInfo: any = await db.user.findUnique({
+    where: { id: sessionClaims.userId },
   });
-  if (userInfo == undefined) {
+  if (userInfo?.status == "pending") {
     return redirect("/pending");
   }
-
+  if (userInfo?.status == "ban") {
+    return redirect("/ban");
+  }
   await db.user.update({
     where: { id: sessionClaims.userId },
     data: {

@@ -49,7 +49,7 @@ export const TitleForm = ({ initialData, permissionId }: TitleFormProps) => {
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
       await axios.patch(`/api/permission/${permissionId}`, values);
-      toast.success("Role updated");
+      toast.success("Permission updated");
       toggleEdit();
       router.refresh();
     } catch {
@@ -61,7 +61,7 @@ export const TitleForm = ({ initialData, permissionId }: TitleFormProps) => {
     <div className="mt-6 border bg-slate-100 rounded-md p-4 text-black dark:bg-slate-950">
       <div className="font-medium flex items-center justify-between dark:text-slate-50">
         <div className="flex items-center">
-          Role title <Asterisk className="size-4" color="red" />
+          Permission title <Asterisk className="size-4" color="red" />
         </div>
 
         <Button onClick={toggleEdit} variant="ghost">

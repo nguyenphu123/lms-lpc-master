@@ -59,20 +59,6 @@ export const columns: ColumnDef<User>[] = [
       );
     },
   },
-  {
-    accessorKey: "role",
-    header: ({ column }) => {
-      return (
-        <span
-          className="flex items-center cursor-pointer"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          <span className="mr-2">Role</span>
-          <ArrowUpDown className="h-4 w-4" />
-        </span>
-      );
-    },
-  },
 
   {
     accessorKey: "star",

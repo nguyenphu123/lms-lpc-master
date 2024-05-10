@@ -8,11 +8,27 @@ import { db } from "@/lib/db";
 import { IconBadge } from "@/components/icon-badge";
 
 import { TitleForm } from "./_components/title-form";
+import { PermissionForm } from "./_components/permission-list";
 
 const RoleIdPage = async ({ params }: { params: { roleId: string } }) => {
   const { userId } = auth();
 
   if (!userId) {
+    return redirect("/");
+  }
+  const checkUser = await db.userPermission.findMany({
+    where: {
+      userId: userId,
+    },
+    include: {
+      permission: true,
+    },
+  });
+  if (
+    checkUser
+      .map((item: { permission: { title: any } }) => item.permission.title)
+      .indexOf("Edit role permission") == -1
+  ) {
     return redirect("/");
   }
   // try {
@@ -21,11 +37,20 @@ const RoleIdPage = async ({ params }: { params: { roleId: string } }) => {
       id: params.roleId,
       // userId,
     },
+
     include: {
-      permission: true,
+      rolePermission: {
+        include: {
+          permission: true,
+        },
+      },
     },
   });
-
+  const permissions = await db.permission.findMany({
+    where: {
+      status: "active",
+    },
+  });
   if (!role) {
     return redirect("/");
   }
@@ -56,7 +81,7 @@ const RoleIdPage = async ({ params }: { params: { roleId: string } }) => {
               <ArrowLeft className="h-4 w-4 mr-2" />
               Back to role
             </Link>
-            <h1 className="text-2xl font-medium">Program setup</h1>
+            <h1 className="text-2xl font-medium">Role setup</h1>
             <span className="text-sm text-slate-700">
               Complete all fields {completionText}
             </span>
@@ -66,16 +91,19 @@ const RoleIdPage = async ({ params }: { params: { roleId: string } }) => {
           <div>
             <div className="flex items-center gap-x-2">
               <IconBadge icon={LayoutDashboard} />
-              <h2 className="text-xl">Customize your program</h2>
+              <h2 className="text-xl">Customize your role</h2>
             </div>
             <TitleForm initialData={role} roleId={role.id} />
           </div>
           <div className="space-y-6">
-            <div>
-              <div className="flex items-center gap-x-2">
-                <IconBadge icon={ListChecks} />
-                <h2 className="text-xl">Role permissions</h2>
-              </div>
+            <div className="flex items-center gap-x-2">
+              <IconBadge icon={ListChecks} />
+              <h2 className="text-xl">Role permissions</h2>
+              <PermissionForm
+                initialData={role}
+                roleId={role.id}
+                permission={permissions}
+              ></PermissionForm>
             </div>
           </div>
         </div>

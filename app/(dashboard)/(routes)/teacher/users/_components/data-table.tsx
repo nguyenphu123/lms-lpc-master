@@ -27,11 +27,15 @@ import { Input } from "@/components/ui/input";
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
+  canCreate: boolean;
+  canEdit: boolean;
 }
 
 export function DataTable<TData, TValue>({
   columns,
   data,
+  canCreate,
+  canEdit,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(

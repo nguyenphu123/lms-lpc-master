@@ -12,7 +12,24 @@ const CoursesPage = async () => {
   if (!userId) {
     return redirect("/");
   }
-
+  const checkUser = await db.userPermission.findMany({
+    where: {
+      userId: userId,
+    },
+    include: {
+      permission: true,
+    },
+  });
+  if (
+    checkUser
+      .map((item: { permission: { title: any } }) => item.permission.title)
+      .indexOf("Edit course permission") == -1 &&
+    checkUser
+      .map((item: { permission: { title: any } }) => item.permission.title)
+      .indexOf("Create course permission") == -1
+  ) {
+    return redirect("/");
+  }
   const courses = await db.course.findMany({
     // where: {
     //   userId,
@@ -22,13 +39,30 @@ const CoursesPage = async () => {
     },
     include: {
       user: true,
-      updatedUser:true,
+      updatedUser: true,
     },
   });
 
   return (
     <div className="p-6">
-      <DataTable columns={columns} data={courses} />
+      <DataTable
+        columns={columns}
+        data={courses}
+        canCreate={
+          checkUser
+            .map(
+              (item: { permission: { title: any } }) => item.permission.title
+            )
+            .indexOf("Create course permission") != -1
+        }
+        canEdit={
+          checkUser
+            .map(
+              (item: { permission: { title: any } }) => item.permission.title
+            )
+            .indexOf("Edit course permission") != -1
+        }
+      />
     </div>
   );
 };

@@ -3,6 +3,7 @@ import { useState } from "react";
 import { Pencil, X } from "lucide-react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
+import { useQuery } from "react-query";
 const UserInformation = ({ user }: any) => {
   const router = useRouter();
   const [isRoleEditing, setIsRoleEditing] = useState(false);
@@ -34,7 +35,7 @@ const UserInformation = ({ user }: any) => {
     setIsStatusEditing(false);
     let values = {
       department: e.target.department.value,
-      role: e.target.role.value,
+
       username: e.target.username.value,
       status: e.target.status.value,
     };

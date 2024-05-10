@@ -11,19 +11,29 @@ generator client {
 }
 
 model Role {
-  id         String       @id @default(uuid())
-  title      String       @unique
-  permission Permission[]
+  id             String           @id @default(uuid())
+  title          String           @unique
+  status         String           @default("active")
+  rolePermission RolePermission[]
 }
 
 model Permission {
   id             String           @id @default(uuid())
   title          String           @unique
-  role           Role?             @relation(fields: [roleId], references: [id], onDelete: Cascade)
-  roleId         String
+  status         String           @default("active")
   userPermission userPermission[]
+  RolePermission RolePermission[]
+}
+
+model RolePermission {
+  id           String      @id @default(uuid())
+  role         Role?       @relation(fields: [roleId], references: [id])
+  roleId       String?
+  permission   Permission? @relation(fields: [permissionId], references: [id])
+  permissionId String?
 
   @@index([roleId])
+  @@index([permissionId])
 }
 
 model userPermission {
@@ -38,10 +48,10 @@ model userPermission {
 }
 
 model Department {
-  id    String @id @default(uuid())
-  title String @unique
-  User  User[]
-
+  id                  String                @id @default(uuid())
+  title               String                @unique
+  User                User[]
+  status              String                @default("active")
   ProgramOnDepartment ProgramOnDepartment[]
 
   CourseOnDepartment CourseOnDepartment[]
@@ -78,10 +88,11 @@ model User {
   // role                     String
   star                     Int?
   imageUrl                 String?
-  status                   String
+  status                   String                     @default("active")
   programParticipantRecord ProgramParticipantRecord[]
   Course                   Course[]                   @relation("userId")
   updatedCourse            Course[]                   @relation("updatedBy")
+  instructedCourse         Course[]                   @relation("courseInstructedBy")
   ClassSessionRecord       ClassSessionRecord[]
   Module                   Module[]
   UserProgress             UserProgress[]
@@ -140,6 +151,8 @@ model Course {
   userId             String
   updatedUser        User?                @relation("updatedBy", fields: [updatedBy], references: [id])
   updatedBy          String               @default("")
+  courseInstructor   User?                @relation("courseInstructedBy", fields: [courseInstructedBy], references: [id])
+  courseInstructedBy String               @default("")
   startDate          DateTime             @default(now())
   endDate            DateTime?
   updateDate         DateTime?
@@ -154,6 +167,7 @@ model Course {
 
   @@index([userId])
   @@index([updatedBy])
+  @@index([courseInstructedBy])
 }
 
 model ClassSessionRecord {
@@ -201,8 +215,9 @@ model Module {
   waitTime     Int?
   timeLimit    Float?
   scoreLimit   Int?
-  Category     Category[]
-  Resource     Resource[]
+
+  Category Category[]
+  Resource Resource[]
 
   @@index([courseId])
   @@index([userId])

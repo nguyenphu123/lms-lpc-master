@@ -34,6 +34,7 @@ const ChapterIdPage = async ({
   params: { courseId: string; chapterId: string };
 }) => {
   const { userId } = auth();
+
   let contentType = "file";
   if (!userId) {
     return redirect("/");
@@ -64,7 +65,21 @@ const ChapterIdPage = async ({
   if (!chapter) {
     return redirect("/");
   }
-
+  const checkUser = await db.userPermission.findMany({
+    where: {
+      userId: userId,
+    },
+    include: {
+      permission: true,
+    },
+  });
+  if (
+    checkUser
+      .map((item: { permission: { title: any } }) => item.permission.title)
+      .indexOf("Edit course permission") == -1
+  ) {
+    return redirect("/");
+  }
   const requiredFields = [
     chapter.title,
     // chapter.description,
@@ -90,6 +105,7 @@ const ChapterIdPage = async ({
     //   toast.error("Something went wrong");
     // }
   };
+
   return (
     <>
       {!chapter.isPublished && (

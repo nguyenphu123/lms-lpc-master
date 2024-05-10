@@ -5,6 +5,7 @@ export const getUser = async (): Promise<any> => {
     const users: any = await db.user.findMany({
       include: {
         Department: true,
+        userPermission: true,
       },
     });
     for (let i = 0; i < users.length; i++) {

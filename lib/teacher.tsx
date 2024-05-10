@@ -5,11 +5,14 @@ import Link from "next/link";
 import { useQuery } from "react-query";
 
 export const IsTeacher = ({ userId }: any) => {
-  const fetchUserRole = async () => {
+  const fetchUserPermission = async () => {
     const { data } = await axios.get(`/api/user/${userId}`);
     return data;
   };
-  const { data, error, isLoading } = useQuery("userRole", fetchUserRole);
+  const { data, error, isLoading } = useQuery(
+    "userPermission",
+    fetchUserPermission
+  );
 
   if (error) {
     return <></>;
@@ -17,7 +20,18 @@ export const IsTeacher = ({ userId }: any) => {
   if (isLoading) {
     return <></>;
   } else {
-    return (
+    return data.userPermission.length <= 3 &&
+      data.userPermission
+        .map((item: { permission: { title: any } }) => item.permission.title)
+        .indexOf("Create personal report") != -1 &&
+      data.userPermission
+        .map((item: { permission: { title: any } }) => item.permission.title)
+        .indexOf("User personal management permission") != -1 &&
+      data.userPermission
+        .map((item: { permission: { title: any } }) => item.permission.title)
+        .indexOf("Study permission") != -1 ? (
+      <></>
+    ) : (
       <Link href="/teacher/programs">
         <Button size="sm" variant="ghost">
           Teacher mode

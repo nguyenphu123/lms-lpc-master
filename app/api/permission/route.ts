@@ -5,6 +5,7 @@ import { db } from "@/lib/db";
 export async function POST(req: Request) {
   try {
     const { title } = await req.json();
+
     const permission = await db.permission.create({
       data: {
         title,
@@ -24,7 +25,11 @@ export async function GET(req: Request) {
     if (!userId) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
-    const role = await db.permission.findMany({});
+    const role = await db.permission.findMany({
+      where: {
+        status: "active",
+      },
+    });
     return NextResponse.json(role);
   } catch (error) {
     console.log("[PERMISSION]", error);

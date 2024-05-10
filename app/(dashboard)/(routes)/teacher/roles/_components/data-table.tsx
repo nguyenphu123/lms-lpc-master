@@ -29,11 +29,15 @@ import { Input } from "@/components/ui/input";
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
+  canCreate: boolean;
+  canEdit: boolean;
 }
 
 export function DataTable<TData, TValue>({
   columns,
   data,
+  canCreate,
+  canEdit,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
@@ -59,19 +63,23 @@ export function DataTable<TData, TValue>({
     <div>
       <div className="flex items-center py-4 justify-between">
         <Input
-          placeholder="Filter courses..."
+          placeholder="Filter roles..."
           value={(table.getColumn("title")?.getFilterValue() as string) ?? ""}
           onChange={(event) =>
             table.getColumn("title")?.setFilterValue(event.target.value)
           }
           className="max-w-sm"
         />
-        <Link href="/teacher/create/role">
-          <Button>
-            <PlusCircle className="h-4 w-4 mr-2" />
-            New Role
-          </Button>
-        </Link>
+        {canCreate ? (
+          <Link href="/teacher/create/role">
+            <Button>
+              <PlusCircle className="h-4 w-4 mr-2" />
+              New Role
+            </Button>
+          </Link>
+        ) : (
+          <></>
+        )}
       </div>
       <div className="rounded-md border">
         <Table>

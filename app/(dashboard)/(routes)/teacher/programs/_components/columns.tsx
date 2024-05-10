@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
+import { ProgramActionCell } from "@/components/ui/program-action-cell";
 
 export const columns: ColumnDef<Course>[] = [
   {
@@ -98,33 +99,6 @@ export const columns: ColumnDef<Course>[] = [
   {
     id: "actions",
     accessorKey: "Action",
-    cell: ({ row }) => {
-      const { id } = row.original;
-
-      return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-4 w-8 p-0">
-              <span className="sr-only">Open menu</span>
-              <MoreHorizontal className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <Link href={`/teacher/programs/${id}`}>
-              <DropdownMenuItem>
-                <Pencil className="h-4 w-4 mr-2" />
-                Edit
-              </DropdownMenuItem>
-            </Link>
-            <Link href={`/teacher/programs/${id}/report`}>
-              <DropdownMenuItem>
-                <ClipboardList className="h-4 w-4 mr-2" />
-                Report
-              </DropdownMenuItem>
-            </Link>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      );
-    },
+    cell: ProgramActionCell,
   },
 ];

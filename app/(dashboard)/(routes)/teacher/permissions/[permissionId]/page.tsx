@@ -19,6 +19,21 @@ const PermissionIdPage = async ({
   if (!userId) {
     return redirect("/");
   }
+  const checkUser = await db.userPermission.findMany({
+    where: {
+      userId: userId,
+    },
+    include: {
+      permission: true,
+    },
+  });
+  if (
+    checkUser
+      .map((item: { permission: { title: any } }) => item.permission.title)
+      .indexOf("Edit permission permission") == -1
+  ) {
+    return redirect("/");
+  }
   // try {
   const permission: any = await db.permission.findUnique({
     where: {
@@ -51,13 +66,13 @@ const PermissionIdPage = async ({
         <div className="flex items-center justify-between">
           <div className="flex flex-col gap-y-2">
             <Link
-              href={`/teacher/roles`}
+              href={`/teacher/permissions`}
               className="flex items-center text-sm hover:opacity-75 transition mb-6"
             >
               <ArrowLeft className="h-4 w-4 mr-2" />
-              Back to role
+              Back to permission
             </Link>
-            <h1 className="text-2xl font-medium">Program setup</h1>
+            <h1 className="text-2xl font-medium">Permission setup</h1>
             <span className="text-sm text-slate-700">
               Complete all fields {completionText}
             </span>
@@ -67,7 +82,7 @@ const PermissionIdPage = async ({
           <div>
             <div className="flex items-center gap-x-2">
               <IconBadge icon={LayoutDashboard} />
-              <h2 className="text-xl">Customize your program</h2>
+              <h2 className="text-xl">Customize your permission</h2>
             </div>
             <TitleForm initialData={permission} permissionId={permission.id} />
           </div>

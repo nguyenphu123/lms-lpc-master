@@ -4,6 +4,7 @@ import * as React from "react";
 import {
   ColumnDef,
   ColumnFiltersState,
+  PaginationState,
   SortingState,
   flexRender,
   getCoreRowModel,
@@ -29,17 +30,24 @@ import { Input } from "@/components/ui/input";
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
+  canCreate: boolean;
+  canEdit: boolean;
 }
 
 export function DataTable<TData, TValue>({
   columns,
   data,
+  canCreate,
+  canEdit,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
   );
-
+  const [pagination, setPagination] = React.useState<PaginationState>({
+    pageIndex: 0,
+    pageSize: 10,
+  });
   const table = useReactTable({
     data,
     columns,
@@ -49,8 +57,10 @@ export function DataTable<TData, TValue>({
     getSortedRowModel: getSortedRowModel(),
     onColumnFiltersChange: setColumnFilters,
     getFilteredRowModel: getFilteredRowModel(),
+    onPaginationChange: setPagination,
     state: {
       sorting,
+      pagination,
       columnFilters,
     },
   });
@@ -66,12 +76,16 @@ export function DataTable<TData, TValue>({
           }
           className="max-w-sm"
         />
-        <Link href="/teacher/create/permission">
-          <Button>
-            <PlusCircle className="h-4 w-4 mr-2" />
-            New Permission
-          </Button>
-        </Link>
+        {canCreate ? (
+          <Link href="/teacher/create/permission">
+            <Button>
+              <PlusCircle className="h-4 w-4 mr-2" />
+              New Permission
+            </Button>
+          </Link>
+        ) : (
+          <></>
+        )}
       </div>
       <div className="rounded-md border">
         <Table>

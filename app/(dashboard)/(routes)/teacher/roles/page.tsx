@@ -12,15 +12,46 @@ const RolesPage = async () => {
   if (!userId) {
     return redirect("/");
   }
-
-  const roles = await db.role.findMany({
-   
-    
+  const checkUser = await db.userPermission.findMany({
+    where: {
+      userId: userId,
+    },
+    include: {
+      permission: true,
+    },
   });
+  if (
+    checkUser
+      .map((item: { permission: { title: any } }) => item.permission.title)
+      .indexOf("Edit role permission") == -1 &&
+    checkUser
+      .map((item: { permission: { title: any } }) => item.permission.title)
+      .indexOf("Create role permission") == -1
+  ) {
+    return redirect("/");
+  }
+  const roles = await db.role.findMany({});
 
   return (
     <div className="p-6">
-      <DataTable columns={columns} data={roles} />
+      <DataTable
+        columns={columns}
+        data={roles}
+        canCreate={
+          checkUser
+            .map(
+              (item: { permission: { title: any } }) => item.permission.title
+            )
+            .indexOf("Create program permission") != -1
+        }
+        canEdit={
+          checkUser
+            .map(
+              (item: { permission: { title: any } }) => item.permission.title
+            )
+            .indexOf("Edit program permission") != -1
+        }
+      />
     </div>
   );
 };

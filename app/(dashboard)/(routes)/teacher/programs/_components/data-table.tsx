@@ -29,11 +29,15 @@ import { Input } from "@/components/ui/input";
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
+  canCreate: boolean;
+  canEdit: boolean;
 }
 
 export function DataTable<TData, TValue>({
   columns,
   data,
+  canCreate,
+  canEdit,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
@@ -66,12 +70,16 @@ export function DataTable<TData, TValue>({
           }
           className="max-w-sm"
         />
-        <Link href="/teacher/create/program">
-          <Button>
-            <PlusCircle className="h-4 w-4 mr-2" />
-            New program
-          </Button>
-        </Link>
+        {canCreate ? (
+          <Link href="/teacher/create/program">
+            <Button>
+              <PlusCircle className="h-4 w-4 mr-2" />
+              New program
+            </Button>
+          </Link>
+        ) : (
+          <></>
+        )}
       </div>
       <div className="rounded-md border">
         <Table>
