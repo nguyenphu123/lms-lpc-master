@@ -59,17 +59,17 @@ export function DataTable<TData, TValue>({
     <div>
       <div className="flex items-center py-4 justify-between">
         <Input
-          placeholder="Filter programs..."
+          placeholder="Filter permission..."
           value={(table.getColumn("title")?.getFilterValue() as string) ?? ""}
           onChange={(event) =>
             table.getColumn("title")?.setFilterValue(event.target.value)
           }
           className="max-w-sm"
         />
-        <Link href="/teacher/create/program">
+        <Link href="/teacher/create/permission">
           <Button>
             <PlusCircle className="h-4 w-4 mr-2" />
-            New program
+            New Permission
           </Button>
         </Link>
       </div>

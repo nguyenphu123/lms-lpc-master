@@ -18,7 +18,7 @@ export async function POST(req: Request) {
     let createUser = await db.user.create({
       data: {
         id: createdUserId,
-        role: "STAFF",
+
         email: emailAddress,
         status: "pending",
         username: username,
@@ -45,16 +45,11 @@ export async function POST(req: Request) {
         },
       },
     });
-    const adminList = await db.user.findMany({
-      where: {
-        role: "ADMIN",
-      },
-    });
-    const adminEmail = adminList.map((item) => item.email);
+
     const mess = {
       from: "Webmaster@lp.com.vn",
-      to: adminEmail.toString(),
-      cc: adminEmail.toString(),
+      to: "",
+      cc: "",
       subject: `${emailAddress} has requested approval to access the system`,
       text: `
         Please review and approve this user's request to access the system.

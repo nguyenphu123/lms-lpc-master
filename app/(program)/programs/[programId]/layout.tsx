@@ -18,9 +18,6 @@ const ProgramLayout = async ({
   if (!userId) {
     return redirect("/");
   }
-  if (userInfo.role.toUpperCase() == "STAFF") {
-    return redirect("/");
-  }
 
   return (
     <div className="h-full">

@@ -66,17 +66,14 @@ export const SidebarRoutes = ({ userId }: any) => {
   const fetchUserRoutes = async () => {
     const { data } = await axios.get(`/api/user/${userId}`);
 
-    if (data.role != "ADMIN") {
-    } else {
-      setTeacherRoutes([
-        ...teacherRoutes,
-        {
-          icon: UsersRound,
-          label: "Users",
-          href: "/teacher/users",
-        },
-      ]);
-    }
+    setTeacherRoutes([
+      ...teacherRoutes,
+      {
+        icon: UsersRound,
+        label: "Users",
+        href: "/teacher/users",
+      },
+    ]);
 
     return data;
   };

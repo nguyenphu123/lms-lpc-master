@@ -36,7 +36,6 @@ export async function PATCH(
     const user = await db.user.update({
       where: { id: params.userId },
       data: {
-        role: values.role,
         status: values.status,
         username: values.username,
       },

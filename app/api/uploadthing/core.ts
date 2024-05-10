@@ -9,9 +9,8 @@ const handleAuth = async () => {
   let userInfo: any = await db.user.findUnique({
     where: { id: userId, status: "approved" },
   });
-  const isAuthorized = userInfo.role.toUpperCase() == "STAFF";
 
-  if (!userId || !isAuthorized) throw new Error("Unauthorized");
+  if (!userId) throw new Error("Unauthorized");
   return { userId };
 };
 

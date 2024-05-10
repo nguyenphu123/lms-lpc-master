@@ -57,28 +57,19 @@ export const Cell = ({ row }: any) => {
           </Link>
         )}
 
-        {userId != id && (role != "ADMIN" || role != "MANAGER") ? (
-          status == "approved" ? (
-            <DropdownMenuItem onClick={() => onChangeStatus(id, status)}>
-              <Ban className="h-4 w-4 mr-2" />
-              Ban
-            </DropdownMenuItem>
-          ) : (
-            <>
-              <DropdownMenuItem onClick={() => onChangeStatus(id, status)}>
-                <BadgeCheck className="h-4 w-4 mr-2" />
-                Approved
-              </DropdownMenuItem>
+        <DropdownMenuItem onClick={() => onChangeStatus(id, status)}>
+          <Ban className="h-4 w-4 mr-2" />
+          Ban
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={() => onChangeStatus(id, status)}>
+          <BadgeCheck className="h-4 w-4 mr-2" />
+          Approved
+        </DropdownMenuItem>
 
-              <DropdownMenuItem onClick={() => onDelete(id)}>
-                <BadgeX className="h-4 w-4 mr-2" />
-                Delete
-              </DropdownMenuItem>
-            </>
-          )
-        ) : (
-          <></>
-        )}
+        <DropdownMenuItem onClick={() => onDelete(id)}>
+          <BadgeX className="h-4 w-4 mr-2" />
+          Delete
+        </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );

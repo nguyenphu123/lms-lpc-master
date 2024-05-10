@@ -131,40 +131,6 @@ const UserInformation = ({ user }: any) => {
 
       <div>
         <label className="block text-gray-700 text-sm font-bold mb-2">
-          Role:
-        </label>
-        <div className="relative bg-gray-100 border border-gray-300 rounded-md  text-black">
-          <select
-            defaultValue={user?.role}
-            name="role"
-            disabled={!isRoleEditing}
-            // style={{backgroundColor:"#f3f4f6",textColor:"#11111"}}
-            className={`appearance:none w-full bg-gray-100 border border-gray-300 rounded-md p-2 ${
-              isRoleEditing ? "border-blue-500" : ""
-            }`}
-          >
-            <option value="STAFF">Staff</option>
-            <option value="MANAGER">Manager</option>
-            <option disabled value="ADMIN">
-              Admin
-            </option>
-          </select>
-
-          <div
-            className="absolute right-2 top-2 cursor-pointer"
-            onClick={handleRoleEditClick}
-          >
-            {isRoleEditing ? (
-              <X className="text-blue-500 w-5 h-5" />
-            ) : (
-              <Pencil className="text-blue-500 w-5 h-5" />
-            )}
-          </div>
-        </div>
-      </div>
-
-      <div>
-        <label className="block text-gray-700 text-sm font-bold mb-2">
           Star
         </label>
         <input

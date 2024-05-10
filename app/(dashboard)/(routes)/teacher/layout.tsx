@@ -8,9 +8,7 @@ const TeacherLayout = async ({ children }: { children: React.ReactNode }) => {
     where: { id: userId, status: "approved" },
   });
 
-  if (userInfo.role.toUpperCase() == "STAFF") {
-    return redirect("/");
-  }
+  
 
   return (
     <div className="overflow-x-hidden items-center justify-center">

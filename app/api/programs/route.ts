@@ -9,9 +9,6 @@ export async function GET(req: Request) {
     let userInfo: any = await db.user.findUnique({
       where: { id: userId, status: "approved" },
     });
-    if (!userId || userInfo.role.toUpperCase() == "STAFF") {
-      return new NextResponse("Unauthorized", { status: 401 });
-    }
 
     const programs = await db.program.findMany();
 
@@ -28,9 +25,7 @@ export async function POST(req: Request) {
     let userInfo: any = await db.user.findUnique({
       where: { id: userId, status: "approved" },
     });
-    if (!userId || userInfo.role.toUpperCase() == "STAFF") {
-      return new NextResponse("Unauthorized", { status: 401 });
-    }
+
     const date = new Date();
     const program = await db.program.create({
       data: {

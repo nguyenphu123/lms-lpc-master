@@ -15,9 +15,7 @@ const UsersPage = async () => {
   if (!userId) {
     return redirect("/");
   }
-  if (sessionClaims.userInfo.staff) {
-    return redirect("/");
-  }
+
   if (userInfo.status == "pending") {
     return redirect("/pending");
   }
@@ -25,11 +23,7 @@ const UsersPage = async () => {
 
   return (
     <div className="p-6">
-      {userInfo.role == "ADMIN" ? (
-        <DataTable columns={columns} data={users} />
-      ) : (
-        <></>
-      )}
+      <DataTable columns={columns} data={users} />
     </div>
   );
 };

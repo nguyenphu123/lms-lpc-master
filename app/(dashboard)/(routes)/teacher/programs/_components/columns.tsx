@@ -68,7 +68,7 @@ export const columns: ColumnDef<Course>[] = [
     },
     cell: ({ row }: any) => {
       const { updatedUser } = row.original;
-      console.log(updatedUser);
+
       return <div>{updatedUser?.username} </div>;
     },
   },

@@ -17,14 +17,12 @@ export const IsTeacher = ({ userId }: any) => {
   if (isLoading) {
     return <></>;
   } else {
-    return data.role == "ADMIN" || data.role == "MANAGER" ? (
+    return (
       <Link href="/teacher/programs">
         <Button size="sm" variant="ghost">
           Teacher mode
         </Button>
       </Link>
-    ) : (
-      <></>
     );
   }
 };

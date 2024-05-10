@@ -61,22 +61,29 @@ export const SidebarRoutes = ({ userId }: any) => {
       label: "Analytics",
       href: "/teacher/analytics",
     },
+    {
+      icon: BarChart,
+      label: "Roles",
+      href: "/teacher/roles",
+    },
+    {
+      icon: BarChart,
+      label: "Permissions",
+      href: "/teacher/permissions",
+    },
   ]);
   const isTeacherPage = pathname?.includes("/teacher");
   const fetchUserRoutes = async () => {
     const { data } = await axios.get(`/api/user/${userId}`);
 
-    if (data.role != "ADMIN") {
-    } else {
-      setTeacherRoutes([
-        ...teacherRoutes,
-        {
-          icon: UsersRound,
-          label: "Users",
-          href: "/teacher/users",
-        },
-      ]);
-    }
+    setTeacherRoutes([
+      ...teacherRoutes,
+      {
+        icon: UsersRound,
+        label: "Users",
+        href: "/teacher/users",
+      },
+    ]);
 
     return data;
   };
