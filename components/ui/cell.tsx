@@ -25,7 +25,7 @@ export const Cell = ({ row }: any) => {
   const router = useRouter();
   const { userId }: any = useAuth();
   const fetchUserPermission = async () => {
-    const { data } = await axios.get(`/api/user/${userId}`);
+    const { data } = await axios.get(`/api/user/${userId}/personalInfo`);
     return data;
   };
 
@@ -35,7 +35,7 @@ export const Cell = ({ row }: any) => {
   );
   async function onChangeStatus(id: string, status: string): Promise<void> {
     let values = {
-      status: status == "approved",
+      status: "approved",
     };
 
     await axios.patch(`/api/user/${id}/status`, values);
@@ -44,7 +44,7 @@ export const Cell = ({ row }: any) => {
   }
   async function onChangeStatusBan(id: string, status: string): Promise<void> {
     let values = {
-      status: status == "ban",
+      status: "ban",
     };
 
     await axios.patch(`/api/user/${id}/status`, values);
@@ -53,7 +53,7 @@ export const Cell = ({ row }: any) => {
   }
   async function onDelete(id: string): Promise<void> {
     let values = {
-      status: status == "inActive",
+      status: "inActive",
     };
 
     await axios.patch(`/api/user/${id}/status`, values);
@@ -72,7 +72,7 @@ export const Cell = ({ row }: any) => {
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
-          {status != "approved" &&
+          {status == "pending" &&
           data.userPermission
             .map(
               (item: { permission: { title: any } }) => item.permission.title
@@ -87,16 +87,21 @@ export const Cell = ({ row }: any) => {
               </DropdownMenuItem>
             </Link>
           )}
+          {status == "approved" ? (
+            <DropdownMenuItem onClick={() => onChangeStatusBan(id, status)}>
+              <Ban className="h-4 w-4 mr-2" />
+              Ban
+            </DropdownMenuItem>
+          ) : (
+            <></>
+          )}
 
-          <DropdownMenuItem onClick={() => onChangeStatusBan(id, status)}>
-            <Ban className="h-4 w-4 mr-2" />
-            Ban
-          </DropdownMenuItem>
           {data.userPermission
             .map(
               (item: { permission: { title: any } }) => item.permission.title
             )
-            .indexOf("User approval permission") != -1 ? (
+            .indexOf("User approval permission") != -1 &&
+          status == "pending" ? (
             <DropdownMenuItem onClick={() => onChangeStatus(id, status)}>
               <BadgeCheck className="h-4 w-4 mr-2" />
               Approve
@@ -104,7 +109,18 @@ export const Cell = ({ row }: any) => {
           ) : (
             <></>
           )}
-
+          {data.userPermission
+            .map(
+              (item: { permission: { title: any } }) => item.permission.title
+            )
+            .indexOf("User approval permission") != -1 && status == "ban" ? (
+            <DropdownMenuItem onClick={() => onChangeStatus(id, status)}>
+              <BadgeCheck className="h-4 w-4 mr-2" />
+              Unban
+            </DropdownMenuItem>
+          ) : (
+            <></>
+          )}
           <DropdownMenuItem onClick={() => onDelete(id)}>
             <BadgeX className="h-4 w-4 mr-2" />
             Disable

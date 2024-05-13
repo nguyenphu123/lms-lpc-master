@@ -26,7 +26,8 @@ export const ProgramActionCell = ({ row }: any) => {
 
   const { userId }: any = useAuth();
   const fetchUserPermission = async () => {
-    const { data } = await axios.get(`/api/user/${userId}`);
+    const { data } = await axios.get(`/api/user/${userId}/personalInfo`);
+
     return data;
   };
 
@@ -34,6 +35,7 @@ export const ProgramActionCell = ({ row }: any) => {
     "userPermission",
     fetchUserPermission
   );
+  // console.log(data);
   if (isLoading) {
     return <></>;
   } else {

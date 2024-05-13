@@ -74,7 +74,11 @@ const CourseIdPage = async ({ params }: { params: { courseId: string } }) => {
     },
   });
 
-  const department: any = await db.department.findMany({});
+  const department: any = await db.department.findMany({
+    include: {
+      User: true,
+    },
+  });
   for (let i = 0; i < department.length; i++) {
     if (
       course.CourseOnDepartment.map((item: any) => item.departmentId).indexOf(
@@ -187,7 +191,7 @@ const CourseIdPage = async ({ params }: { params: { courseId: string } }) => {
                 department={department}
               />
             </div>
-            <div>
+            {/* <div>
               <div className="flex items-center gap-x-2">
                 <IconBadge icon={UserPlus} />
                 <h2 className="text-xl">Assign staff</h2>
@@ -197,7 +201,7 @@ const CourseIdPage = async ({ params }: { params: { courseId: string } }) => {
                 courseId={course.id}
                 Student={users}
               />
-            </div>
+            </div> */}
           </div>
         </div>
       </div>

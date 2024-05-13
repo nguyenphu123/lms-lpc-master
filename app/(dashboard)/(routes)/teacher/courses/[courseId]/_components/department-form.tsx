@@ -5,7 +5,7 @@ import axios from "axios";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { Pencil } from "lucide-react";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 
@@ -36,7 +36,7 @@ const formSchema = z.array(Department);
 export const DepartmentForm = ({ initialData, courseId, department }: any) => {
   const [isEditing, setIsEditing] = useState(false);
   const [departmentList, setDepartmentList] = useState(department);
-
+  const [assignList, setAssignList] = useState([]);
   const toggleEdit = () => setIsEditing((current) => !current);
   const router = useRouter();
 
@@ -44,7 +44,14 @@ export const DepartmentForm = ({ initialData, courseId, department }: any) => {
     resolver: zodResolver(formSchema),
     defaultValues: initialData.Department,
   });
-
+  useEffect(() => {
+    let newAssignList: any = [...assignList];
+    for (let i = 0; i < departmentList.length; i++) {
+      let user = departmentList[i].user;
+      newAssignList.push(user);
+    }
+    setAssignList(newAssignList);
+  }, []);
   const onChangeDepartmentList = (
     e: any,
     department: DepartmentProps,
@@ -52,21 +59,58 @@ export const DepartmentForm = ({ initialData, courseId, department }: any) => {
   ) => {
     // e.preventDefault();
     let newList = [...departmentList];
-
+    let newAssignList: any = [...assignList];
     if (newList[index].isEnrolled) {
       newList[index].isEnrolled = false;
+      for (let i = 0; i < newList[index].user.length; i++) {
+        newList[index].user[i].isEnrolled = false;
+        newAssignList.splice(
+          newAssignList
+            .map((item: { id: any }) => item.id)
+            .indexOf(newList[index].user[i].id),
+          1
+        );
+      }
     } else {
       newList[index].isEnrolled = true;
+      for (let i = 0; i < newList[index].user.length; i++) {
+        newList[index].user[i].isEnrolled = true;
+        newAssignList = [...newAssignList, newList[index].user[i]];
+      }
     }
+    setAssignList(newAssignList);
     setDepartmentList(newList);
   };
-
+  const onChangeStudentList = async (
+    e: any,
+    department: DepartmentProps,
+    i: any,
+    j: any
+  ) => {
+    let newList = [...departmentList];
+    let newAssignList: any = [...assignList];
+    if (newList[i].user[j].isEnrolled) {
+      newList[i].user[j].isEnrolled = false;
+      newList[i].isEnrolled = false;
+      newAssignList.splice(
+        newAssignList
+          .map((item: { id: any }) => item.id)
+          .indexOf(newList[i].user[j].id),
+        1
+      );
+    } else {
+      newList[i].user[j].isEnrolled = true;
+      newAssignList = [...newAssignList, newList[i].user[j]];
+    }
+    setAssignList(newAssignList);
+    setDepartmentList(newList);
+  };
   // const { isSubmitting, isValid } = form.formState;
 
   const onSubmit = async () => {
     try {
       await axios.patch(`/api/courses/${courseId}/department`, {
-        departmentList,
+        assignList,
       });
       toast.success("Course updated");
       toggleEdit();
@@ -108,6 +152,22 @@ export const DepartmentForm = ({ initialData, courseId, department }: any) => {
                     defaultChecked={item.isEnrolled}
                   />
                   {item.title}
+                  <div className="grid grid-cols-3 gap-6 w-full">
+                    {item.user.map((item: any, j: any) => {
+                      return (
+                        <div key={item.id} className="dark:text-slate-50">
+                          <input
+                            onChange={(e) => onChangeStudentList(e, item, i, j)}
+                            disabled={isEditing ? false : true}
+                            value={item.title}
+                            type="checkbox"
+                            defaultChecked={item.isEnrolled}
+                          />
+                          {item.username}
+                        </div>
+                      );
+                    })}
+                  </div>
                 </div>
               );
             })}

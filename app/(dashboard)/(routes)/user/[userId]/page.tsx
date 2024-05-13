@@ -6,7 +6,9 @@ import Avatar from "./_components/avatar";
 import Star from "./_components/star";
 import UserInformation from "./_components/infomation-form";
 import CourseHistory from "./_components/courses-history";
-import { string } from "zod";
+import { DataTable } from "./_components/data-table";
+import { columns } from "./_components/columns";
+
 interface userValue {
   userId: string;
   star: number;
@@ -43,6 +45,27 @@ const UserPage = async ({ params }: { params: { userId: string } }) => {
       Department: true,
     },
   });
+
+  const courses = await db.course.findMany({
+    where: {
+      ClassSessionRecord: {
+        every: {
+          userId,
+        },
+      },
+    },
+    orderBy: {
+      startDate: "desc",
+    },
+    include: {
+      Module: {
+        include: {
+          UserProgress: true,
+        },
+      },
+    },
+  });
+
   return (
     user && (
       <div className="p-6">
@@ -50,6 +73,17 @@ const UserPage = async ({ params }: { params: { userId: string } }) => {
         <Star star={user?.star} />
         <UserInformation user={user} />
         <CourseHistory userId={params.userId} />
+        <DataTable
+          columns={columns}
+          data={courses}
+          canPrintReport={
+            checkUser
+              .map(
+                (item: { permission: { title: any } }) => item.permission.title
+              )
+              .indexOf("Create personal report") != -1
+          }
+        />
       </div>
     )
   );

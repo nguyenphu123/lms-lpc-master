@@ -12,13 +12,13 @@ import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 interface PermissionProps {
-  id: string;
+  permissionId: string;
   title: string;
-  userId: string;
+  roleId: string;
 }
 interface PermissionFormProps {
   initialData: PermissionProps[];
-  userId: string;
+  permissionId: string;
   role: PermissionProps[];
 }
 const Permission = z.object({
@@ -49,11 +49,38 @@ export const PermissionForm = ({
   });
   const onChangePermissionList = (e: any, permission: PermissionProps) => {
     // e.preventDefault();
+    let newPermissionList = [...permissionList];
+    if (
+      newPermissionList
+        .map((item) => item.permissionId)
+        .indexOf(permission.permissionId) != -1
+    ) {
+      newPermissionList.splice(
+        newPermissionList
+          .map((item) => item.permissionId)
+          .indexOf(permission.permissionId),
+        1
+      );
+    } else {
+      let newItem = {
+        permissionId: permission.permissionId,
+        permission: permission,
+        roleId: permission.roleId,
+      };
+
+      setPermissionList((prevState) => [...prevState, newItem]);
+    }
   };
   const onChangePermissionListByRole = (e: any, role: any) => {
     if (currentRole == role.title) {
       setCurrentRole("");
-      setPermissionList([]);
+      let newPermissionList = [...permissionList];
+      for (let i = 0; i < newPermissionList.length; i++) {
+        if (newPermissionList[i].roleId == role.roleId) {
+          newPermissionList.splice(i, 1);
+        }
+      }
+      setPermissionList([...newPermissionList]);
     } else {
       setCurrentRole(role.title);
       setPermissionList([]);
@@ -61,6 +88,7 @@ export const PermissionForm = ({
         let newItem = {
           permissionId: role.rolePermission[i].permissionId,
           permission: role.rolePermission[i].permission,
+          roleId: role.rolePermission[i].roleId,
         };
 
         setPermissionList((prevState) => [...prevState, newItem]);
@@ -88,7 +116,6 @@ export const PermissionForm = ({
     }
   };
   useEffect(() => {
-    console.log(role);
     for (let i = 0; i < role.length; i++) {
       checkRole(role[i].title, role[i].rolePermission);
     }

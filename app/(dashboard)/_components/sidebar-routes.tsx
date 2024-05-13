@@ -10,6 +10,9 @@ import {
   List,
   Star,
   UsersRound,
+  CircuitBoard,
+  Cctv,
+  Waypoints,
 } from "lucide-react";
 import { usePathname } from "next/navigation";
 
@@ -47,7 +50,8 @@ export const SidebarRoutes = ({ userId }: any) => {
   const [teacherRoutes, setTeacherRoutes]: any = useState([]);
   const isTeacherPage = pathname?.includes("/teacher");
   const fetchUserRoutes = async () => {
-    const { data } = await axios.get(`/api/user/${userId}`);
+    const { data } = await axios.get(`/api/user/${userId}/personalInfo`);
+
     if (
       data.userPermission
         .map((item: { permission: { title: any } }) => item.permission.title)
@@ -56,12 +60,12 @@ export const SidebarRoutes = ({ userId }: any) => {
         .map((item: { permission: { title: any } }) => item.permission.title)
         .indexOf("Edit program permission") != -1
     ) {
-      setTeacherRoutes([
-        ...teacherRoutes,
+      setTeacherRoutes((prevState: any) => [
+        ...prevState,
         {
-          icon: UsersRound,
-          label: "Users",
-          href: "/teacher/users",
+          icon: CircuitBoard,
+          label: "Programs",
+          href: "/teacher/programs",
         },
       ]);
     }
@@ -73,8 +77,8 @@ export const SidebarRoutes = ({ userId }: any) => {
         .map((item: { permission: { title: any } }) => item.permission.title)
         .indexOf("Edit course permission") != -1
     ) {
-      setTeacherRoutes([
-        ...teacherRoutes,
+      setTeacherRoutes((prevState: any) => [
+        ...prevState,
         {
           icon: List,
           label: "Courses",
@@ -93,27 +97,28 @@ export const SidebarRoutes = ({ userId }: any) => {
         .map((item: { permission: { title: any } }) => item.permission.title)
         .indexOf("Create exam report") != -1
     ) {
-      setTeacherRoutes([
-        ...teacherRoutes,
+      setTeacherRoutes((prevState: any) => [
+        ...prevState,
         {
           icon: BarChart,
-          label: "Analytics",
+          label: "Analytics and Report",
           href: "/teacher/analytics",
         },
       ]);
     }
+
     if (
       data.userPermission
         .map((item: { permission: { title: any } }) => item.permission.title)
         .indexOf("Create role permission") != -1 &&
       data.userPermission
         .map((item: { permission: { title: any } }) => item.permission.title)
-        .indexOf("Edit role permission") != -1
+        .indexOf("Manage role permission") != -1
     ) {
-      setTeacherRoutes([
-        ...teacherRoutes,
+      setTeacherRoutes((prevState: any) => [
+        ...prevState,
         {
-          icon: BarChart,
+          icon: Waypoints,
           label: "Roles",
           href: "/teacher/roles",
         },
@@ -125,12 +130,12 @@ export const SidebarRoutes = ({ userId }: any) => {
         .indexOf("Create permission permission") != -1 &&
       data.userPermission
         .map((item: { permission: { title: any } }) => item.permission.title)
-        .indexOf("Edit permission permission") != -1
+        .indexOf("Manage permission permission") != -1
     ) {
-      setTeacherRoutes([
-        ...teacherRoutes,
+      setTeacherRoutes((prevState: any) => [
+        ...prevState,
         {
-          icon: BarChart,
+          icon: Cctv,
           label: "Permissions",
           href: "/teacher/permissions",
         },
@@ -144,8 +149,8 @@ export const SidebarRoutes = ({ userId }: any) => {
         .map((item: { permission: { title: any } }) => item.permission.title)
         .indexOf("User management permission") != -1
     ) {
-      setTeacherRoutes([
-        ...teacherRoutes,
+      setTeacherRoutes((prevState: any) => [
+        ...prevState,
         {
           icon: UsersRound,
           label: "Users",
@@ -153,13 +158,23 @@ export const SidebarRoutes = ({ userId }: any) => {
         },
       ]);
     }
-
+    if (
+      data.userPermission
+        .map((item: { permission: { title: any } }) => item.permission.title)
+        .indexOf("User personal management permission") != -1
+    ) {
+      guestRoutes.push({
+        icon: UsersRound,
+        label: "Personal Information",
+        href: `/users/${userId}`,
+      });
+    }
     return data;
   };
   const { data, error, isLoading } = useQuery("userRoutes", fetchUserRoutes, {
     refetchOnWindowFocus: false,
   });
-  if (isLoading) {
+  if ((isLoading && teacherRoutes.length == 0) || guestRoutes.length == 0) {
     return <></>;
   } else {
     return (

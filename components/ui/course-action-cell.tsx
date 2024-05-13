@@ -26,7 +26,7 @@ export const CourseActionCell = ({ row }: any) => {
 
   const { userId }: any = useAuth();
   const fetchUserPermission = async () => {
-    const { data } = await axios.get(`/api/user/${userId}`);
+    const { data } = await axios.get(`/api/user/${userId}/personalInfo`);
     return data;
   };
 
