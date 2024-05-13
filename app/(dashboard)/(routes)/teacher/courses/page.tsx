@@ -39,12 +39,17 @@ const CoursesPage = async () => {
     return redirect("/");
   }
   let courses;
-  if (userDepartment.title != "BOD") {
+  if (
+    userDepartment.title != "BOD" &&
+    checkUser
+      .map((item: { permission: { title: any } }) => item.permission.title)
+      .indexOf("Manage all course permission") == -1
+  ) {
     courses = await db.course.findMany({
       where: {
-        userId: userId,
         OR: [
           {
+            userId: userId,
             courseInstructedBy: userId,
             updatedBy: userId,
           },
