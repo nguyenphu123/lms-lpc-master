@@ -38,7 +38,14 @@ export const PermissionForm = ({
   const [permissionList, setPermissionList] = useState([
     ...initialData.userPermission,
   ]);
-
+  useEffect(() => {
+    for (let i = 0; i < role.length; i++) {
+      if (role[i].rolePermission.length == permissionList.length) {
+        setCurrentRole(role[i].title);
+        break;
+      }
+    }
+  }, []);
   const toggleEdit = () => setIsEditing((current) => !current);
 
   const router = useRouter();

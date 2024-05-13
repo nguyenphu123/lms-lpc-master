@@ -27,7 +27,7 @@ import { Actions } from "./_components/actions";
 import { Prisma } from "@prisma/client";
 import { CreditForm } from "./_components/credit-form";
 import { DepartmentForm } from "./_components/department-form";
-import { StudentAssignForm } from "./_components/student-assign";
+import { InstructorAssignForm } from "./_components/instructor-assign";
 const CourseIdPage = async ({ params }: { params: { courseId: string } }) => {
   const { userId } = auth();
 
@@ -60,7 +60,7 @@ const CourseIdPage = async ({ params }: { params: { courseId: string } }) => {
           position: "asc",
         },
       },
-      ClassSessionRecord: {},
+      ClassSessionRecord: { include: { user: true } },
       CourseOnDepartment: {
         include: {
           Department: true,
@@ -89,34 +89,24 @@ const CourseIdPage = async ({ params }: { params: { courseId: string } }) => {
     } else {
       department[i]["isEnrolled"] = false;
     }
+
+    for (let j = 0; j < department[i]?.User.length; j++) {
+      if (
+        course.ClassSessionRecord.map((item: any) => item.userId).indexOf(
+          department[i].User[j].id
+        ) !== -1
+      ) {
+        department[i].User[j]["isEnrolled"] = true;
+      } else {
+        department[i].User[j]["isEnrolled"] = false;
+      }
+    }
   }
-  const users: any = await db.user.findMany({
-    // where: {
-    //   id: { not: userId },
-    // },
-    include: {
-      ClassSessionRecord: {
-        where: {
-          courseId: params.courseId,
-        },
-      },
-    },
-  });
 
   if (!course) {
     return redirect("/");
   }
-  for (let i = 0; i < users.length; i++) {
-    if (
-      users[i].ClassSessionRecord.map((item: any) => item.courseId).indexOf(
-        params.courseId
-      ) !== -1
-    ) {
-      users[i]["isEnrolled"] = true;
-    } else {
-      users[i]["isEnrolled"] = false;
-    }
-  }
+
   const requiredFields = [
     course.title,
     // course.description,
@@ -124,6 +114,7 @@ const CourseIdPage = async ({ params }: { params: { courseId: string } }) => {
     course.credit,
     // course.price,
     // course.programId,
+    course.courseInstructedBy,
     course.Module.some((chapter: { isPublished: any }) => chapter.isPublished),
   ];
 
@@ -133,6 +124,27 @@ const CourseIdPage = async ({ params }: { params: { courseId: string } }) => {
   const completionText = `(${completedFields}/${totalFields})`;
 
   const isComplete = requiredFields.every(Boolean);
+  const users: any = await db.user.findMany({
+    where: {
+      userPermission: {
+        some: {
+          permission: {
+            title: "Instruction permission",
+          },
+        },
+      },
+    },
+    include: {
+      Department: true,
+    },
+  });
+  for (let i = 0; i < users.length; i++) {
+    if (users[i].id == course.courseInstructedBy) {
+      users[i]["isAssign"] = true;
+    } else {
+      users[i]["isAssign"] = false;
+    }
+  }
 
   return (
     <>
@@ -191,17 +203,17 @@ const CourseIdPage = async ({ params }: { params: { courseId: string } }) => {
                 department={department}
               />
             </div>
-            {/* <div>
+            <div>
               <div className="flex items-center gap-x-2">
                 <IconBadge icon={UserPlus} />
-                <h2 className="text-xl">Assign staff</h2>
+                <h2 className="text-xl">Assign instructor for this course</h2>
               </div>
-              <StudentAssignForm
+              <InstructorAssignForm
                 initialData={course}
                 courseId={course.id}
-                Student={users}
+                Instructor={users}
               />
-            </div> */}
+            </div>
           </div>
         </div>
       </div>

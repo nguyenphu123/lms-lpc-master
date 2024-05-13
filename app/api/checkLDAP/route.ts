@@ -4,7 +4,7 @@ export async function POST(req: Request) {
   try {
     const { emailAddress } = await req.json();
     let result: boolean = false;
-    
+
     var client = new LdapClient({ url: "ldap://10.20.1.11:389" });
     try {
       await client.bind("trainconnect@lp.local", "Js46~p9@X3$Gu!");
@@ -19,7 +19,8 @@ export async function POST(req: Request) {
       };
 
       const entries = await client.search("DC=lp,DC=local", options);
-      result = entries[0].mail == emailAddress ? true : false;
+
+      result = entries[0];
     } catch (e) {
       console.log(e);
     }

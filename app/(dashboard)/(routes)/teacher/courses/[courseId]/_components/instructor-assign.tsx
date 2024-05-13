@@ -4,7 +4,7 @@ import * as z from "zod";
 import axios from "axios";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { Pencil, TrendingUp } from "lucide-react";
+import { Asterisk, Pencil, TrendingUp } from "lucide-react";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
@@ -13,49 +13,54 @@ import { Form } from "@/components/ui/form";
 
 import { Button } from "@/components/ui/button";
 
-interface StudentFormProps {
-  initialData: { Student: any[] };
+interface InstructorFormProps {
+  initialData: { Instructor: any[] };
   courseId: string;
-  Student: any[];
+  Instructor: any[];
 }
-const Student = z.object({
+const Instructor = z.object({
   id: z.string(),
   username: z.string(),
 });
-const formSchema = z.array(Student);
+const formSchema = z.array(Instructor);
 
-export const StudentAssignForm = ({
+export const InstructorAssignForm = ({
   initialData,
   courseId,
-  Student,
-}: StudentFormProps) => {
+  Instructor,
+}: InstructorFormProps) => {
   const [isEditing, setIsEditing] = useState(false);
-  const [studentList, setStudentList] = useState(Student);
+  const [instructorList, setInstructorList] = useState(Instructor);
+
   const toggleEdit = () => setIsEditing((current) => !current);
 
   const router = useRouter();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: initialData.Student,
+    defaultValues: initialData.Instructor,
   });
-  const onChangeStudentList = async (i: any) => {
-    let newList = [...studentList];
-    if (newList[i].isEnrolled) {
-      newList[i].isEnrolled = false;
-    } else {
-      newList[i].isEnrolled = true;
+  const onChangeInstructorList = async (i: any) => {
+    let newList = [...instructorList];
+    for (let i = 0; i < newList.length; i++) {
+      newList[i].isAssign = false;
     }
-    setStudentList(newList);
+    newList[i].isAssign = true;
+    // if (newList[i].isAssign) {
+    //   newList[i].isAssign = false;
+    // } else {
+    //   newList[i].isAssign = true;
+    // }
+    setInstructorList(newList);
   };
   // const { isSubmitting, isValid } = form.formState;
 
   const onSubmit = async () => {
     try {
       await axios.patch(`/api/courses/${courseId}/assign`, {
-        studentList,
+        instructorList,
       });
-      toast.success("Course updated");
+      toast.success("Instructor Assigned");
       toggleEdit();
       router.refresh();
     } catch {
@@ -66,7 +71,11 @@ export const StudentAssignForm = ({
   return (
     <div className="mt-6 border bg-slate-100 rounded-md p-4 text-black dark:bg-slate-950">
       <div className="font-medium flex items-center justify-between dark:text-slate-50">
-        Staff
+        <div className="flex items-center">
+          Instructor
+          <Asterisk className="size-4" color="red" />
+        </div>
+
         <Button onClick={toggleEdit} variant="ghost">
           {isEditing ? (
             <>Cancel</>
@@ -84,21 +93,23 @@ export const StudentAssignForm = ({
             onSubmit={form.handleSubmit(onSubmit)}
             className="space-y-4 mt-4"
           >
-            {studentList.map((item, i) => {
+            {instructorList.map((item, i) => {
               return (
                 <div
                   key={item.id}
                   className="flex items-center space-x-2 dark:text-slate-50"
                 >
                   <input
-                    onClick={() => onChangeStudentList(i)}
+                    onClick={() => onChangeInstructorList(i)}
                     disabled={isEditing ? false : true}
                     value={item.id}
-                    type="checkbox"
-                    checked={item.isEnrolled}
+                    type="radio"
+                    checked={item.isAssign}
                     className="text-blue-500"
                   />
-                  <label>{item.username}</label>
+                  <label>
+                    {item.username}({item.Department.title})
+                  </label>
                 </div>
               );
             })}

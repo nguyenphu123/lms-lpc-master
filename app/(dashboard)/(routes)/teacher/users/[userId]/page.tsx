@@ -50,6 +50,11 @@ const UserPage = async ({ params }: { params: { userId: string } }) => {
     where: {
       status: "active",
     },
+    orderBy: {
+      rolePermission: {
+        _count: "desc",
+      },
+    },
     include: {
       rolePermission: {
         include: {

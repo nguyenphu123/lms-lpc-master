@@ -25,7 +25,7 @@ const Exam = ({
   isCompleted,
 }: any) => {
   const router = useRouter();
-  const [maxAsset, setMaxAsset] = useState(chapter.maxAsset);
+
   const [categoryList, setCategoryList]: any = useState([...chapter.Category]);
   const [finishedExam, setFinishedExam] = useState(false);
   const [finalScore, setFinalScore] = useState(0);
@@ -35,8 +35,9 @@ const Exam = ({
   const [examMaxScore, setExamMaxSocre] = useState(0);
   const [selectedAnswers, setSelectedAnswers]: Array<any> = useState([]);
   const [onFinish, setOnFinish] = useState(false);
+  const [examRecord, setExamRecord]: Array<any> = useState([]);
   const confetti = useConfettiStore();
-
+  console.log(selectedAnswers);
   useEffect(() => {
     const getHistory = async () => {
       let getLatestTestResult: any = await axios.get(
@@ -44,9 +45,6 @@ const Exam = ({
       );
       if (getLatestTestResult.data?.UserProgress[0]?.status == "finished") {
       } else {
-        setMaxAsset(
-          maxAsset - getLatestTestResult.data?.UserProgress[0]?.attempt
-        );
       }
 
       setFinishedExam(
@@ -77,7 +75,6 @@ const Exam = ({
       const totalScore = finalScore;
 
       if (!finishedExam) {
-        setMaxAsset(maxAsset - 1);
         const date = new Date();
         await axios.put(
           `/api/courses/${courseId}/chapters/${chapter.id}/progress`,
@@ -153,9 +150,6 @@ const Exam = ({
     setCurrentQuestion(0);
     setSelectedAnswers([]);
     if (!finishedExam) {
-      if (maxAsset == 0) {
-        return;
-      }
       let questionList = await axios.get(
         `/api/courses/${chapter.courseId}/chapters/${chapter.id}/category/exam/shuffle`
       );
@@ -220,7 +214,6 @@ const Exam = ({
       const totalScore = finalScore;
 
       if (!finishedExam) {
-        setMaxAsset(maxAsset - 1);
         const date = new Date();
 
         await axios.put(
@@ -330,6 +323,7 @@ const Exam = ({
             ? 0
             : parseInt(newCategoryList[categoryIndex]["categoryScore"]) +
               parseInt(selectedAnswers[i].score);
+        } else {
         }
       } else {
         let correctSelectedAnswer = 0;
@@ -436,9 +430,9 @@ const Exam = ({
               ) : (
                 <AlertDialogCancel onClick={() => accept()}>
                   Retake
-                  {maxAsset == 0 ? (
+                  {isCompleted == "failed" ? (
                     <span className="text-red-500">
-                      Sorry, you have reached max asset on this test
+                      Sorry, please wait for the exam reset to retake this test
                     </span>
                   ) : (
                     <></>
@@ -501,9 +495,9 @@ const Exam = ({
         <AlertDialogTrigger className="flex justify-center items-center">
           <div className="font-bold ml-2 rounded-lg">
             👉Take an exam{" "}
-            {maxAsset == 0 ? (
+            {isCompleted == "failed" ? (
               <span className="text-red-500">
-                Sorry, you have reached max asset on this test
+                Sorry, please wait for the exam reset to retake this test
               </span>
             ) : (
               <></>
@@ -516,13 +510,10 @@ const Exam = ({
             Exam note
           </AlertDialogTitle>
           <AlertDialogDescription className="AlertDialogDescription">
-            {finishedExam ? (
+            {finishedExam && isCompleted != "studying" ? (
               <>Do you want to retake this exam?</>
             ) : (
-              <>
-                Do you want to do the exam? You have{" "}
-                {maxAsset > 5 ? "Infinite" : maxAsset} time to do this test
-              </>
+              <>Do you want to do the exam?</>
             )}
           </AlertDialogDescription>
           <div

@@ -9,42 +9,23 @@ export async function PATCH(
   try {
     const { userId } = auth();
     const { courseId } = params;
-    const { studentList } = await req.json();
+    const { instructorList } = await req.json();
 
     if (!userId) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
-    const date = new Date();
-    for (const student of studentList) {
-      if (student.isEnrolled) {
-        await db.classSessionRecord.upsert({
+    for (const instructor of instructorList) {
+      if (instructor.isAssign) {
+        await db.course.update({
           where: {
-            courseId_userId: {
-              courseId: courseId.toString(),
-              userId: student.id,
-            },
+            id: courseId,
           },
-          create: {
-            courseId,
-            userId: student.id,
-            progress: "0%",
-            status: "studying",
-            startDate: date,
+          data: {
+            courseInstructedBy: instructor.id,
           },
-          update: {},
         });
       } else {
-        await db.classSessionRecord.delete({
-          where: {
-            progress: "0%",
-            status: "studying",
-            courseId_userId: {
-              courseId: courseId.toString(),
-              userId: student.id,
-            },
-          },
-        });
       }
     }
     return NextResponse.json("");

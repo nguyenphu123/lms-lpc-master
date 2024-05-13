@@ -8,7 +8,7 @@ import { Pencil } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
-
+import { Accordion, AccordionItem } from "@nextui-org/react";
 import {
   Form,
   FormControl,
@@ -141,37 +141,48 @@ export const DepartmentForm = ({ initialData, courseId, department }: any) => {
             onSubmit={form.handleSubmit(onSubmit)}
             className="space-y-4 mt-4"
           >
-            {department.map((item: any, i: any) => {
-              return (
-                <div key={item.id} className="dark:text-slate-50">
-                  <input
-                    onChange={(e) => onChangeDepartmentList(e, item, i)}
-                    disabled={isEditing ? false : true}
-                    value={item.title}
-                    type="checkbox"
-                    defaultChecked={item.isEnrolled}
-                  />
-                  {item.title}
-                  <div className="grid grid-cols-3 gap-6 w-full">
-                    {item.user.map((item: any, j: any) => {
-                      return (
-                        <div key={item.id} className="dark:text-slate-50">
-                          <input
-                            onChange={(e) => onChangeStudentList(e, item, i, j)}
-                            disabled={isEditing ? false : true}
-                            value={item.title}
-                            type="checkbox"
-                            defaultChecked={item.isEnrolled}
-                          />
-                          {item.username}
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-              );
-            })}
-
+            <Accordion>
+              {department.map((item: any, i: any) => {
+                return (
+                  <AccordionItem
+                    key="1"
+                    aria-label={item.title}
+                    className="dark:text-slate-50"
+                    startContent={
+                      <>
+                        <input
+                          onChange={(e) => onChangeDepartmentList(e, item, i)}
+                          disabled={isEditing ? false : true}
+                          value={item.title}
+                          type="checkbox"
+                          defaultChecked={item.isEnrolled}
+                        />
+                        {item.title}
+                      </>
+                    }
+                  >
+                    <div className="grid grid-cols-3 gap-6 w-full">
+                      {item.User.map((item: any, j: any) => {
+                        return (
+                          <div key={item.id} className="dark:text-slate-50">
+                            <input
+                              onChange={(e) =>
+                                onChangeStudentList(e, item, i, j)
+                              }
+                              disabled={isEditing ? false : true}
+                              value={item.title}
+                              type="checkbox"
+                              defaultChecked={item.isEnrolled}
+                            />
+                            {item.username}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </AccordionItem>
+                );
+              })}
+            </Accordion>
             <div className="flex items-center gap-x-2">
               <Button onClick={() => onSubmit()}>Save</Button>
             </div>

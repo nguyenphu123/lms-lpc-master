@@ -20,6 +20,14 @@ const CoursesPage = async () => {
       permission: true,
     },
   });
+  const userDepartment: any = await db.user.findUnique({
+    where: {
+      id: userId,
+    },
+    include: {
+      Department: true,
+    },
+  });
   if (
     checkUser
       .map((item: { permission: { title: any } }) => item.permission.title)
@@ -30,18 +38,42 @@ const CoursesPage = async () => {
   ) {
     return redirect("/");
   }
-  const courses = await db.course.findMany({
-    // where: {
-    //   userId,
-    // },
-    orderBy: {
-      startDate: "desc",
-    },
-    include: {
-      user: true,
-      updatedUser: true,
-    },
-  });
+  let courses;
+  if (userDepartment.title != "BOD") {
+    courses = await db.course.findMany({
+      where: {
+        userId: userId,
+        OR: [
+          {
+            courseInstructedBy: userId,
+            updatedBy: userId,
+          },
+        ],
+      },
+      orderBy: {
+        startDate: "desc",
+      },
+      include: {
+        user: true,
+        updatedUser: true,
+        courseInstructor: true,
+      },
+    });
+  } else {
+    courses = await db.course.findMany({
+      // where: {
+      //   userId,
+      // },
+      orderBy: {
+        startDate: "desc",
+      },
+      include: {
+        user: true,
+        updatedUser: true,
+        courseInstructor: true,
+      },
+    });
+  }
 
   return (
     <div className="p-6">

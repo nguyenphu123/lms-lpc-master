@@ -55,11 +55,6 @@ export default function Page() {
       return;
     }
 
-    if (!username) {
-      setError("Please enter your name.");
-      return;
-    }
-
     let user = await axios.post("/api/checkLDAP", {
       emailAddress,
       // password,
@@ -74,7 +69,7 @@ export default function Page() {
       setError("Please select a department.");
       return;
     }
-
+    setUsername(user.data.cn);
     try {
       await signUp.create({
         emailAddress,
@@ -157,7 +152,7 @@ export default function Page() {
         Slot registration page
       </h1>
       <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
+        {/* <div>
           <label htmlFor="username" className="block mb-1">
             Name
           </label>
@@ -169,7 +164,7 @@ export default function Page() {
             onChange={(e) => setUsername(e.target.value)}
             className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring focus:ring-blue-400"
           />
-        </div>
+        </div> */}
         <div>
           <label htmlFor="email" className="block mb-1">
             Email

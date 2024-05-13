@@ -14,53 +14,36 @@ export async function PATCH(
         userId: params.userId,
       },
     });
-    if (currentPermissionList.length == 0) {
-      for (const permission of permissionList) {
-        await db.userPermission.create({
-          data: {
+    for (const permission of currentPermissionList) {
+      if (
+        permissionList
+          .map((item: { permissionId: any }) => item.permissionId)
+          .indexOf(permission.permissionId) == -1
+      ) {
+        await db.userPermission.delete({
+          where: {
+            id: permission.id,
             permissionId: permission.permissionId,
             userId: params.userId,
           },
         });
       }
     }
-    for (const currentPermission of currentPermissionList) {
-      if (
-        permissionList
-          .map((item: { permissionId: any }) => item.permissionId)
-          .indexOf(currentPermission.permissionId) == -1
-      ) {
-        await db.userPermission.delete({
-          where: {
-            id: currentPermission.id,
-            permissionId: currentPermission.permissionId,
+    for (const permission of permissionList) {
+      const checkPermission = await db.userPermission.findFirst({
+        where: {
+          permissionId: permission.permissionId,
+          userId: params.userId,
+        },
+      });
+      if (checkPermission) {
+      } else {
+        await db.userPermission.create({
+          data: {
+            permissionId: permission.permissionId,
             userId: params.userId,
           },
         });
-      }
-
-      for (const permission of permissionList) {
-        if (currentPermissionList.length > 0) {
-          if (
-            currentPermissionList
-              .map((item: { permissionId: any }) => item.permissionId)
-              .indexOf(permission.permissionId) == -1
-          ) {
-            await db.userPermission.create({
-              data: {
-                permissionId: permission.permissionId,
-                userId: params.userId,
-              },
-            });
-          }
-        } else {
-          await db.userPermission.create({
-            data: {
-              permissionId: permission.permissionId,
-              userId: params.userId,
-            },
-          });
-        }
       }
     }
 

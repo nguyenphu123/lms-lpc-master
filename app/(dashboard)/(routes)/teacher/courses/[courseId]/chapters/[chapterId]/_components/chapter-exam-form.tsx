@@ -489,44 +489,7 @@ export default function Exam({ chapter }: any) {
               <option value="80">80%</option>
             </select>
           </div>
-          <div className="grow-0 mr-2">
-            <label
-              className="block text-sm font-medium text-gray-700 mb-1"
-              htmlFor="maxAsset"
-            >
-              The student can retake
-            </label>
-            <select
-              className="px-4 py-2 border rounded focus:outline-none border-black "
-              onChange={(e: any) => setMaxAsset(parseInt(e.target.value))}
-              name={"maxAsset"}
-              defaultValue={maxAsset}
-            >
-              <option value="3">three time</option>
 
-              <option value="5">five time</option>
-            </select>
-          </div>
-          <div className="grow-0 mr-2">
-            <label
-              className="block text-sm font-medium text-gray-700 mb-1"
-              htmlFor="maxAsset"
-            >
-              Reset this test after
-            </label>
-            <select
-              className="px-4 py-2 border rounded focus:outline-none border-black "
-              onChange={(e: any) => setWaitTime(parseInt(e.target.value))}
-              name={"maxAsset"}
-              defaultValue={maxAsset}
-            >
-              <option value="1">1 day</option>
-
-              <option value="3">3 days</option>
-
-              <option value="7">7 days</option>
-            </select>
-          </div>
           <div className="grow-0 mr-2">
             <label
               className="block text-sm font-medium text-gray-700 mb-1"

@@ -32,31 +32,6 @@ export default async function Dashboard() {
     },
   });
 
-  const examList: any = await db.module.findMany({
-    where: {
-      type: "Exam",
-    },
-  });
-  for (let i = 0; i < examList.length; i++) {
-    const yesterday = new Date(
-      new Date().setDate(new Date().getDate() - examList[i].waitTime)
-    );
-
-    await db.userProgress.updateMany({
-      where: {
-        userId: sessionClaims.userId,
-        status: "studying",
-        endDate: {
-          lte: yesterday,
-        },
-      },
-
-      data: {
-        attempt: 0,
-      },
-    });
-  }
-
   let myActivity: any = await db.classSessionRecord.findMany({
     where: {
       userId: sessionClaims.userId,
@@ -65,7 +40,11 @@ export default async function Dashboard() {
     include: {
       course: {
         include: {
-          Module: true,
+          Module: {
+            where: {
+              isPublished: true,
+            },
+          },
           ClassSessionRecord: true,
           BookMark: true,
         },
@@ -98,7 +77,11 @@ export default async function Dashboard() {
               isPublished: true,
             },
             include: {
-              Module: true,
+              Module: {
+                where: {
+                  isPublished: true,
+                },
+              },
               BookMark: true,
               ClassSessionRecord: true,
             },
@@ -127,7 +110,11 @@ export default async function Dashboard() {
       isPublished: true,
     },
     include: {
-      Module: true,
+      Module: {
+        where: {
+          isPublished: true,
+        },
+      },
       BookMark: true,
       ClassSessionRecord: {
         where: {
@@ -156,7 +143,11 @@ export default async function Dashboard() {
       },
     },
     include: {
-      Module: true,
+      Module: {
+        where: {
+          isPublished: true,
+        },
+      },
       BookMark: true,
       ClassSessionRecord: true,
     },
@@ -170,7 +161,11 @@ export default async function Dashboard() {
     include: {
       course: {
         include: {
-          Module: true,
+          Module: {
+            where: {
+              isPublished: true,
+            },
+          },
           ClassSessionRecord: true,
           BookMark: true,
         },

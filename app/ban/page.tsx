@@ -2,9 +2,9 @@ import { auth } from "@clerk/nextjs";
 import { redirect } from "next/navigation";
 import { BasicNavbar } from "./_component/course-navbar";
 import { db } from "@/lib/db";
-import "@/css/clock.css";
+import Image from "next/image";
 
-const StepTwo = async () => {
+const Ban = async () => {
   const { sessionClaims }: any = auth();
   if (!sessionClaims?.userId) {
     return redirect("/sign-in");
@@ -26,16 +26,17 @@ const StepTwo = async () => {
       </div>
       <div className="p-6 flex items-center justify-center">
         <div className="text-center">
-          <p className="mb-4 text-4xl mt-24">Warning! !!!</p>
+          <p className="mb-4 text-4xl mt-24">Warning !!!</p>
           {/* <p className="mb-4">
             Your organization requires admin approval before you can access to
             LPC Learning System.
           </p> */}
           <p className="mb-4">
-            You have been banned from the LMS duo to unapproriate action.
+            You have been banned from the LMS due to inappropriate actions.
           </p>
-          <p className="mb-10">
-            Please contact your department manager or admin for more details.
+          <p className="mb-5">
+            Please reach out to your department manager or administrator for
+            further details.
           </p>
           {/* <p>
             Please contact your
@@ -48,16 +49,16 @@ const StepTwo = async () => {
             </a>{" "}
             for permission.
           </p> */}
-          {/* <Image
+          <Image
             className="mx-auto my-auto mt-6"
-            src="/hourglass.png"
+            src="/warning.png"
             alt="Contact Administrator"
             width={200}
             height={200}
-          /> */}
-          <div className="flex justify-center items-center">
-            <div className="loader"></div>
-          </div>
+          />
+          {/* <div className="flex justify-center items-center">
+            <div className="ban-message"></div>
+          </div> */}
           {/* <div className="relative w-full h-90 flex items-center justify-center rounded overflow-hidden mt-4">
             <Image
               src="https://media.giphy.com/media/l3vR1tvIhCrrZsty0/giphy.gif"
@@ -74,4 +75,4 @@ const StepTwo = async () => {
   );
 };
 
-export default StepTwo;
+export default Ban;

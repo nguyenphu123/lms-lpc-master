@@ -3,6 +3,11 @@ import { db } from "@/lib/db";
 export const getUser = async (): Promise<any> => {
   try {
     const users: any = await db.user.findMany({
+      where: {
+        status: {
+          not: "inActive",
+        },
+      },
       include: {
         Department: true,
         userPermission: true,

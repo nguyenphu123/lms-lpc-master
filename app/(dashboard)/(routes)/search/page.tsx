@@ -51,7 +51,11 @@ const SearchPage = async ({ searchParams }: SearchPageProps) => {
               isPublished: true,
             },
             include: {
-              Module: true,
+              Module: {
+                where: {
+                  isPublished: true,
+                },
+              },
               BookMark: true,
               ClassSessionRecord: true,
             },
@@ -71,7 +75,11 @@ const SearchPage = async ({ searchParams }: SearchPageProps) => {
       isPublished: true,
     },
     include: {
-      Module: true,
+      Module: {
+        where: {
+          isPublished: true,
+        },
+      },
       BookMark: true,
       ClassSessionRecord: {
         where: {
@@ -145,9 +153,9 @@ const SearchPage = async ({ searchParams }: SearchPageProps) => {
     where: {
       isPublished: true,
     },
-    include:{
-      courseWithProgram:true
-    }
+    include: {
+      courseWithProgram: true,
+    },
   });
   const courses1: any = await getCourses({
     userId,

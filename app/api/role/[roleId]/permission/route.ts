@@ -14,53 +14,36 @@ export async function PATCH(
         roleId: params.roleId,
       },
     });
-    if (currentPermissionList.length == 0) {
-      for (const permission of permissionList) {
-        await db.rolePermission.create({
-          data: {
+    for (const permission of currentPermissionList) {
+      if (
+        permissionList
+          .map((item: { permissionId: any }) => item.permissionId)
+          .indexOf(permission.permissionId) == -1
+      ) {
+        await db.rolePermission.delete({
+          where: {
+            id: permission.id,
             permissionId: permission.permissionId,
             roleId: params.roleId,
           },
         });
       }
     }
-    for (const currentPermission of currentPermissionList) {
-      if (
-        permissionList
-          .map((item: { permissionId: any }) => item.permissionId)
-          .indexOf(currentPermission.permissionId) == -1
-      ) {
-        await db.rolePermission.delete({
-          where: {
-            id: currentPermission.id,
-            permissionId: currentPermission.permissionId,
+    for (const permission of permissionList) {
+      const checkPermission = await db.rolePermission.findFirst({
+        where: {
+          permissionId: permission.permissionId,
+          roleId: params.roleId,
+        },
+      });
+      if (checkPermission) {
+      } else {
+        await db.rolePermission.create({
+          data: {
+            permissionId: permission.permissionId,
             roleId: params.roleId,
           },
         });
-      }
-
-      for (const permission of permissionList) {
-        if (currentPermissionList.length > 0) {
-          if (
-            currentPermissionList
-              .map((item: { permissionId: any }) => item.permissionId)
-              .indexOf(permission.permissionId) == -1
-          ) {
-            await db.rolePermission.create({
-              data: {
-                permissionId: permission.permissionId,
-                roleId: params.roleId,
-              },
-            });
-          }
-        } else {
-          await db.rolePermission.create({
-            data: {
-              permissionId: permission.permissionId,
-              roleId: params.roleId,
-            },
-          });
-        }
       }
     }
 
