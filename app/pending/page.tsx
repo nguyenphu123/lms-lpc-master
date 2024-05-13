@@ -18,7 +18,9 @@ const StepTwo = async () => {
   if (userInfo != undefined && userInfo.status == "approved") {
     return redirect("/");
   }
-
+  if (userInfo != undefined && userInfo.status == "ban") {
+    return redirect("/ban");
+  }
   return (
     <>
       <div className="h-[80px] fixed inset-y-0 w-full z-50">
