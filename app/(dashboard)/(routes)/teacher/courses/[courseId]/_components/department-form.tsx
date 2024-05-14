@@ -179,7 +179,7 @@ export const DepartmentForm = ({ initialData, courseId, department }: any) => {
                     >
                       <div
                         key={"department-user " + item.id}
-                        className="grid grid-cols-3 gap-2 w-full"
+                        className="grid grid-cols-2 gap-2 w-full"
                       >
                         {item.User.map((item: any, j: any) => {
                           return (
