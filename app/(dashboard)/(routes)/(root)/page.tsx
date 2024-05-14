@@ -228,8 +228,8 @@ export default async function Dashboard() {
     })
   );
 
-  return !userInfo ? (
-    <>Sorry you are not approved, please send money to admin to get approval</>
+  return userInfo.isInExam ? (
+    <>Sorry you are currently doing test!!!</>
   ) : (
     <>
       <div className="px-6 pt-6 md:hidden md:mb-0 block">

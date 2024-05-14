@@ -145,6 +145,11 @@ const Exam = ({
         }
       }
     }
+    let currentUser = await axios.get(`/api/user`);
+    await axios.patch(
+      `/api/user/${currentUser.data.id}/isInExam/${chapter.id}`,
+      { isInExam: false }
+    );
   };
 
   // Danh sách câu hỏi và đáp án
@@ -162,7 +167,11 @@ const Exam = ({
     setSelectedAnswers([]);
     setExamRecord([]);
     setIsGeneratingExam(true);
-
+    let currentUser = await axios.get(`/api/user`);
+    await axios.patch(
+      `/api/user/${currentUser.data.id}/isInExam/${chapter.id}`,
+      { isInExam: true }
+    );
     if (!finishedExam) {
       let questionList = await axios.get(
         `/api/courses/${chapter.courseId}/chapters/${chapter.id}/category/exam/shuffle`
@@ -296,6 +305,11 @@ const Exam = ({
         }
       }
     }
+    let currentUser = await axios.get(`/api/user`);
+    await axios.patch(
+      `/api/user/${currentUser.data.id}/isInExam/${chapter.id}`,
+      { isInExam: false }
+    );
   };
   const setBookmark = (index: any) => {
     let newArr = [...questions];

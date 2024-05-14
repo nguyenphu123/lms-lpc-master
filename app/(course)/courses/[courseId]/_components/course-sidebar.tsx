@@ -2,6 +2,7 @@ import { auth } from "@clerk/nextjs";
 import { Course } from "@prisma/client";
 import { redirect } from "next/navigation";
 import { CourseSidebarItem } from "./course-sidebar-item";
+import { db } from "@/lib/db";
 
 interface CourseSidebarProps {
   course: Course & {
@@ -21,6 +22,7 @@ export const CourseSidebar = async (
 ) => {
   const { userId } = auth();
   // const searchParams = useParams();
+
   if (!userId) {
     return redirect("/");
   }

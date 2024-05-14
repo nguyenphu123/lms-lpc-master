@@ -97,7 +97,7 @@ export const InstructorAssignForm = ({
               return (
                 <div
                   key={item.id}
-                  className="flex items-center space-x-2 dark:text-slate-50"
+                  className="flex items-center space-x-3 p-2 bg-white dark:bg-gray-800 rounded-lg shadow dark:text-slate-50"
                 >
                   <input
                     onClick={() => onChangeInstructorList(i)}
@@ -108,7 +108,7 @@ export const InstructorAssignForm = ({
                     className="text-blue-500"
                   />
                   <label>
-                    {item.username}({item.Department.title})
+                    {item.username} ({item.Department.title})
                   </label>
                 </div>
               );
