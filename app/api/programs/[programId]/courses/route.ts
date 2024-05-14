@@ -82,17 +82,7 @@ export async function PATCH(
         programId: params.programId,
       },
     });
-    const updateCourse = await db.programParticipantRecord.updateMany({
-      where: {
-        programId: params.programId,
-        status: "finished",
-        progress: "100%",
-      },
-      data: {
-        status: "studying",
-        progress: (getCourseCount / getCourseCountAll) * 100 + "%",
-      },
-    });
+
     const deleteLink = await db.courseWithProgram.deleteMany({
       where: {
         courseId: "",

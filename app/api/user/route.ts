@@ -40,6 +40,7 @@ export async function POST(req: Request) {
       data: {
         id: createdUserId,
         // role: "staff",
+        isInExam: false,
         email: emailAddress,
         status: "pending",
         username: emailAddress,
