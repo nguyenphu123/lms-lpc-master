@@ -9,7 +9,7 @@ export async function PATCH(
 ) {
   try {
     const { userId } = auth();
-    const { departmentList }: any = await req.json();
+    const { departmentList, assignList }: any = await req.json();
 
     if (!userId) {
       return new NextResponse("Unauthorized", { status: 401 });
@@ -28,22 +28,21 @@ export async function PATCH(
             departmentId: departmentList[i].id,
           },
         });
-        const findUsers = await db.user.findMany({
-          where: {
-            departmentId: departmentList[i].id,
-          },
-        });
+      } else {
+      }
+    }
+    for (let i = 0; i < assignList.length; i++) {
+      if (assignList[i].isEnrolled) {
         await db.classSessionRecord.createMany({
-          data: findUsers.map((user) => ({
-            userId: user.id,
+          data: {
+            userId: assignList[i].id,
             courseId: params.courseId,
             progress: "0%",
             status: "studying",
             startDate: date,
-          })),
+          },
           skipDuplicates: true,
         });
-      } else {
       }
     }
     return NextResponse.json("");

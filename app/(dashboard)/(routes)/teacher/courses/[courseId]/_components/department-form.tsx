@@ -36,7 +36,7 @@ const formSchema = z.array(Department);
 export const DepartmentForm = ({ initialData, courseId, department }: any) => {
   const [isEditing, setIsEditing] = useState(false);
   const [departmentList, setDepartmentList] = useState(department);
-  const [assignList, setAssignList] = useState([]);
+  const [assignList, setAssignList]: any = useState([]);
   const toggleEdit = () => setIsEditing((current) => !current);
   const router = useRouter();
 
@@ -47,8 +47,10 @@ export const DepartmentForm = ({ initialData, courseId, department }: any) => {
   useEffect(() => {
     let newAssignList: any = [...assignList];
     for (let i = 0; i < departmentList.length; i++) {
-      let user = departmentList[i].user;
-      newAssignList.push(user);
+      let users = departmentList[i].User;
+      for (let j = 0; j < users.length; j++) {
+        newAssignList.push(users[j]);
+      }
     }
     setAssignList(newAssignList);
   }, []);
@@ -58,28 +60,34 @@ export const DepartmentForm = ({ initialData, courseId, department }: any) => {
     index: any
   ) => {
     // e.preventDefault();
+
     let newList = [...departmentList];
     let newAssignList: any = [...assignList];
+
     if (newList[index].isEnrolled) {
       newList[index].isEnrolled = false;
-      for (let i = 0; i < newList[index].user.length; i++) {
-        newList[index].user[i].isEnrolled = false;
-        newAssignList.splice(
+      for (let i = 0; i < newList[index].User.length; i++) {
+        newList[index].User[i].isEnrolled = false;
+        newAssignList[
           newAssignList
             .map((item: { id: any }) => item.id)
-            .indexOf(newList[index].user[i].id),
-          1
-        );
+            .indexOf(newList[index].User[i].id)
+        ].isEnrolled = false;
       }
     } else {
       newList[index].isEnrolled = true;
-      for (let i = 0; i < newList[index].user.length; i++) {
-        newList[index].user[i].isEnrolled = true;
-        newAssignList = [...newAssignList, newList[index].user[i]];
+      for (let i = 0; i < newList[index].User.length; i++) {
+        newList[index].User[i].isEnrolled = true;
+        newAssignList[
+          newAssignList
+            .map((item: { id: any }) => item.id)
+            .indexOf(newList[index].User[i].id)
+        ].isEnrolled = true;
       }
     }
-    setAssignList(newAssignList);
-    setDepartmentList(newList);
+    setAssignList([...newAssignList]);
+
+    setDepartmentList([...newList]);
   };
   const onChangeStudentList = async (
     e: any,
@@ -89,20 +97,24 @@ export const DepartmentForm = ({ initialData, courseId, department }: any) => {
   ) => {
     let newList = [...departmentList];
     let newAssignList: any = [...assignList];
-    if (newList[i].user[j].isEnrolled) {
-      newList[i].user[j].isEnrolled = false;
+    if (newList[i].User[j].isEnrolled) {
+      newList[i].User[j].isEnrolled = false;
       newList[i].isEnrolled = false;
-      newAssignList.splice(
+      newAssignList[
         newAssignList
           .map((item: { id: any }) => item.id)
-          .indexOf(newList[i].user[j].id),
-        1
-      );
+          .indexOf(newList[i].User[j].id)
+      ].isEnrolled = false;
     } else {
-      newList[i].user[j].isEnrolled = true;
-      newAssignList = [...newAssignList, newList[i].user[j]];
+      newList[i].User[j].isEnrolled = true;
+      newAssignList[
+        newAssignList
+          .map((item: { id: any }) => item.id)
+          .indexOf(newList[i].User[i].id)
+      ].isEnrolled = true;
     }
     setAssignList(newAssignList);
+
     setDepartmentList(newList);
   };
   // const { isSubmitting, isValid } = form.formState;
@@ -110,6 +122,7 @@ export const DepartmentForm = ({ initialData, courseId, department }: any) => {
   const onSubmit = async () => {
     try {
       await axios.patch(`/api/courses/${courseId}/department`, {
+        departmentList,
         assignList,
       });
       toast.success("Course updated");
@@ -141,48 +154,62 @@ export const DepartmentForm = ({ initialData, courseId, department }: any) => {
             onSubmit={form.handleSubmit(onSubmit)}
             className="space-y-4 mt-4"
           >
-            <Accordion>
-              {department.map((item: any, i: any) => {
-                return (
-                  <AccordionItem
-                    key="1"
-                    aria-label={item.title}
-                    className="dark:text-slate-50"
-                    startContent={
-                      <>
-                        <input
-                          onChange={(e) => onChangeDepartmentList(e, item, i)}
-                          disabled={isEditing ? false : true}
-                          value={item.title}
-                          type="checkbox"
-                          defaultChecked={item.isEnrolled}
-                        />
-                        {item.title}
-                      </>
-                    }
-                  >
-                    <div className="grid grid-cols-3 gap-6 w-full">
-                      {item.User.map((item: any, j: any) => {
-                        return (
-                          <div key={item.id} className="dark:text-slate-50">
-                            <input
-                              onChange={(e) =>
-                                onChangeStudentList(e, item, i, j)
-                              }
-                              disabled={isEditing ? false : true}
-                              value={item.title}
-                              type="checkbox"
-                              defaultChecked={item.isEnrolled}
-                            />
-                            {item.username}
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </AccordionItem>
-                );
-              })}
-            </Accordion>
+            {departmentList.map((item: any, i: any) => {
+              return (
+                <div key={item.id} className=" justify-between">
+                  <Accordion>
+                    <AccordionItem
+                      className=" dark:text-slate-50"
+                      key={item.id}
+                      aria-label={item.title}
+                      startContent={
+                        <>
+                          <input
+                            id={"department " + item.id}
+                            onChange={(e) => onChangeDepartmentList(e, item, i)}
+                            disabled={isEditing ? false : true}
+                            value={item.title}
+                            type="checkbox"
+                            checked={item.isEnrolled}
+                            defaultChecked={item.isEnrolled}
+                          />
+                          {item.title}
+                        </>
+                      }
+                    >
+                      <div
+                        key={"department-user " + item.id}
+                        className="grid grid-cols-3 gap-2 w-full"
+                      >
+                        {item.User.map((item: any, j: any) => {
+                          return (
+                            <div
+                              key={item.id}
+                              className="flex items-center space-x-2 p-2 dark:text-slate-50 bg-white dark:bg-gray-800 rounded-lg shadow"
+                            >
+                              <input
+                                id={"user " + item.id}
+                                onChange={(e) =>
+                                  onChangeStudentList(e, item, i, j)
+                                }
+                                disabled={isEditing ? false : true}
+                                value={item.title}
+                                type="checkbox"
+                                className="form-checkbox h-5 w-5 text-blue-600 dark:text-blue-400"
+                                checked={item.isEnrolled}
+                                defaultChecked={item.isEnrolled}
+                              />
+                              <span>{item.username}</span>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </AccordionItem>
+                  </Accordion>
+                </div>
+              );
+            })}
+
             <div className="flex items-center gap-x-2">
               <Button onClick={() => onSubmit()}>Save</Button>
             </div>

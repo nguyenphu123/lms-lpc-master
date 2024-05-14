@@ -40,9 +40,8 @@ export default function Exam({ chapter }: any) {
   >([]);
   const [textTitle, setTextTitle] = useState(chapter.title);
   const [timeLimit, setTimeLimit]: any = useState(60);
-  const [passPercentage, setPassPercentage] = useState(70);
-  const [maxAsset, setMaxAsset] = useState(3);
-  const [waitTime, setWaitTime] = useState(1);
+  const [passPercentage, setPassPercentage] = useState(80);
+
   useEffect(() => {
     async function loadQuestion() {
       let questionList = await axios.get(
@@ -50,10 +49,9 @@ export default function Exam({ chapter }: any) {
       );
 
       setQuizList(questionList.data.Category);
-      setPassPercentage(chapter.scoreLimit);
-      setMaxAsset(chapter.maxAsset);
-      setWaitTime(chapter.waitTime);
-      setTimeLimit(chapter.timeLimit);
+      setPassPercentage(chapter.scoreLimit == null ? 80 : chapter.timeLimit);
+
+      setTimeLimit(chapter.timeLimit == null ? 60 : chapter.timeLimit);
     }
     loadQuestion();
   }, []);
@@ -287,8 +285,6 @@ export default function Exam({ chapter }: any) {
     let values = {
       timeLimit: parseFloat(timeLimit),
       scoreLimit: passPercentage,
-      maxAsset,
-      waitTime,
     };
     await axios.patch(
       `/api/courses/${chapter?.courseId}/chapters/${chapter?.id}`,

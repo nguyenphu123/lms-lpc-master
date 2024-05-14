@@ -114,7 +114,7 @@ const CourseIdPage = async ({ params }: { params: { courseId: string } }) => {
     course.credit,
     // course.price,
     // course.programId,
-    course.courseInstructedBy,
+    // course.courseInstructedBy,
     course.Module.some((chapter: { isPublished: any }) => chapter.isPublished),
   ];
 

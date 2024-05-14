@@ -14,16 +14,18 @@ export async function PATCH(
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
-    const ownCourse = await db.course.findUnique({
+    let courseChapterBefore: any = await db.course.findUnique({
       where: {
         id: params.courseId,
-        userId,
+      },
+      include: {
+        Module: {
+          where: {
+            isPublished: true,
+          },
+        },
       },
     });
-
-    if (!ownCourse) {
-      return new NextResponse("Unauthorized", { status: 401 });
-    }
 
     const unpublishedChapter = await db.module.update({
       where: {
@@ -61,6 +63,40 @@ export async function PATCH(
         updatedBy: userId,
       },
     });
+    let courseChapterAfter: any = await db.course.findUnique({
+      where: {
+        id: params.courseId,
+      },
+      include: {
+        Module: {
+          where: {
+            isPublished: true,
+          },
+        },
+      },
+    });
+    const checkClassSessionRecord: any = await db.classSessionRecord.findMany({
+      where: { courseId: params.courseId },
+    });
+    for (let i = 0; i < checkClassSessionRecord.length; i++) {
+      await db.classSessionRecord.update({
+        where: {
+          id: checkClassSessionRecord[i].id,
+        },
+        data: {
+          status:
+            courseChapterBefore.Module.length ==
+            courseChapterAfter.Module.length
+              ? "finished"
+              : "studying",
+          progress:
+            (courseChapterBefore.Module.length /
+              courseChapterAfter.Module.length) *
+              100 +
+            "%",
+        },
+      });
+    }
     return NextResponse.json(unpublishedChapter);
   } catch (error) {
     console.log("[CHAPTER_UNPUBLISH]", error);

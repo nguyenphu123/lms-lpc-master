@@ -94,6 +94,9 @@ export const CreditForm = ({ initialData, courseId }: CreaditFormProps) => {
                       className="dark:text-slate-50"
                       disabled={isSubmitting}
                       placeholder="e.g. '10'"
+                      type="number"
+                      min={0}
+                      max={10}
                       {...field}
                     />
                   </FormControl>

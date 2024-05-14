@@ -36,8 +36,9 @@ const Exam = ({
   const [selectedAnswers, setSelectedAnswers]: Array<any> = useState([]);
   const [onFinish, setOnFinish] = useState(false);
   const [examRecord, setExamRecord]: Array<any> = useState([]);
+  const [isGeneratingExam, setIsGeneratingExam] = useState(false);
   const confetti = useConfettiStore();
-  console.log(selectedAnswers);
+
   useEffect(() => {
     const getHistory = async () => {
       let getLatestTestResult: any = await axios.get(
@@ -54,6 +55,11 @@ const Exam = ({
       );
       setFinalScore(getLatestTestResult.data?.UserProgress[0]?.score);
       setCategoryList(getLatestTestResult.data?.Category);
+      let currentUser = await axios.get(`/api/user`);
+      let getLatestExamRecord: any = await axios.get(
+        `/api/user/${currentUser.data.id}/examRecord/${chapter.id}`
+      );
+      console.log(getLatestExamRecord);
     };
     getHistory();
     window.addEventListener("beforeunload", alertUser);
@@ -124,6 +130,11 @@ const Exam = ({
 
       setOnFinish(true);
       setQuestions([]);
+      let currentUser = await axios.get(`/api/user`);
+      await axios.patch(
+        `/api/user/${currentUser.data.id}/examRecord/${chapter.id}`,
+        examRecord
+      );
       if (totalScore >= chapter.scoreLimit) {
         if (nextChapterId != null) {
           setTimeout(function () {
@@ -149,6 +160,9 @@ const Exam = ({
     setTimeLimit(chapter.timeLimit);
     setCurrentQuestion(0);
     setSelectedAnswers([]);
+    setExamRecord([]);
+    setIsGeneratingExam(true);
+
     if (!finishedExam) {
       let questionList = await axios.get(
         `/api/courses/${chapter.courseId}/chapters/${chapter.id}/category/exam/shuffle`
@@ -162,6 +176,7 @@ const Exam = ({
 
       setQuestions(shuffleArray(questionList.data.ExamList));
     }
+    setIsGeneratingExam(false);
   };
   // const cancel = () => {
   //   return redirect(`/courses`);
@@ -266,6 +281,11 @@ const Exam = ({
 
       setOnFinish(true);
       setQuestions([]);
+      let currentUser = await axios.get(`/api/user`);
+      await axios.patch(
+        `/api/user/${currentUser.data.id}/examRecord/${chapter.id}`,
+        examRecord
+      );
       if (totalScore >= chapter.scoreLimit) {
         if (nextChapterId != null) {
           setTimeout(function () {
@@ -316,6 +336,7 @@ const Exam = ({
         : parseInt(newCategoryList[categoryIndex]["categoryScore"]);
       if (selectedAnswers[i].type == "singleChoice") {
         if (selectedAnswers[i].chooseAnswer[0].isCorrect == true) {
+          selectedAnswers[i]["isRight"] = true;
           myScore = myScore + parseInt(selectedAnswers[i].score);
           newCategoryList[categoryIndex]["categoryScore"] = isNaN(
             parseInt(newCategoryList[categoryIndex]["categoryScore"])
@@ -324,7 +345,10 @@ const Exam = ({
             : parseInt(newCategoryList[categoryIndex]["categoryScore"]) +
               parseInt(selectedAnswers[i].score);
         } else {
+          selectedAnswers[i]["isRight"] = false;
         }
+
+        setExamRecord(...examRecord, selectedAnswers[i]);
       } else {
         let correctSelectedAnswer = 0;
         let numberOfCorrectAnswer = selectedAnswers[i].answer.filter(
@@ -344,6 +368,7 @@ const Exam = ({
           selectedAnswers[i]?.chooseAnswer.length == correctSelectedAnswer &&
           correctSelectedAnswer == numberOfCorrectAnswer
         ) {
+          selectedAnswers[i]["isRight"] = true;
           myScore = myScore + parseInt(selectedAnswers[i].score);
           newCategoryList[categoryIndex]["categoryScore"] = isNaN(
             parseInt(newCategoryList[categoryIndex]["categoryScore"])
@@ -351,15 +376,15 @@ const Exam = ({
             ? 0
             : parseInt(newCategoryList[categoryIndex]["categoryScore"]) +
               parseInt(selectedAnswers[i].score);
+        } else {
+          selectedAnswers[i]["isRight"] = false;
         }
+        setExamRecord(...examRecord, selectedAnswers[i]);
       }
     }
 
     // setCategoryList([...newCategoryList]);
-    let maxScore = questions.reduce(
-      (n: number, { score }: any) => n + score,
-      0
-    );
+    let maxScore = 100;
 
     finalScore = Math.floor((myScore / maxScore) * 100);
     setFinalScore(finalScore);
@@ -388,7 +413,14 @@ const Exam = ({
             This exam consists of multiple-choice questions.
           </li>
           <li className="mb-2">
-            You will have a limited time to complete the exam.
+            You will have{" "}
+            <span className="text-red-600">{timeLimit} minutes</span> to
+            complete the exam.
+          </li>
+          <li className="mb-2">
+            You need atleast{" "}
+            <span className="text-red-600">{chapter.scoreLimit}%</span> to pass
+            the exam.
           </li>
           <li className="mb-2">
             Make sure you are in a quiet environment to avoid distractions .
@@ -495,6 +527,13 @@ const Exam = ({
         <AlertDialogTrigger className="flex justify-center items-center">
           <div className="font-bold ml-2 rounded-lg">
             👉Take an exam{" "}
+            {isGeneratingExam ? (
+              <div className="">
+                We are generating your exam please be patient
+              </div>
+            ) : (
+              <></>
+            )}
             {isCompleted == "failed" ? (
               <span className="text-red-500">
                 Sorry, please wait for the exam reset to retake this test

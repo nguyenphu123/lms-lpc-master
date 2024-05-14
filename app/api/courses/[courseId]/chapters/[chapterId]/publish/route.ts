@@ -14,16 +14,16 @@ export async function PATCH(
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
-    const ownCourse = await db.course.findUnique({
-      where: {
-        id: params.courseId,
-        userId,
-      },
-    });
+    // const ownCourse = await db.course.findUnique({
+    //   where: {
+    //     id: params.courseId,
+    //     userId,
+    //   },
+    // });
 
-    if (!ownCourse) {
-      return new NextResponse("Unauthorized", { status: 401 });
-    }
+    // if (!ownCourse) {
+    //   return new NextResponse("Unauthorized", { status: 401 });
+    // }
 
     const chapter = await db.module.findUnique({
       where: {
@@ -35,7 +35,18 @@ export async function PATCH(
     if (!chapter || !chapter.title) {
       return new NextResponse("Missing required fields", { status: 400 });
     }
-
+    let courseChapterBefore: any = await db.course.findUnique({
+      where: {
+        id: params.courseId,
+      },
+      include: {
+        Module: {
+          where: {
+            isPublished: true,
+          },
+        },
+      },
+    });
     const publishedChapter = await db.module.update({
       where: {
         id: params.chapterId,
@@ -54,6 +65,37 @@ export async function PATCH(
         updatedBy: userId,
       },
     });
+    let courseChapterAfter: any = await db.course.findUnique({
+      where: {
+        id: params.courseId,
+      },
+      include: {
+        Module: {
+          where: {
+            isPublished: true,
+          },
+        },
+      },
+    });
+    const checkClassSessionRecord: any = await db.classSessionRecord.findMany({
+      where: { courseId: params.courseId },
+    });
+    for (let i = 0; i < checkClassSessionRecord.length; i++) {
+      await db.classSessionRecord.update({
+        where: {
+          id: checkClassSessionRecord[i].id,
+        },
+        data: {
+          status: "studying",
+          progress:
+            (courseChapterBefore.Module.length /
+              courseChapterAfter.Module.length) *
+              100 +
+            "%",
+        },
+      });
+    }
+
     return NextResponse.json(publishedChapter);
   } catch (error) {
     console.log("[CHAPTER_PUBLISH]", error);
