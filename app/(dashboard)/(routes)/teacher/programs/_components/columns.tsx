@@ -24,6 +24,7 @@ import { ProgramTitleCell } from "@/components/ui/program-title-cel";
 
 export const columns: ColumnDef<Course>[] = [
   {
+    id: "title",
     accessorKey: "title",
     header: ({ column }) => {
       return (
@@ -31,7 +32,7 @@ export const columns: ColumnDef<Course>[] = [
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          Program title and program's courses
+          title
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       );
