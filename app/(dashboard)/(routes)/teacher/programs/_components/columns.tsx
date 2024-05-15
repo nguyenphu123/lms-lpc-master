@@ -28,13 +28,13 @@ export const columns: ColumnDef<Course>[] = [
     accessorKey: "title",
     header: ({ column }) => {
       return (
-        <Button
-          variant="ghost"
+        <span
+          className="flex items-center cursor-pointer"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          title
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
+          <span className="mr-2">Title</span>
+          <ArrowUpDown className="h-4 w-4" />
+        </span>
       );
     },
     cell: ProgramTitleCell,
@@ -43,13 +43,13 @@ export const columns: ColumnDef<Course>[] = [
     accessorKey: "user",
     header: ({ column }) => {
       return (
-        <Button
-          variant="ghost"
+        <span
+          className="flex items-center cursor-pointer"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          Created By
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
+          <span className="mr-2">Created By</span>
+          <ArrowUpDown className="h-4 w-4" />
+        </span>
       );
     },
     cell: ({ row }: any) => {
@@ -61,13 +61,13 @@ export const columns: ColumnDef<Course>[] = [
     accessorKey: "updatedUser",
     header: ({ column }) => {
       return (
-        <Button
-          variant="ghost"
+        <span
+          className="flex items-center cursor-pointer"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          Updated By
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
+          <span className="mr-2">Updated By</span>
+          <ArrowUpDown className="h-4 w-4" />
+        </span>
       );
     },
     cell: ({ row }: any) => {
@@ -80,13 +80,13 @@ export const columns: ColumnDef<Course>[] = [
     accessorKey: "isPublished",
     header: ({ column }) => {
       return (
-        <Button
-          variant="ghost"
+        <span
+          className="flex items-center cursor-pointer"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          Published
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
+          <span className="mr-2">Published</span>
+          <ArrowUpDown className="h-4 w-4" />
+        </span>
       );
     },
     cell: ({ row }) => {

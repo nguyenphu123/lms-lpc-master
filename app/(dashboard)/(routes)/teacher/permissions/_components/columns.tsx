@@ -9,7 +9,7 @@ import {
   ClipboardList,
 } from "lucide-react";
 import Link from "next/link";
-
+import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -18,6 +18,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { PermissionActionCell } from "@/components/ui/permission-action-cell";
+import { Badge } from "@/components/ui/badge";
 
 export const columns: ColumnDef<{
   id: string;
@@ -28,13 +29,13 @@ export const columns: ColumnDef<{
     accessorKey: "title",
     header: ({ column }) => {
       return (
-        <Button
-          variant="ghost"
+        <span
+          className="flex items-center cursor-pointer"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          Title
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
+          <span className="mr-2">Title</span>
+          <ArrowUpDown className="h-4 w-4" />
+        </span>
       );
     },
   },
@@ -42,13 +43,27 @@ export const columns: ColumnDef<{
     accessorKey: "status",
     header: ({ column }) => {
       return (
-        <Button
-          variant="ghost"
+        <span
+          className="flex items-center cursor-pointer"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          Status
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
+          <span className="mr-2">Status</span>
+          <ArrowUpDown className="h-4 w-4" />
+        </span>
+      );
+    },
+    cell: ({ row }: any) => {
+      const { id, status } = row.original;
+
+      return (
+        <Badge
+          className={cn(
+            "bg-slate-500 dark:text-zinc-50 ",
+            status === "active" && "bg-sky-700"
+          )}
+        >
+          {status == "active" ? "Active" : "Inactive"}
+        </Badge>
       );
     },
   },
