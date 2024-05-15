@@ -20,6 +20,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { ProgramActionCell } from "@/components/ui/program-action-cell";
+import { ProgramTitleCell } from "@/components/ui/program-title-cel";
 
 export const columns: ColumnDef<Course>[] = [
   {
@@ -30,11 +31,12 @@ export const columns: ColumnDef<Course>[] = [
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          Title
+          Program title and program's courses
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       );
     },
+    cell: ProgramTitleCell,
   },
   {
     accessorKey: "user",

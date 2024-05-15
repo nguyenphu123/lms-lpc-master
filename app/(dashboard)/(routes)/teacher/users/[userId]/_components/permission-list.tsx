@@ -12,9 +12,10 @@ import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 interface PermissionProps {
-  permissionId: string;
+  id: string;
   title: string;
-  roleId: string;
+
+  status: string;
 }
 interface PermissionFormProps {
   initialData: PermissionProps[];
@@ -35,9 +36,11 @@ export const PermissionForm = ({
 }: any) => {
   const [isEditing, setIsEditing] = useState(false);
   const [currentRole, setCurrentRole] = useState("");
-  const [permissionList, setPermissionList] = useState([
-    ...initialData.userPermission,
-  ]);
+  const [roleList, setRoleList] = useState(role);
+
+  const [permissionList, setPermissionList] = useState(
+    initialData.userPermission
+  );
   useEffect(() => {
     for (let i = 0; i < role.length; i++) {
       if (role[i].rolePermission.length == permissionList.length) {
@@ -54,30 +57,42 @@ export const PermissionForm = ({
     resolver: zodResolver(formSchema),
     defaultValues: initialData,
   });
-  const onChangePermissionList = (e: any, permission: PermissionProps) => {
+  const onChangePermissionList = (e: any, permission: any) => {
+    // debugger;
+
     // e.preventDefault();
     let newPermissionList = [...permissionList];
+
     if (
       newPermissionList
         .map((item) => item.permissionId)
-        .indexOf(permission.permissionId) != -1
+        .indexOf(permission.id) != -1
     ) {
       newPermissionList.splice(
         newPermissionList
           .map((item) => item.permissionId)
-          .indexOf(permission.permissionId),
+          .indexOf(permission.id),
         1
       );
+      setPermissionList([...newPermissionList]);
     } else {
-      let newItem = {
-        permissionId: permission.permissionId,
-        permission: permission,
-        roleId: permission.roleId,
-      };
+      for (let i = 0; i < roleList.length; i++) {
+        for (let j = 0; j < roleList[i].rolePermission.length; j++) {
+          if (roleList[i].rolePermission[j].permissionId == permission.id) {
+            let newItem = {
+              permissionId: permission.id,
+              permission: permission,
+              roleId: roleList[i].id,
+              userId: userId,
+            };
 
-      setPermissionList((prevState) => [...prevState, newItem]);
+            setPermissionList([...permissionList, newItem]);
+          }
+        }
+      }
     }
   };
+
   const onChangePermissionListByRole = (e: any, role: any) => {
     if (currentRole == role.title) {
       setCurrentRole("");
@@ -96,9 +111,10 @@ export const PermissionForm = ({
           permissionId: role.rolePermission[i].permissionId,
           permission: role.rolePermission[i].permission,
           roleId: role.rolePermission[i].roleId,
+          userId: userId,
         };
 
-        setPermissionList((prevState) => [...prevState, newItem]);
+        setPermissionList([...permissionList, newItem]);
       }
     }
 
@@ -160,9 +176,9 @@ export const PermissionForm = ({
         <div className="dark: text-zinc-50">
           Set permission base on role
           <div className="grid grid-cols-5 gap-4">
-            {role.map((item: any, i: any) => {
+            {roleList.map((item: any, i: any) => {
               return (
-                <div key={item.id} className="dark:text-slate-50">
+                <div key={i + "-" + item.id} className="dark:text-slate-50">
                   <input
                     onChange={(e) => onChangePermissionListByRole(e, item)}
                     disabled={isEditing ? false : true}
@@ -179,7 +195,7 @@ export const PermissionForm = ({
           <div className="grid grid-cols-8 gap-16 w-full">
             {permission.map((item: any, i: any) => {
               return (
-                <div key={item.id} className="dark:text-slate-50">
+                <div key={i + "-" + item.id} className="dark:text-slate-50">
                   <input
                     onChange={(e) => onChangePermissionList(e, item)}
                     disabled={isEditing ? false : true}
