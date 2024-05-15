@@ -160,7 +160,7 @@ export const PermissionForm = ({
   return (
     <div className="mt-6 border bg-slate-100 rounded-md p-4 text-black dark:bg-slate-950">
       <div className="font-medium flex items-center justify-between dark:text-slate-50">
-        permission
+        <h2 className="text-lg">Permissions</h2>
         <Button onClick={toggleEdit} variant="ghost">
           {isEditing ? (
             <>Cancel</>
@@ -173,12 +173,17 @@ export const PermissionForm = ({
         </Button>
       </div>
       {isEditing && (
-        <div className="dark: text-zinc-50">
-          Set permission base on role
-          <div className="grid grid-cols-5 gap-4">
+        <div className="dark:text-zinc-50 mt-4">
+          <h3 className="text-md font-semibold">
+            Set permissions based on role
+          </h3>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-2">
             {roleList.map((item: any, i: any) => {
               return (
-                <div key={i + "-" + item.id} className="dark:text-slate-50">
+                <div
+                  key={i + "-" + item.id}
+                  className="dark:text-slate-50 flex items-center space-x-2"
+                >
                   <input
                     onChange={(e) => onChangePermissionListByRole(e, item)}
                     disabled={isEditing ? false : true}
@@ -186,16 +191,21 @@ export const PermissionForm = ({
                     type="checkbox"
                     checked={currentRole == item.title ? true : false}
                   />
-                  {item.title}
+                  <span>{item.title}</span>
                 </div>
               );
             })}
           </div>
-          Or Custom permission
-          <div className="grid grid-cols-8 gap-16 w-full">
+          <h3 className="text-md font-semibold mt-6">
+            Or customize permissions
+          </h3>
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 mt-2">
             {permission.map((item: any, i: any) => {
               return (
-                <div key={i + "-" + item.id} className="dark:text-slate-50">
+                <div
+                  key={i + "-" + item.id}
+                  className="dark:text-slate-50 flex items-center space-x-2"
+                >
                   <input
                     onChange={(e) => onChangePermissionList(e, item)}
                     disabled={isEditing ? false : true}
@@ -209,14 +219,14 @@ export const PermissionForm = ({
                         : false
                     }
                   />
-                  {item.title}
+                  <span>{item.title}</span>
                 </div>
               );
             })}
           </div>
-          <div className="flex items-center gap-x-2">
-            <Button onClick={() => onSubmit()} type="button">
-              Save
+          <div className="flex items-center gap-x-2 mt-4">
+            <Button onClick={onSubmit} type="button" disabled={isSubmitting}>
+              {isSubmitting ? "Saving..." : "Save"}
             </Button>
           </div>
         </div>
