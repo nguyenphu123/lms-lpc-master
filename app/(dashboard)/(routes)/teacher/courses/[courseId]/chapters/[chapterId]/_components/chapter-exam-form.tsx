@@ -49,7 +49,7 @@ export default function Exam({ chapter }: any) {
       );
 
       setQuizList(questionList.data.Category);
-      setPassPercentage(chapter.scoreLimit == null ? 80 : chapter.timeLimit);
+      setPassPercentage(chapter.scoreLimit == null ? 80 : chapter.scoreLimit);
 
       setTimeLimit(chapter.timeLimit == null ? 60 : chapter.timeLimit);
     }
@@ -400,7 +400,26 @@ export default function Exam({ chapter }: any) {
           readData = [...readData, category];
         }
 
-        setQuizList([...quizList, ...readData]);
+        for (let i = 0; i < readData.length; i++) {
+          if (
+            quizList
+              .map((item: { title: any }) => item.title)
+              .indexOf(readData[i].title) != -1
+          ) {
+            quizList[
+              quizList
+                .map((item: { title: any }) => item.title)
+                .indexOf(readData[i].title)
+            ].numOfAppearance = readData[i].numOfAppearance;
+            quizList[
+              quizList
+                .map((item: { title: any }) => item.title)
+                .indexOf(readData[i].title)
+            ].question = readData[i].question;
+          } else {
+            setQuizList((prevState: any) => [...prevState, readData[i]]);
+          }
+        }
 
         // setData(parsedData);
       };
