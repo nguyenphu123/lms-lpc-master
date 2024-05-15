@@ -61,7 +61,11 @@ export async function POST(req: Request) {
         <p>Please review and approve this user's request to access the system.</p>
         <p><strong>Username:</strong> ${username}</p>
         <p><strong>Email:</strong> ${emailAddress}</p>
-        <a href='http://localhost:3000/teacher/users?email=${emailAddress}&task=approved' >Click here to approve</a>
+        <a href='http://localhost:3000/teacher/users?email=${emailAddress}&task=approved' >
+        <button style="background-color: green; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;">
+        Approve
+    </button>
+    </a>
       `,
     };
     let transporter = nodemailer.createTransport(

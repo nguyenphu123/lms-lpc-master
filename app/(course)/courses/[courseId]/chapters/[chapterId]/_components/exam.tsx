@@ -540,13 +540,10 @@ const Exam = ({
       <AlertDialog>
         <AlertDialogTrigger className="flex justify-center items-center">
           <div className="font-bold ml-2 rounded-lg">
-            👉Take an exam{" "}
             {isGeneratingExam ? (
-              <div className="">
-                We are generating your exam please be patient
-              </div>
+              <div className="">Please wait while we generate your exam...</div>
             ) : (
-              <></>
+              <>👉Take an exam </>
             )}
             {isCompleted == "failed" ? (
               <span className="text-red-500">
