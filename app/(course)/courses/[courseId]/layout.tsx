@@ -12,6 +12,9 @@ const CourseLayout = async ({
   params: { courseId: string };
 }) => {
   const { userId }: any = auth();
+  let userInfo: any = await db.user.findUnique({
+    where: { id: userId },
+  });
   if (!userId) {
     return redirect("/");
   }
@@ -45,8 +48,10 @@ const CourseLayout = async ({
   }
 
   const progressCount = await getProgress(userId, course.id);
-  
-  return (
+
+  return userInfo.isInExam ? (
+    <>Sorry you are currently doing test!!!</>
+  ) : (
     <div className="h-full pl-1">
       <div className="h-[80px] md:pl-80 fixed inset-y-0 w-full z-50">
         <CourseNavbar
