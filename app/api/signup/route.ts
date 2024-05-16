@@ -18,7 +18,7 @@ export async function POST(req: Request) {
     let createUser = await db.user.create({
       data: {
         id: createdUserId,
-        isInExam: false,
+
         email: emailAddress,
         status: "pending",
         username: username,
