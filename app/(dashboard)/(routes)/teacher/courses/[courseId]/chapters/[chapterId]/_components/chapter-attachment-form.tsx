@@ -35,10 +35,11 @@ export const AttacthmentForm = ({
       attachmentType: string;
     }>
   >(initialData.Resource);
+  const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const onChangeFileUrl = async (e: any, id: any) => {
     e.preventDefault();
-
+    setIsLoading(true);
     const file = e.target.files?.[0];
     let objIndex = contents.findIndex((obj: any, index: any) => obj.id == id);
 
@@ -78,6 +79,7 @@ export const AttacthmentForm = ({
       objIndex
     ].attachment = `${process.env.NEXT_PUBLIC_ACCOUNT_URL}/Course/${getCourse.data.title}/${getChapter.data.title}/${initialData.title}/attachment/${file.name}`;
     setContents([...contents]);
+    setIsLoading(false);
   };
   const addResource = () => {
     let newItem = {
@@ -146,20 +148,37 @@ export const AttacthmentForm = ({
           </div>
         ))}
       </div>
-      <div className="flex justify-end space-x-4 mt-6">
-        <button
-          onClick={addResource}
-          className="bg-blue-600 text-white px-4 py-2 rounded-md"
-        >
-          Add Resource
-        </button>
-        <button
-          onClick={onSubmit}
-          className="bg-green-600 text-white px-4 py-2 rounded-md"
-        >
-          Submit
-        </button>
-      </div>
+      {isLoading ? (
+        <div className="flex justify-end space-x-4 mt-6">
+          <button
+            disabled
+            className="bg-blue-600 text-white px-4 py-2 rounded-md"
+          >
+            Waiting...
+          </button>
+          <button
+            disabled
+            className="bg-gray-500 text-white px-4 py-2 rounded-md"
+          >
+            Waiting...
+          </button>
+        </div>
+      ) : (
+        <div className="flex justify-end space-x-4 mt-6">
+          <button
+            onClick={addResource}
+            className="bg-blue-600 text-white px-4 py-2 rounded-md"
+          >
+            Add Resource
+          </button>
+          <button
+            onClick={onSubmit}
+            className="bg-green-600 text-white px-4 py-2 rounded-md"
+          >
+            Submit
+          </button>
+        </div>
+      )}
     </div>
   );
 };

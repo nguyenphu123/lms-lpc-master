@@ -8,6 +8,7 @@ import { Trash, PlusCircle, Asterisk } from "lucide-react";
 import dynamic from "next/dynamic";
 
 const Link = dynamic(() => import("next/link"), { ssr: false });
+
 interface AttachmentFormProps {
   courseId: string;
   moduleId: string;
@@ -30,14 +31,14 @@ export const ContentForm = ({ courseId, moduleId }: AttachmentFormProps) => {
   const [currentTab, setCurrentTab] = useState("");
   const [edit, setEdit] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  function getRandomInt(max: number) {
-    return Math.floor(Math.random() * max);
-  }
+
+  const generateId = () => Math.random().toString(36).substr(2, 9);
+
   const addContent = () => {
-    let initContent = {
-      id: getRandomInt(100000).toString(),
+    const newContent = {
+      id: generateId(),
       title: "New page",
-      moduleId: moduleId,
+      moduleId,
       description: "",
       content: "",
       contentType: "video",
@@ -45,46 +46,34 @@ export const ContentForm = ({ courseId, moduleId }: AttachmentFormProps) => {
       fileUrl: "",
       Resource: [],
     };
-    setCurrentTab(initContent.id);
-    setContents([...contents, initContent]);
+    setCurrentTab(newContent.id);
+    setContents([...contents, newContent]);
   };
-  const removeContent = (id: any) => {
-    let objIndex = contents.findIndex((obj: any, index: any) => obj.id == id);
-    let newArr = [...contents];
-    newArr.splice(objIndex, 1);
-    setContents([...newArr]);
+
+  const removeContent = (id: string) => {
+    setContents(contents.filter((content) => content.id !== id));
   };
+
   useEffect(() => {
-    async function loadData() {
-      let contentList = await axios.get(
+    const loadData = async () => {
+      const { data } = await axios.get(
         `/api/courses/${courseId}/chapters/${moduleId}/slide`
       );
-
-      if (contentList.data.length == 0) {
-      } else {
-        setCurrentTab(contentList.data[0].id);
-        setContents(contentList.data);
+      if (data.length > 0) {
+        setCurrentTab(data[0].id);
+        setContents(data);
       }
-
-      // if (data.data.type.toLowerCase() == "video") {
-      //   setSelectedFile(data.data.content);
-      // } else {
-      //   editorRef = data.data.content;
-      // }
-    }
+    };
     loadData();
-  }, []);
+  }, [courseId, moduleId]);
+
   const router = useRouter();
 
   const onSubmit = async () => {
-    let values = {
-      contents,
-    };
     try {
-      await axios.post(
-        `/api/courses/${courseId}/chapters/${moduleId}/slide`,
-        values
-      );
+      await axios.post(`/api/courses/${courseId}/chapters/${moduleId}/slide`, {
+        contents,
+      });
       toast.success("Content created");
       router.refresh();
     } catch {
@@ -92,153 +81,92 @@ export const ContentForm = ({ courseId, moduleId }: AttachmentFormProps) => {
     }
   };
 
-  const onChangeType = (e: ChangeEvent<HTMLSelectElement>, id: any) => {
-    e.preventDefault();
-    let objIndex = contents.findIndex((obj: any, index: any) => obj.id == id);
-
-    contents[objIndex].contentType = e.target.value;
-    setContents([...contents]);
-  };
-  const onChangeContent = (content: string, id: any) => {
-    let objIndex = contents.findIndex((obj: any, index: any) => obj.id == id);
-    contents[objIndex].content = content;
-    setContents([...contents]);
-  };
-  const onChangeTitle = (e: ChangeEvent<HTMLSelectElement>, id: any) => {
-    e.preventDefault();
-    let objIndex = contents.findIndex((obj: any, index: any) => obj.id == id);
-    contents[objIndex].title = e.target.value;
-    setContents([...contents]);
-  };
-  const onChangeDescription = (e: ChangeEvent<HTMLSelectElement>, id: any) => {
-    e.preventDefault();
-    let objIndex = contents.findIndex((obj: any, index: any) => obj.id == id);
-    contents[objIndex].description = e.target.value;
-    setContents([...contents]);
+  const handleChange = (field: string, value: string, id: string) => {
+    setContents(
+      contents.map((content) =>
+        content.id === id ? { ...content, [field]: value } : content
+      )
+    );
   };
 
-  const onChangeFileUrl = async (e: any, id: any) => {
-    e.preventDefault();
+  const handleFileUpload = async (
+    e: ChangeEvent<HTMLInputElement>,
+    id: string,
+    field: "fileUrl" | "videoUrl"
+  ) => {
     setIsLoading(true);
     const file = e.target.files?.[0];
-    let objIndex = contents.findIndex((obj: any, index: any) => obj.id == id);
+    if (!file) return;
 
-    let getToken = await axios.get("/api/getToken");
-    if (
-      contents[objIndex].fileUrl != null &&
-      contents[objIndex].fileUrl != ""
-    ) {
-      await axios.delete(contents[objIndex].fileUrl, {
+    try {
+      const getToken = await axios.get("/api/getToken");
+      const { data: getCourse } = await axios.get(`/api/courses/${courseId}`);
+      const { data: getChapter } = await axios.get(
+        `/api/courses/${courseId}/chapters/${moduleId}`
+      );
+
+      const uploadUrl = `${process.env.NEXT_PUBLIC_ACCOUNT_URL}/Course/${getCourse.title}/${getChapter.title}/${file.name}`;
+
+      await axios.put(uploadUrl, file, {
         headers: {
           "Access-Control-Allow-Origin": "*",
-          "X-Auth-Token": getToken.data["x-subject-token"],
-        },
-      });
-    }
-
-    let getCourse: any = await axios.get(`/api/courses/${courseId}`);
-    let getChapter: any = await axios.get(
-      `/api/courses/${courseId}/chapters/${moduleId}`
-    );
-
-    await axios.put(
-      `${process.env.NEXT_PUBLIC_ACCOUNT_URL}/Course/${getCourse.data.title}/${getChapter.data.title}/${file.name}`,
-      file,
-      {
-        headers: {
-          "Access-Control-Allow-Origin": "*",
-          Accept: "*/*",
           "Content-Type": file.type,
           "X-Auth-Token": getToken.data["x-subject-token"],
         },
-      }
-    );
-    contents[
-      objIndex
-    ].fileUrl = `${process.env.NEXT_PUBLIC_ACCOUNT_URL}/Course/${getCourse.data.title}/${getChapter.data.title}/${file.name}`;
-    setContents([...contents]);
-    setIsLoading(false);
-  };
-  const onChangeVideoUrl = async (e: any, id: any) => {
-    e.preventDefault();
-    setIsLoading(true);
-    const file = e.target.files?.[0];
-    let objIndex = contents.findIndex((obj: any, index: any) => obj.id == id);
-    let getToken = await axios.get("/api/getToken");
-    if (
-      contents[objIndex].videoUrl != null &&
-      contents[objIndex].videoUrl != ""
-    ) {
-      await axios.delete(contents[objIndex].videoUrl, {
-        headers: {
-          "Access-Control-Allow-Origin": "*",
-          "X-Auth-Token": getToken.data["x-subject-token"],
-        },
       });
+
+      handleChange(field, uploadUrl, id);
+    } catch {
+      toast.error("Failed to upload file");
+    } finally {
+      setIsLoading(false);
     }
-
-    let getCourse: any = await axios.get(`/api/courses/${courseId}`);
-    let getChapter: any = await axios.get(
-      `/api/courses/${courseId}/chapters/${moduleId}`
-    );
-
-    await axios.put(
-      `${process.env.NEXT_PUBLIC_ACCOUNT_URL}/Course/${getCourse.data.title}/${getChapter.data.title}/${file.name}`,
-      file,
-      {
-        headers: {
-          "Access-Control-Allow-Origin": "*",
-          Accept: "*/*",
-          "Content-Type": file.type,
-          "X-Auth-Token": getToken.data["x-subject-token"],
-        },
-      }
-    );
-    contents[
-      objIndex
-    ].videoUrl = `${process.env.NEXT_PUBLIC_ACCOUNT_URL}/Course/${getCourse.data.title}/${getChapter.data.title}/${file.name}`;
-    setContents([...contents]);
-    setIsLoading(false);
   };
+
   return (
     <div className="mt-6 border dark:text-white rounded-md p-4">
       <div className="font-medium flex items-center justify-between mb-4">
         <div className="flex items-center">
           Course Content <Asterisk className="size-4" color="red" />
         </div>
-      </div>
-      <button
-        onClick={() => addContent()}
-        className="bg-black text-white px-4 py-2 rounded-md mb-4 flex items-center"
-      >
-        <PlusCircle className="h-4 w-4 mr-2" /> Content
-      </button>
-      {contents.map((item: any) => (
-        <div
-          key={item.id}
-          onClick={() => setCurrentTab(item.id)}
-          className={`cursor-pointer mb-4 p-2 rounded-md ${
-            currentTab === item.id ? "bg-gray-200 dark:bg-lime-900" : ""
-          }`}
+        <button
+          onClick={addContent}
+          className="bg-black text-white px-4 py-2 rounded-md flex items-center"
         >
-          {item.title}
-        </div>
-      ))}
+          <PlusCircle className="h-4 w-4 mr-2" /> Add Content
+        </button>
+      </div>
+
+      <div className="flex flex-col mb-4">
+        {contents.map((item) => (
+          <div
+            key={item.id}
+            onClick={() => setCurrentTab(item.id)}
+            className={`cursor-pointer p-2 rounded-md ${
+              currentTab === item.id ? "bg-gray-200 dark:bg-lime-900" : ""
+            }`}
+          >
+            {item.title}
+          </div>
+        ))}
+      </div>
+
       {contents
-        .filter((item: any) => item.id === currentTab)
-        .map((item: any) => (
+        .filter((item) => item.id === currentTab)
+        .map((item) => (
           <div key={item.id} className="mb-4">
-            <div className="mb-4 flex items-center">
+            <div className="flex items-center mb-4">
               <input
                 type="text"
-                defaultValue={item.title}
-                onChange={(e: any) => onChangeTitle(e, item.id)}
+                value={item.title}
+                onChange={(e) => handleChange("title", e.target.value, item.id)}
                 className="border p-2 rounded-md w-full"
               />
               <select
-                name="contentType"
-                defaultValue={item.contentType}
-                onChange={(e) => onChangeType(e, item.id)}
+                value={item.contentType}
+                onChange={(e) =>
+                  handleChange("contentType", e.target.value, item.id)
+                }
                 className="border p-2 rounded-md ml-2"
               >
                 <option value="video">Video</option>
@@ -247,175 +175,144 @@ export const ContentForm = ({ courseId, moduleId }: AttachmentFormProps) => {
               </select>
               <button
                 onClick={() => removeContent(item.id)}
-                className="bg-black text-white px-3 py-3 rounded-md ml-2"
+                className="bg-red-600 text-white px-3 py-2 rounded-md ml-2"
               >
                 <Trash className="h-4 w-4" />
               </button>
             </div>
 
-            {item.contentType?.toLowerCase() === "video" ? (
+            {item.contentType === "video" ? (
               <div className="mb-4">
-                <div className="font-medium flex items-center justify-between mb-4">
-                  {/* Add Video Icon */}
-                  {item.videoUrl === "" ? "Add a video" : "Update video"}
+                <div className="font-medium mb-2">
+                  {item.videoUrl ? "Update Video" : "Add a Video"}
                 </div>
                 <div className="mb-2">
-                  {item.videoUrl != "" && !edit ? (
+                  {item.videoUrl && !edit ? (
                     <Link
-                      suppressHydrationWarning={true}
                       href={item.videoUrl}
                       target="_blank"
-                      className="text-blue-600 hover:underline cursor-pointer"
+                      className="text-blue-600 hover:underline"
                     >
-                      {item.videoUrl.split("/").pop() as string}
+                      {item.videoUrl.split("/").pop()}
                     </Link>
                   ) : (
                     <input
                       type="file"
-                      onChange={(e: any) => onChangeVideoUrl(e, item.id)}
-                      accept="application/*"
+                      onChange={(e) => handleFileUpload(e, item.id, "videoUrl")}
+                      accept="video/*"
+                      className="file-input"
                     />
                   )}
-                  {item.videoUrl !== "" ? (
-                    !edit ? (
-                      <button type="button" onClick={() => setEdit(!edit)}>
-                        edit
-                      </button>
-                    ) : (
-                      <button type="button" onClick={() => setEdit(!edit)}>
-                        cancel
-                      </button>
-                    )
-                  ) : (
-                    <></>
+                  {item.videoUrl && (
+                    <button
+                      type="button"
+                      onClick={() => setEdit(!edit)}
+                      className="ml-2"
+                    >
+                      {edit ? "Cancel" : "Edit"}
+                    </button>
                   )}
-                </div>
-                <div className="font-medium flex items-center justify-between mb-4">
-                  Description
                 </div>
                 <textarea
                   value={item.description}
-                  onChange={(e: any) => onChangeDescription(e, item.id)}
+                  onChange={(e) =>
+                    handleChange("description", e.target.value, item.id)
+                  }
                   className="border p-2 rounded-md w-full"
+                  placeholder="Description"
                 ></textarea>
               </div>
-            ) : item.contentType?.toLowerCase() === "text" ? (
+            ) : item.contentType === "text" ? (
               <div className="mb-4">
-                <div className="font-medium flex items-center justify-between mb-4">
-                  Description
-                </div>
                 <Editor
                   apiKey="8jo1uligpkc7y1v598qze63nfgfvcflmy7ifyfqt9ah17l7m"
                   value={item.content}
-                  onEditorChange={(content: any) =>
-                    onChangeContent(content, item.id)
+                  onEditorChange={(content) =>
+                    handleChange("content", content, item.id)
                   }
                   init={{
                     height: 500,
                     width: "auto",
                     plugins: [
-                      "advlist",
-                      "autolink",
-                      "lists",
-                      "link",
-                      "image",
-                      "charmap",
-                      "preview",
-                      "anchor",
-                      "searchreplace",
-                      "visualblocks",
-                      "code",
-                      "fullscreen",
-                      "insertdatetime",
-                      "media",
-                      "table",
-                      "code",
-                      "help",
-                      "wordcount",
+                      "advlist autolink lists link image charmap preview anchor",
+                      "searchreplace visualblocks code fullscreen",
+                      "insertdatetime media table code help wordcount",
                     ],
                     toolbar:
                       "undo redo | blocks | " +
                       "bold italic forecolor | alignleft aligncenter " +
                       "alignright alignjustify | bullist numlist outdent indent | " +
-                      "removeformat | help | image",
-                    images_file_types: "jpg,svg,webp,png",
+                      "removeformat | help",
                     paste_data_images: true,
-                    paste_retain_style_properties: "all",
-                    // ... (unchanged options)
                   }}
                 />
-                {/* <div className="mb-2">
-                  Description :{" "}
-                  <textarea
-                    value={item.description}
-                    onChange={(e: any) => onChangeDescription(e, item.id)}
-                    className="border p-2 rounded-md w-full"
-                  ></textarea>
-                </div> */}
+                <textarea
+                  value={item.description}
+                  onChange={(e) =>
+                    handleChange("description", e.target.value, item.id)
+                  }
+                  className="border p-2 rounded-md w-full mt-4"
+                  placeholder="Description"
+                ></textarea>
               </div>
             ) : (
-              <div>
+              <div className="mb-4">
+                <div className="font-medium mb-2">
+                  {item.fileUrl ? "Update File" : "Add a File"}
+                </div>
                 <div className="mb-2">
-                  {/* Adjust input/file styling as needed */}
-                  {item.fileUrl != "" && !edit ? (
+                  {item.fileUrl && !edit ? (
                     <Link
-                      suppressHydrationWarning={true}
-                      download="Exam_Format"
                       href={item.fileUrl}
                       target="_blank"
-                      className="text-blue-600 hover:underline cursor-pointer"
+                      className="text-blue-600 hover:underline"
                     >
-                      {item.fileUrl.split("/").pop() as string}
+                      {item.fileUrl.split("/").pop()}
                     </Link>
                   ) : (
                     <input
                       type="file"
-                      onChange={(e: any) => onChangeFileUrl(e, item.id)}
+                      onChange={(e) => handleFileUpload(e, item.id, "fileUrl")}
                       accept="application/*"
+                      className="file-input"
                     />
                   )}
-                  {item.fileUrl !== "" ? (
-                    !edit ? (
-                      <button type="button" onClick={() => setEdit(!edit)}>
-                        edit
-                      </button>
-                    ) : (
-                      <button type="button" onClick={() => setEdit(!edit)}>
-                        cancel
-                      </button>
-                    )
-                  ) : (
-                    <></>
+                  {item.fileUrl && (
+                    <button
+                      type="button"
+                      onClick={() => setEdit(!edit)}
+                      className="ml-2"
+                    >
+                      {edit ? "Cancel" : "Edit"}
+                    </button>
                   )}
                 </div>
-                <div className="font-medium flex items-center justify-between mb-4">
-                  Description
-                </div>
-                <div className="mb-2">
-                  <textarea
-                    value={item.description}
-                    onChange={(e: any) => onChangeDescription(e, item.id)}
-                    className="border p-2 rounded-md w-full"
-                  ></textarea>
-                </div>
+                <textarea
+                  value={item.description}
+                  onChange={(e) =>
+                    handleChange("description", e.target.value, item.id)
+                  }
+                  className="border p-2 rounded-md w-full"
+                  placeholder="Description"
+                ></textarea>
               </div>
             )}
           </div>
         ))}
+
       {contents.length > 0 && (
-        <div className="flex items-center justify-between">
-          {/* <div className="font-medium">Course content</div> */}
+        <div className="flex justify-end">
           {isLoading ? (
             <button
               disabled
-              className="bg-black text-white px-4 py-2 rounded-md ml-auto"
+              className="bg-gray-500 text-white px-4 py-2 rounded-md"
             >
               Waiting...
             </button>
           ) : (
             <button
-              onClick={() => onSubmit()}
-              className="bg-black text-white px-4 py-2 rounded-md ml-auto"
+              onClick={onSubmit}
+              className="bg-black text-white px-4 py-2 rounded-md"
             >
               Submit
             </button>
