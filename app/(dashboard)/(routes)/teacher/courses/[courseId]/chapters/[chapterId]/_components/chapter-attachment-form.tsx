@@ -2,7 +2,6 @@
 
 import * as z from "zod";
 import axios from "axios";
-
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
@@ -108,20 +107,20 @@ export const AttacthmentForm = ({
 
   return (
     <div className="mt-6 border rounded-md p-4 dark:text-white">
-      <div className="font-medium flex items-center justify-between">
-        Chapter Extra resources
+      <div className="font-medium flex items-center justify-between mb-4">
+        <div className="flex items-center">Chapter Extra Resources</div>
       </div>
 
-      <div>
+      <div className="space-y-4">
         {contents.map((item: any, index: any) => (
-          <div key={index}>
-            {item.attachment != "" && !edit ? (
+          <div key={index} className="flex items-center justify-between">
+            {item.attachment !== "" && !edit ? (
               <Link
                 suppressHydrationWarning={true}
-                download="Exam_Format"
+                download="Attachment"
                 href={item.attachment}
                 target="_blank"
-                className="text-blue-600 hover:underline cursor-pointer"
+                className="text-blue-600 hover:underline"
               >
                 {item.attachment.split("/").pop() as string}
               </Link>
@@ -130,38 +129,33 @@ export const AttacthmentForm = ({
                 type="file"
                 onChange={(e: any) => onChangeFileUrl(e, item.id)}
                 accept="application/*"
+                className="file-input"
               />
             )}
-            {item.attachment !== "" ? (
-              !edit ? (
-                <button type="button" onClick={() => setEdit(!edit)}>
-                  edit
-                </button>
-              ) : (
-                <button type="button" onClick={() => setEdit(!edit)}>
-                  cancel
-                </button>
-              )
-            ) : (
-              <></>
+            {edit && (
+              <button
+                type="button"
+                onClick={() =>
+                  setContents(contents.filter((_, i) => i !== index))
+                }
+                className="bg-red-500 text-white px-3 py-1 rounded-md ml-2"
+              >
+                Remove
+              </button>
             )}
           </div>
         ))}
       </div>
-      <div className="flex items-center justify-between">
-        {/* <div className="font-medium">Course content</div> */}
+      <div className="flex justify-end space-x-4 mt-6">
         <button
-          onClick={() => addResource()}
-          className="bg-black text-white px-4 py-2 rounded-md ml-auto"
+          onClick={addResource}
+          className="bg-blue-600 text-white px-4 py-2 rounded-md"
         >
-          Add
+          Add Resource
         </button>
-      </div>
-      <div className="flex items-center justify-between">
-        {/* <div className="font-medium">Course content</div> */}
         <button
-          onClick={() => onSubmit()}
-          className="bg-black text-white px-4 py-2 rounded-md ml-auto"
+          onClick={onSubmit}
+          className="bg-green-600 text-white px-4 py-2 rounded-md"
         >
           Submit
         </button>

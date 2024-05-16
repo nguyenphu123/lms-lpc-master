@@ -41,12 +41,8 @@ export async function GET(
       for (let i = 0; i < questionsList.Category.length; i++) {
         let listQuestionByCategory: any = [];
         let finalListQuestionByCategory: any = [];
-        let categoryMaxScore = 0;
-        for (let j = 0; j < questionsList.Category[i].Exam.length; j++) {
-          categoryMaxScore =
-            categoryMaxScore +
-            parseInt(questionsList.Category[i].Exam[j].score);
 
+        for (let j = 0; j < questionsList.Category[i].Exam.length; j++) {
           questionsList.Category[i].Exam[j].answer = shuffleArray(
             questionsList.Category[i].Exam[j].answer
           );
@@ -71,22 +67,26 @@ export async function GET(
             Math.random() * listQuestionByCategory.length
           );
           if (!listQuestionByCategory[random].compulsory) {
-            finalListQuestionByCategory = [
-              ...finalListQuestionByCategory,
-              listQuestionByCategory[random],
-            ];
+            finalListQuestionByCategory = Array.from(
+              new Set([
+                ...finalListQuestionByCategory,
+                listQuestionByCategory[random],
+              ])
+            );
           }
         }
-        questionsList.Category[i]["categoryMaxScore"] = categoryMaxScore;
-        questionUnShuffleList = Array.from(
-          new Set([...questionUnShuffleList, ...finalListQuestionByCategory])
-        );
-        examMaxScore = questionUnShuffleList.reduce(
-          (accumulator: any, currentValue: any) =>
-            accumulator.score + currentValue.score,
-          0
-        );
+
+        questionUnShuffleList = [
+          ...questionUnShuffleList,
+          ...finalListQuestionByCategory,
+        ];
       }
+
+      examMaxScore = questionUnShuffleList
+        .map((item: { score: any }) => item.score)
+        .reduce(function (a: any, b: any) {
+          return a + b;
+        });
     }
 
     const questions = {

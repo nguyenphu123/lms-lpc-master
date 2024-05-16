@@ -41,6 +41,11 @@ export async function POST(
             numOfAppearance: parseInt(numOfAppearance),
           },
         });
+        await db.exam.deleteMany({
+          where: {
+            categoryId: id,
+          },
+        });
         if (category.id != undefined) {
           for (let i = 0; i < values[k].question.length; i++) {
             const { id, question, type, score, answer, compulsory }: any =
@@ -51,25 +56,9 @@ export async function POST(
               delete answerList[j]["examId"];
             }
 
-            const createExam = await db.exam.upsert({
-              where: {
-                id: id.toString() || "",
-              },
-              update: {
-                question,
-                type,
-                score: parseInt(score) || 0,
-                answer: {
-                  deleteMany: { examId: id.toString() || "" },
-                  createMany: { data: [...answerList] },
-                },
-              },
-              create: {
-                category: {
-                  connect: {
-                    id: category.id,
-                  },
-                },
+            const createExam = await db.exam.create({
+              data: {
+                categoryId: category.id,
                 compulsory,
                 question,
                 type,
