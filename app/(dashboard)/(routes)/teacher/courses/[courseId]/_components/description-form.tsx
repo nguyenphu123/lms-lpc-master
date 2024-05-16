@@ -43,7 +43,7 @@ export const DescriptionForm = ({
   return (
     <div className="mt-6 border bg-slate-100 rounded-md p-4 text-black dark:bg-slate-950">
       <div className="font-medium flex items-center justify-between dark:text-slate-50">
-        Course description
+        <div className="flex items-center">Course Description</div>
         <Button onClick={toggleEdit} variant="ghost">
           {isEditing ? (
             <>Cancel</>
@@ -59,7 +59,7 @@ export const DescriptionForm = ({
         <div
           className={cn(
             "dark:text-slate-50",
-            "text-sm mt-2",
+            "text-sm mt-4",
             !content && "text-slate-500 italic"
           )}
           dangerouslySetInnerHTML={{ __html: content }}
@@ -105,18 +105,20 @@ export const DescriptionForm = ({
               // ... (unchanged options)
             }}
           />
-          <button
-            onClick={() => onSubmit()}
-            className="bg-black text-white px-4 py-2 rounded-md ml-auto"
-          >
-            Submit
-          </button>
-          <button
-            onClick={() => setIsEditing(false)}
-            className="bg-black text-white px-4 py-2 rounded-md ml-auto"
-          >
-            Cancel
-          </button>
+          <div className="flex justify-end gap-2 mt-4">
+            <button
+              onClick={toggleEdit}
+              className="bg-gray-500 hover:bg-gray-700 text-white px-4 py-2 rounded-md"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={onSubmit}
+              className="bg-blue-500 hover:bg-blue-700 text-white px-4 py-2 rounded-md"
+            >
+              Submit
+            </button>
+          </div>
         </>
       )}
     </div>

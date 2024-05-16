@@ -38,7 +38,10 @@ export const CellUserExamStatus = ({ row }: any) => {
     await axios.patch(`/api/user/${id}/isInExam`, {
       isInExam: false,
     });
-
+    await axios.post(`/api/user/${id}/noteRecord`, {
+      exam,
+      note,
+    });
     router.refresh();
   }
   function onChangeCourse(courseId: any) {

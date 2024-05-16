@@ -149,7 +149,7 @@ const CourseIdPage = async ({ params }: { params: { courseId: string } }) => {
   return (
     <>
       {!course.isPublished && (
-        <Banner label="This course is unpublished. It will not be visible to the students." />
+        <Banner label="This course is unpublished. It will not be visible to the staff." />
       )}
       <div className="p-6">
         <div className="flex items-center justify-between">
@@ -179,10 +179,12 @@ const CourseIdPage = async ({ params }: { params: { courseId: string } }) => {
               <IconBadge icon={LayoutDashboard} />
               <h2 className="text-xl">Customize your course</h2>
             </div>
-            <TitleForm initialData={course} courseId={course.id} />
-            <CreditForm initialData={course} courseId={course.id} />
-            <DescriptionForm initialData={course} courseId={course.id} />
-            <ImageForm initialData={course} courseId={course.id} />
+            <div className="space-y-6 mt-4">
+              <TitleForm initialData={course} courseId={course.id} />
+              <CreditForm initialData={course} courseId={course.id} />
+              <DescriptionForm initialData={course} courseId={course.id} />
+              <ImageForm initialData={course} courseId={course.id} />
+            </div>
           </div>
           <div className="space-y-6">
             <div>
@@ -190,29 +192,35 @@ const CourseIdPage = async ({ params }: { params: { courseId: string } }) => {
                 <IconBadge icon={ListChecks} />
                 <h2 className="text-xl">Course chapters</h2>
               </div>
-              <ChaptersForm initialData={course} courseId={course.id} />
+              <div className="mt-4">
+                <ChaptersForm initialData={course} courseId={course.id} />
+              </div>
             </div>
             <div>
               <div className="flex items-center gap-x-2">
                 <IconBadge icon={SquareDashedBottomCode} />
                 <h2 className="text-xl">Department</h2>
               </div>
-              <DepartmentForm
-                initialData={course}
-                courseId={course.id}
-                department={department}
-              />
+              <div className="mt-4">
+                <DepartmentForm
+                  initialData={course}
+                  courseId={course.id}
+                  department={department}
+                />
+              </div>
             </div>
             <div>
               <div className="flex items-center gap-x-2">
                 <IconBadge icon={UserPlus} />
                 <h2 className="text-xl">Assign instructor for this course</h2>
               </div>
-              <InstructorAssignForm
-                initialData={course}
-                courseId={course.id}
-                Instructor={users}
-              />
+              <div className="mt-4">
+                <InstructorAssignForm
+                  initialData={course}
+                  courseId={course.id}
+                  Instructor={users}
+                />
+              </div>
             </div>
           </div>
         </div>
