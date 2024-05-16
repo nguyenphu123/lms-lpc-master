@@ -20,7 +20,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { ProgramActionCell } from "@/components/ui/program-action-cell";
-import { ProgramTitleCell } from "@/components/ui/program-title-cel";
+import { ProgramTitleCell } from "@/components/ui/program-title-cell";
 
 export const columns: ColumnDef<Course>[] = [
   {

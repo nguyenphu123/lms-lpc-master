@@ -11,6 +11,15 @@ export const getUser = async (): Promise<any> => {
       include: {
         Department: true,
         userPermission: true,
+        userExamReport: {
+          include: {
+            course: true,
+            module: true,
+          },
+          where: {
+            isInExam: true,
+          },
+        },
       },
     });
     for (let i = 0; i < users.length; i++) {

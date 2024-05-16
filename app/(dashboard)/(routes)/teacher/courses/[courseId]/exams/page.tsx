@@ -6,7 +6,7 @@ import { db } from "@/lib/db";
 import { DataTable } from "./_components/data-table";
 import { columns } from "./_components/columns";
 
-const CoursesPage = async () => {
+const CoursesPage = async ({ params }: { params: { courseId: string } }) => {
   const { userId } = auth();
 
   if (!userId) {
@@ -38,66 +38,27 @@ const CoursesPage = async () => {
   ) {
     return redirect("/");
   }
-  let courses;
-  if (
-    userDepartment.title != "BOD" &&
-    checkUser
-      .map((item: { permission: { title: any } }) => item.permission.title)
-      .indexOf("Manage all course permission") == -1
-  ) {
-    courses = await db.course.findMany({
-      where: {
-        OR: [
-          {
-            userId: userId,
-            courseInstructedBy: userId,
-            updatedBy: userId,
-          },
-        ],
-      },
-      orderBy: {
-        startDate: "desc",
-      },
-      include: {
-        user: true,
-        updatedUser: true,
-        courseInstructor: true,
-        Module: {
-          include: {
-            UserProgress: true,
-          },
-        },
-      },
-    });
-  } else {
-    courses = await db.course.findMany({
-      // where: {
-      //   userId,
-      // },
-      orderBy: {
-        startDate: "desc",
-      },
-      include: {
-        user: true,
-        updatedUser: true,
-        courseInstructor: true,
-        Module: {
-          include: {
-            UserProgress: true,
-          },
-          orderBy: {
-            position: "asc",
-          },
-        },
-      },
-    });
-  }
+  let course: any = await db.course.findUnique({
+    where: {
+      id: params.courseId,
+    },
+  });
+  let exams: any = await db.module.findMany({
+    where: {
+      courseId: params.courseId,
+      type: "Exam",
+    },
+    include: {
+      UserProgress: true,
+    },
+  });
 
   return (
     <div className="p-6">
+      {course.title}
       <DataTable
         columns={columns}
-        data={courses}
+        data={exams}
         canCreate={
           checkUser
             .map(

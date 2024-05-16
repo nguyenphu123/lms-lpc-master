@@ -20,6 +20,13 @@ const ChapterIdPage = async ({
   }
   let userInfo: any = await db.user.findUnique({
     where: { id: userId },
+    include: {
+      userExamReport: {
+        where: {
+          isInExam: true,
+        },
+      },
+    },
   });
   const {
     chapter,
@@ -39,7 +46,7 @@ const ChapterIdPage = async ({
   }
 
   return chapter.type == "Exam" ? (
-    userInfo.isInExam ? (
+    userInfo.userExamReport[0]?.isInExam ? (
       <AlertInExam></AlertInExam>
     ) : (
       <>
@@ -52,7 +59,7 @@ const ChapterIdPage = async ({
         />
       </>
     )
-  ) : userInfo.isInExam ? (
+  ) : userInfo.userExamReport[0]?.isInExam ? (
     <AlertInExam></AlertInExam>
   ) : (
     <div className="pl-6 pt-3">

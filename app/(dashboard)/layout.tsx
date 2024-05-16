@@ -9,11 +9,18 @@ const DashboardLayout = async ({ children }: { children: React.ReactNode }) => {
   const { userId }: any = auth();
   let userInfo: any = await db.user.findUnique({
     where: { id: userId },
+    include: {
+      userExamReport: {
+        where: {
+          isInExam: true,
+        },
+      },
+    },
   });
   if (!userId) {
     return redirect("/");
   }
-  if (userInfo.isInExam) {
+  if (userInfo.userExamReport[0]?.isInExam) {
     return <AlertInExam></AlertInExam>;
   }
   return (

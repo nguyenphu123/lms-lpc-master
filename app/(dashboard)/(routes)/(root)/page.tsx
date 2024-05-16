@@ -18,7 +18,14 @@ export default async function Dashboard() {
     return redirect("/sign-in");
   }
   let userInfo: any = await db.user.findUnique({
-    where: { id: sessionClaims.userId },
+    where: { id: sessionClaims?.userId },
+    include: {
+      userExamReport: {
+        where: {
+          isInExam: true,
+        },
+      },
+    },
   });
   if (userInfo?.status == "pending") {
     return redirect("/pending");
@@ -229,7 +236,7 @@ export default async function Dashboard() {
     })
   );
 
-  return userInfo.isInExam ? (
+  return userInfo.userExamReport[0]?.isInExam ? (
     <AlertInExam></AlertInExam>
   ) : (
     <>

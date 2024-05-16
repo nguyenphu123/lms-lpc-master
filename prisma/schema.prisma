@@ -80,16 +80,16 @@ model ProgramOnDepartment {
 }
 
 model User {
-  id                 String               @id @default(uuid())
-  email              String               @unique
-  Department         Department?          @relation(fields: [departmentId], references: [id])
-  departmentId       String?
-  username           String
+  id           String      @id @default(uuid())
+  email        String      @unique
+  Department   Department? @relation(fields: [departmentId], references: [id])
+  departmentId String?
+  username     String
   // role                     String
-  star               Int?
-  imageUrl           String?
-  status             String               @default("active")
-  isInExam           Boolean
+  star         Int?
+  imageUrl     String?
+  status       String      @default("active")
+
   Course             Course[]             @relation("userId")
   updatedCourse      Course[]             @relation("updatedBy")
   instructedCourse   Course[]             @relation("courseInstructedBy")
@@ -150,6 +150,7 @@ model Course {
   courseWithProgram  courseWithProgram[]
   BookMark           BookMark[]
   CourseOnDepartment CourseOnDepartment[]
+  userExamReport     userExamReport[]
 
   @@index([userId])
   @@index([updatedBy])
@@ -314,13 +315,18 @@ model examRecord {
 }
 
 model userExamReport {
-  id       String @id @default(uuid())
-  user     User   @relation(fields: [userId], references: [id])
+  id       String   @id @default(uuid())
+  user     User     @relation(fields: [userId], references: [id])
   userId   String
-  module   Module @relation(fields: [moduleId], references: [id])
+  course   Course   @relation(fields: [courseId], references: [id])
+  courseId String
+  module   Module   @relation(fields: [moduleId], references: [id])
   moduleId String
+  isInExam Boolean
   note     String
+  date     DateTime
 
   @@index([userId])
   @@index([moduleId])
+  @@index([courseId])
 }

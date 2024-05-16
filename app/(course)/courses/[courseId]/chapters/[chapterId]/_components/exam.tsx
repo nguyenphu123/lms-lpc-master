@@ -147,7 +147,9 @@ const Exam = ({
     }
     let currentUser = await axios.get(`/api/user`);
     await axios.patch(`/api/user/${currentUser.data.id}/isInExam`, {
-      isInExam: false,
+      values: {
+        isInExam: false,
+      },
     });
   };
 
@@ -167,8 +169,11 @@ const Exam = ({
     setExamRecord([]);
     setIsGeneratingExam(true);
     let currentUser = await axios.get(`/api/user`);
-    await axios.patch(`/api/user/${currentUser.data.id}/isInExam`, {
+    await axios.post(`/api/user/${currentUser.data.id}/isInExam`, {
       isInExam: true,
+      moduleId: chapter.id,
+      date: new Date(),
+      courseId,
     });
     if (!finishedExam) {
       let questionList = await axios.get(
@@ -305,7 +310,9 @@ const Exam = ({
     }
     let currentUser = await axios.get(`/api/user`);
     await axios.patch(`/api/user/${currentUser.data.id}/isInExam`, {
-      isInExam: false,
+      values: {
+        isInExam: false,
+      },
     });
   };
   const setBookmark = (index: any) => {

@@ -54,6 +54,12 @@ export const CourseActionCell = ({ row }: any) => {
               Edit
             </DropdownMenuItem>
           </Link>
+          <Link href={`/teacher/courses/${id}/exams`}>
+            <DropdownMenuItem>
+              <Pencil className="h-4 w-4 mr-2" />
+              Check exams
+            </DropdownMenuItem>
+          </Link>
         </DropdownMenuContent>
       </DropdownMenu>
     ) : (

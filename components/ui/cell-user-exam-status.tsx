@@ -18,12 +18,10 @@ import {
 import { useState } from "react";
 
 export const CellUserExamStatus = ({ row }: any) => {
-  const { id, isInExam } = row.original;
+  const { id, userExamReport } = row.original;
   const router = useRouter();
-  const [course, setCourse] = useState("");
-  const [examList, setExamList]: any = useState([]);
-  const [exam, setExam] = useState("");
   const [note, setNote] = useState("");
+
   const { userId }: any = useAuth();
 
   const fetchUserCourse = async () => {
@@ -36,29 +34,19 @@ export const CellUserExamStatus = ({ row }: any) => {
   });
   async function onChangeStatus(id: string): Promise<void> {
     await axios.patch(`/api/user/${id}/isInExam`, {
-      isInExam: false,
+      values: {
+        isInExam: false,
+        note: note,
+      },
     });
-    await axios.post(`/api/user/${id}/noteRecord`, {
-      exam,
-      note,
-    });
+
     router.refresh();
-  }
-  function onChangeCourse(courseId: any) {
-    setCourse(courseId);
-    let examArr: any =
-      data.ClassSessionRecord[
-        data.ClassSessionRecord.map((item: any) => item.course.id).indexOf(
-          courseId
-        )
-      ].course.Module;
-    setExamList([...examArr]);
   }
 
   if (isLoading) {
     return <></>;
   } else {
-    return !isInExam ? (
+    return !userExamReport.isInExam ? (
       <div className="font-bold ml-2 rounded-lg">
         This user is not taking any exam
       </div>
@@ -70,7 +58,8 @@ export const CellUserExamStatus = ({ row }: any) => {
       >
         <AlertDialogTrigger className="flex justify-center items-center">
           <div className="font-bold ml-2 rounded-lg">
-            This user is taking an exam
+            This user is taking the {userExamReport.module.title} of{" "}
+            {userExamReport.course.title}
           </div>
         </AlertDialogTrigger>
         <AlertDialogContent className="AlertDialogContent">
@@ -89,41 +78,6 @@ export const CellUserExamStatus = ({ row }: any) => {
             3. If the reset is confirm, please fill the below form to record the
             incident.
             <br />
-            <div>
-              <label htmlFor="course">Course</label>
-              <select
-                id="course"
-                value={course}
-                onChange={(e) => onChangeCourse(e.target.value)}
-              >
-                <option value="">Select an option</option>
-                {data.ClassSessionRecord.map((item: any) => {
-                  return (
-                    <option value={item.course.id} key={item.course.id}>
-                      {item.course.title}
-                    </option>
-                  );
-                })}
-              </select>
-            </div>
-            <div>
-              <label htmlFor="exam">Exam</label>
-              <select
-                id="exam"
-                value={exam}
-                onChange={(e) => setExam(e.target.value)}
-              >
-                <option value="">Select an option</option>
-
-                {examList.map((item: any) => {
-                  return (
-                    <option value={item.id} key={item.id}>
-                      {item.title}
-                    </option>
-                  );
-                })}
-              </select>
-            </div>
             <div>
               <label htmlFor="note">Note</label>
               <textarea
