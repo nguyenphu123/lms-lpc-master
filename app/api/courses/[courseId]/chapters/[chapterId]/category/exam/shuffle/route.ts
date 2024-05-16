@@ -37,7 +37,7 @@ export async function GET(
     });
     let questionUnShuffleList: any = [];
     let examMaxScore = 0;
-    while (examMaxScore < 100 || examMaxScore > 100) {
+    while (examMaxScore != 100) {
       for (let i = 0; i < questionsList.Category.length; i++) {
         let listQuestionByCategory: any = [];
         let finalListQuestionByCategory: any = [];
@@ -81,7 +81,11 @@ export async function GET(
         questionUnShuffleList = Array.from(
           new Set([...questionUnShuffleList, ...finalListQuestionByCategory])
         );
-        examMaxScore = examMaxScore + categoryMaxScore;
+        examMaxScore = questionUnShuffleList.reduce(
+          (accumulator: any, currentValue: any) =>
+            accumulator.score + currentValue.score,
+          0
+        );
       }
     }
 

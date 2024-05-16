@@ -46,20 +46,16 @@ const ChapterIdPage = async ({
   }
 
   return chapter.type == "Exam" ? (
-    userInfo.userExamReport[0]?.isInExam ? (
-      <AlertInExam></AlertInExam>
-    ) : (
-      <>
-        <Exam
-          chapter={chapter}
-          nextChapterId={nextChapter}
-          courseId={params.courseId}
-          course={course}
-          isCompleted={userProgress?.status}
-        />
-      </>
-    )
-  ) : userInfo.userExamReport[0]?.isInExam ? (
+    <>
+      <Exam
+        chapter={chapter}
+        nextChapterId={nextChapter}
+        courseId={params.courseId}
+        course={course}
+        isCompleted={userProgress?.status}
+      />
+    </>
+  ) : userInfo.userExamReport[0]?.isInExam && chapter.type != "Exam" ? (
     <AlertInExam></AlertInExam>
   ) : (
     <div className="pl-6 pt-3">

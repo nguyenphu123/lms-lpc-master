@@ -307,13 +307,13 @@ const Exam = ({
           router.refresh();
         }
       }
+
+      await axios.patch(`/api/user/${currentUser.data.id}/isInExam`, {
+        values: {
+          isInExam: false,
+        },
+      });
     }
-    let currentUser = await axios.get(`/api/user`);
-    await axios.patch(`/api/user/${currentUser.data.id}/isInExam`, {
-      values: {
-        isInExam: false,
-      },
-    });
   };
   const setBookmark = (index: any) => {
     let newArr = [...questions];
@@ -542,22 +542,22 @@ const Exam = ({
         ></DoughnutChart>
       )}
       <AlertDialog>
-        <AlertDialogTrigger className="flex justify-center items-center">
-          <div className="font-bold ml-2 rounded-lg">
-            {isGeneratingExam ? (
-              <div className="">Please wait while we generate your exam...</div>
-            ) : (
+        <div className="font-bold ml-2 rounded-lg">
+          {isGeneratingExam ? (
+            <div className="">Please wait while we generate your exam...</div>
+          ) : (
+            <AlertDialogTrigger className="flex justify-center items-center">
               <>👉Take an exam </>
-            )}
-            {isCompleted == "failed" ? (
-              <span className="text-red-500">
-                Sorry, please wait for the exam reset to retake this test
-              </span>
-            ) : (
-              <></>
-            )}
-          </div>
-        </AlertDialogTrigger>
+            </AlertDialogTrigger>
+          )}
+          {isCompleted == "failed" ? (
+            <span className="text-red-500">
+              Sorry, please wait for the exam reset to retake this test
+            </span>
+          ) : (
+            <></>
+          )}
+        </div>
 
         <AlertDialogContent className="AlertDialogContent">
           <AlertDialogTitle className="AlertDialogTitle">

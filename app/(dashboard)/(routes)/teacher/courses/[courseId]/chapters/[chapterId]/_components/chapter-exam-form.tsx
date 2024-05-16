@@ -359,6 +359,7 @@ export default function Exam({ chapter }: any) {
   };
   const handleFileFull = (e: { target: any }) => {
     const file = e.target.files[0];
+
     if (!file) return;
 
     if (isExcelFile(file) && file.size != 0) {
@@ -416,6 +417,7 @@ export default function Exam({ chapter }: any) {
                 .map((item: { title: any }) => item.title)
                 .indexOf(readData[i].title)
             ].question = readData[i].question;
+            setQuizList([...quizList]);
           } else {
             setQuizList((prevState: any) => [...prevState, readData[i]]);
           }
