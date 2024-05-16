@@ -3,6 +3,7 @@ import { Navbar } from "./_components/navbar";
 import { Sidebar } from "./_components/sidebar";
 import { redirect } from "next/navigation";
 import { db } from "@/lib/db";
+import { AlertInExam } from "@/components/ui/alert-in-exam";
 
 const DashboardLayout = async ({ children }: { children: React.ReactNode }) => {
   const { userId }: any = auth();
@@ -12,9 +13,10 @@ const DashboardLayout = async ({ children }: { children: React.ReactNode }) => {
   if (!userId) {
     return redirect("/");
   }
-  return userInfo.isInExam ? (
-    <>Sorry you are currently doing test!!!</>
-  ) : (
+  if (userInfo.isInExam) {
+    return <AlertInExam></AlertInExam>;
+  }
+  return (
     <div className="h-full">
       <div className="h-[80px] md:pl-56 fixed inset-y-0 w-full z-50">
         <Navbar userId={userId} />

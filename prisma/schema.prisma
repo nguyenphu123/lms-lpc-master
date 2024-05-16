@@ -102,6 +102,7 @@ model User {
   updatedProgram Program[]        @relation("updatedBy")
   userPermission userPermission[]
   examRecord     examRecord[]
+  userExamReport userExamReport[]
 
   @@index([departmentId])
 }
@@ -200,9 +201,10 @@ model Module {
   timeLimit  Float?
   scoreLimit Int?
 
-  Category   Category[]
-  Resource   Resource[]
-  examRecord examRecord[]
+  Category       Category[]
+  Resource       Resource[]
+  examRecord     examRecord[]
+  userExamReport userExamReport[]
 
   @@index([courseId])
   @@index([userId])
@@ -306,6 +308,18 @@ model examRecord {
   moduleId String
   question String
   isRight  Boolean
+
+  @@index([userId])
+  @@index([moduleId])
+}
+
+model userExamReport {
+  id       String @id @default(uuid())
+  user     User   @relation(fields: [userId], references: [id])
+  userId   String
+  module   Module @relation(fields: [moduleId], references: [id])
+  moduleId String
+  note     String
 
   @@index([userId])
   @@index([moduleId])

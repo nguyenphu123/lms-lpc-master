@@ -86,7 +86,7 @@ export const PermissionForm = ({ initialData, roleId, permission }: any) => {
   return (
     <div className="mt-6 border bg-slate-100 rounded-md p-4 text-black dark:bg-slate-950">
       <div className="font-medium flex items-center justify-between dark:text-slate-50">
-        permission
+        <span>Permissions</span>
         <Button onClick={toggleEdit} variant="ghost">
           {isEditing ? (
             <>Cancel</>
@@ -102,7 +102,10 @@ export const PermissionForm = ({ initialData, roleId, permission }: any) => {
         <>
           {permission.map((item: any, i: any) => {
             return (
-              <div key={item.id} className="dark:text-slate-50">
+              <div
+                key={item.id}
+                className="flex items-center dark:text-slate-50"
+              >
                 <input
                   onChange={(e) => onChangePermissionList(e, item)}
                   disabled={isEditing ? false : true}
@@ -115,8 +118,9 @@ export const PermissionForm = ({ initialData, roleId, permission }: any) => {
                       ? true
                       : false
                   }
+                  className="mr-2"
                 />
-                {item.title}
+                <label htmlFor={`permission-${item.id}`}>{item.title}</label>
               </div>
             );
           })}

@@ -6,6 +6,8 @@ import { Preview } from "@/components/preview";
 import Exam from "./_components/exam";
 import Slide from "./_components/slide";
 import Link from "next/link";
+import { db } from "@/lib/db";
+import { AlertInExam } from "@/components/ui/alert-in-exam";
 const ChapterIdPage = async ({
   params,
 }: {
@@ -16,6 +18,9 @@ const ChapterIdPage = async ({
   if (!userId) {
     return redirect("/");
   }
+  let userInfo: any = await db.user.findUnique({
+    where: { id: userId },
+  });
   const {
     chapter,
     course,
@@ -34,15 +39,21 @@ const ChapterIdPage = async ({
   }
 
   return chapter.type == "Exam" ? (
-    <>
-      <Exam
-        chapter={chapter}
-        nextChapterId={nextChapter}
-        courseId={params.courseId}
-        course={course}
-        isCompleted={userProgress?.status}
-      />
-    </>
+    userInfo.isInExam ? (
+      <AlertInExam></AlertInExam>
+    ) : (
+      <>
+        <Exam
+          chapter={chapter}
+          nextChapterId={nextChapter}
+          courseId={params.courseId}
+          course={course}
+          isCompleted={userProgress?.status}
+        />
+      </>
+    )
+  ) : userInfo.isInExam ? (
+    <AlertInExam></AlertInExam>
   ) : (
     <div className="pl-6 pt-3">
       {userProgress?.status == "finished" && (

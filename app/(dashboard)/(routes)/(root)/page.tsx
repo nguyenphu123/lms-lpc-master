@@ -9,6 +9,7 @@ import { Bookmark } from "@/components/bookmark";
 import { SearchInput } from "@/components/search-input";
 import { getProgress } from "@/actions/get-progress";
 import { CompletedCourse } from "@/components/completed-course";
+import { AlertInExam } from "@/components/ui/alert-in-exam";
 
 export default async function Dashboard() {
   const { sessionClaims }: any = auth();
@@ -229,7 +230,7 @@ export default async function Dashboard() {
   );
 
   return userInfo.isInExam ? (
-    <>Sorry you are currently doing test!!!</>
+    <AlertInExam></AlertInExam>
   ) : (
     <>
       <div className="px-6 pt-6 md:hidden md:mb-0 block">

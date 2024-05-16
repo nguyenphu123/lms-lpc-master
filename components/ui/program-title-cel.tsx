@@ -1,22 +1,5 @@
 "use client";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 
-import {
-  ArrowUpDown,
-  MoreHorizontal,
-  Pencil,
-  BadgeCheck,
-  Ban,
-  BadgeX,
-} from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { useRouter } from "next/navigation";
-import Link from "next/link";
 import { useAuth } from "@clerk/nextjs";
 import { useQuery } from "react-query";
 import axios from "axios";
@@ -51,7 +34,7 @@ export const ProgramTitleCell = ({ row }: any) => {
           className="dark:text-slate-50 justify-between w-3/5"
         >
           {courseWithProgram.map((item: any) => {
-            return <>{item.course.title}</>;
+            return <div key={item.course.id}>{item.course.title}</div>;
           })}
         </AccordionItem>
       </Accordion>

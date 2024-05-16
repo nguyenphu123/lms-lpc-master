@@ -6,6 +6,7 @@ import { ArrowUpDown } from "lucide-react";
 
 import Image from "next/image";
 import { Cell } from "@/components/ui/cell";
+import { CellUserExamStatus } from "@/components/ui/cell-user-exam-status";
 
 export const columns: ColumnDef<User>[] = [
   {
@@ -92,5 +93,17 @@ export const columns: ColumnDef<User>[] = [
     id: "actions",
     accessorKey: "Action",
     cell: Cell,
+  },
+  {
+    id: "isInExam",
+    accessorKey: "isInExam",
+    header: ({ column }) => {
+      return (
+        <span className="flex items-center cursor-pointer">
+          <span className="mr-2">Is user taking an exam?</span>
+        </span>
+      );
+    },
+    cell: CellUserExamStatus,
   },
 ];
