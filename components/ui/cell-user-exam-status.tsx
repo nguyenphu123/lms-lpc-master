@@ -47,7 +47,7 @@ export const CellUserExamStatus = ({ row }: any) => {
   if (isLoading) {
     return <></>;
   } else {
-    return !userExamReport[0].isInExam ? (
+    return !userExamReport[0]?.isInExam ? (
       <div className="font-bold ml-2 rounded-lg">
         This user is not taking any exam
       </div>
