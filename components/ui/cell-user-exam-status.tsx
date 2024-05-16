@@ -19,6 +19,7 @@ import { useState } from "react";
 
 export const CellUserExamStatus = ({ row }: any) => {
   const { id, userExamReport } = row.original;
+
   const router = useRouter();
   const [note, setNote] = useState("");
 
@@ -46,7 +47,7 @@ export const CellUserExamStatus = ({ row }: any) => {
   if (isLoading) {
     return <></>;
   } else {
-    return !userExamReport.isInExam ? (
+    return !userExamReport[0].isInExam ? (
       <div className="font-bold ml-2 rounded-lg">
         This user is not taking any exam
       </div>
@@ -58,8 +59,8 @@ export const CellUserExamStatus = ({ row }: any) => {
       >
         <AlertDialogTrigger className="flex justify-center items-center">
           <div className="font-bold ml-2 rounded-lg">
-            This user is taking the {userExamReport.module.title} of{" "}
-            {userExamReport.course.title}
+            This user is taking the {userExamReport[0].module.title} of{" "}
+            {userExamReport[0].course.title}
           </div>
         </AlertDialogTrigger>
         <AlertDialogContent className="AlertDialogContent">
