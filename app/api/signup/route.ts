@@ -9,12 +9,6 @@ export async function POST(req: Request) {
     const { createdUserId, department, emailAddress, username } =
       await req.json();
 
-    let user = await clerkClient.users.updateUserMetadata(createdUserId, {
-      publicMetadata: {
-        role: "STAFF",
-        department: department,
-      },
-    });
     let createUser = await db.user.create({
       data: {
         id: createdUserId,
