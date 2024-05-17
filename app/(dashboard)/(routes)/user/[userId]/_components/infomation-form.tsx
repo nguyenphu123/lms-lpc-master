@@ -28,7 +28,7 @@ const UserInformation = ({ user }: any) => {
   return (
     <form
       onSubmit={(e) => submitEdit(e)}
-      className=" text-black dark:text-white grid grid-cols-2 gap-4 p-4 rounded-md border bg-gradient-to-r from-blue-400 to-red-500 shadow-md"
+      className=" text-black  grid grid-cols-2 gap-4 p-4 rounded-md border bg-gradient-to-r from-blue-400 to-red-500 shadow-md"
     >
       {/* Left Column */}
       <div className="">
@@ -77,13 +77,13 @@ const UserInformation = ({ user }: any) => {
             type="text"
             name="department"
             autoCapitalize={"characters"}
-            defaultValue={user?.Department?.department}
+            defaultValue={user?.Department?.title}
             readOnly={!isDepartmentEditing}
             className={`w-full bg-gray-100 border border-gray-300 rounded-md p-2 pointer-events-none${
               isDepartmentEditing ? "border-blue-500" : ""
             }`}
           />
-          <div
+          {/* <div
             className="absolute right-2 top-2 cursor-pointer"
             onClick={handleDepartmentEditClick}
           >
@@ -92,7 +92,7 @@ const UserInformation = ({ user }: any) => {
             ) : (
               <Pencil className="text-blue-500 w-5 h-5" />
             )}
-          </div>
+          </div> */}
         </div>
       </div>
 
@@ -107,7 +107,7 @@ const UserInformation = ({ user }: any) => {
           className="w-full bg-gray-100 border border-gray-300 rounded-md p-2 pointer-events-none"
         />
       </div>
-      <div className="col-span-2 text-right">
+      {/* <div className="col-span-2 text-right">
         {isDepartmentEditing || isRoleEditing ? (
           <button
             type="submit"
@@ -118,7 +118,7 @@ const UserInformation = ({ user }: any) => {
         ) : (
           <></>
         )}
-      </div>
+      </div> */}
     </form>
   );
 };

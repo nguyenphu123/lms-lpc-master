@@ -49,7 +49,7 @@ const UserPage = async ({ params }: { params: { userId: string } }) => {
   const courses = await db.course.findMany({
     where: {
       ClassSessionRecord: {
-        every: {
+        some: {
           userId,
         },
       },
@@ -72,7 +72,7 @@ const UserPage = async ({ params }: { params: { userId: string } }) => {
         <Avatar imageUrl={user?.imageUrl} />
         <Star star={user?.star} />
         <UserInformation user={user} />
-        <CourseHistory userId={params.userId} />
+        <CourseHistory userId={params.userId} coursesJoined={courses} />
         <DataTable
           columns={columns}
           data={courses}

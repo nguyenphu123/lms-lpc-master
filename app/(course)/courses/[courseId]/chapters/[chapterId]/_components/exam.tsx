@@ -17,6 +17,8 @@ import { useConfettiStore } from "@/hooks/use-confetti-store";
 import shuffleArray from "@/lib/shuffle";
 import DoughnutChart from "@/components/ui/doughnut-chart";
 import Image from "next/image";
+import { Prisma } from "@prisma/client";
+
 const Exam = ({
   chapter,
   nextChapterId,
@@ -30,6 +32,9 @@ const Exam = ({
   const [finishedExam, setFinishedExam] = useState(false);
   const [finalScore, setFinalScore] = useState(0);
   const [timeLimit, setTimeLimit]: any = useState(chapter.timeLimit);
+  const [timeLimitRecord, setTimeLimitRecord]: any = useState(
+    chapter.timeLimit * 60
+  );
   const [questions, setQuestions]: any = useState([]);
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [examMaxScore, setExamMaxSocre] = useState(0);
@@ -37,6 +42,8 @@ const Exam = ({
   const [onFinish, setOnFinish] = useState(false);
   const [examRecord, setExamRecord]: Array<any> = useState([]);
   const [isGeneratingExam, setIsGeneratingExam] = useState(false);
+  const [reportId, setReportId] = useState("");
+  const [currentUserId, setCurrentUserId] = useState(null);
   const confetti = useConfettiStore();
 
   useEffect(() => {
@@ -56,33 +63,81 @@ const Exam = ({
       setFinalScore(getLatestTestResult.data?.UserProgress[0]?.score);
       setCategoryList(getLatestTestResult.data?.Category);
       let currentUser = await axios.get(`/api/user`);
-      let getLatestExamRecord: any = await axios.get(
-        `/api/user/${currentUser.data.id}/examRecord/${chapter.id}`
-      );
-      console.log(getLatestExamRecord);
+      setCurrentUserId(currentUser.data.id);
+      // let getLatestExamRecord: any = await axios.get(
+      //   `/api/user/${currentUser.data.id}/examRecord/${chapter.id}`
+      // );
+
       let chekIfUserIsInExam: any = await axios.get(
         `/api/user/${currentUser.data.id}/isInExam`
       );
+
       if (
-        chekIfUserIsInExam?.isInExam &&
-        chapter.id != chekIfUserIsInExam?.moduleId
+        chekIfUserIsInExam?.data?.isInExam &&
+        chapter.id == chekIfUserIsInExam?.data?.moduleId
       ) {
-        accept();
+        setReportId(chekIfUserIsInExam?.data?.id);
+        const examObj: any = chekIfUserIsInExam?.data
+          ?.examRecord as Prisma.JsonObject;
+        setTimeLimit(examObj.timeLimit);
+        setQuestions(examObj.questionList);
+        setCurrentQuestion(examObj.currentQuestion);
+        setTimeLimitRecord(examObj.timeLimit * 60);
+        console.log(examObj);
+        setSelectedAnswers(examObj.selectedAnswers);
+        // accept();
       }
     };
     getHistory();
-    window.addEventListener("beforeunload", alertUser);
-    return () => {
-      window.removeEventListener("beforeunload", alertUser);
-    };
   }, []);
-  const alertUser = (e: any) => {
-    if (onFinish || questions.length == 0) {
+  useEffect(() => {
+    if (questions.length > 0) {
+      const interval = setInterval(() => {
+        setTimeLimitRecord((prev: number) => {
+          if (prev === 0) {
+            clearInterval(interval);
+            onTimeOut();
+            return prev;
+          }
+          return prev - 1;
+        });
+      }, 60000);
+    }
+  }, [timeLimitRecord, questions]);
+  useEffect(() => {
+    if (questions.length > 0) {
+      window.addEventListener("beforeunload", alertUser);
+      return () => {
+        window.removeEventListener("beforeunload", alertUser);
+      };
+    }
+  }, [questions, reportId, selectedAnswers, timeLimitRecord, currentQuestion]);
+  const alertUser = async (e: any) => {
+    navigator.sendBeacon(
+      `/api/user/${currentUserId}/isInExam`,
+      JSON.stringify({
+        id: reportId,
+        isInExam: true,
+        note: "Sudden tabs or browser close.",
+        moduleId: chapter.id,
+        courseId,
+        date: new Date(),
+        examRecord: {
+          questionList: questions,
+          timeLimit: parseInt(timeLimitRecord / 60 + "").toFixed(2),
+          currentQuestion: currentQuestion,
+          selectedAnswers: selectedAnswers,
+        },
+      })
+    );
+
+    if (questions.length == 0) {
     } else {
       e.preventDefault();
       e.returnValue = "";
     }
   };
+
   const onTimeOut: any = async () => {
     if (questions.length == 0) {
     } else {
@@ -139,11 +194,11 @@ const Exam = ({
 
       setOnFinish(true);
       setQuestions([]);
-      let currentUser = await axios.get(`/api/user`);
-      await axios.patch(
-        `/api/user/${currentUser.data.id}/examRecord/${chapter.id}`,
-        examRecord
-      );
+      // let currentUser = await axios.get(`/api/user`);
+      // await axios.patch(
+      //   `/api/user/${currentUser.data.id}/examRecord/${chapter.id}`,
+      //   examRecord
+      // );
       if (totalScore >= chapter.scoreLimit) {
         if (nextChapterId != null) {
           setTimeout(function () {
@@ -156,8 +211,11 @@ const Exam = ({
     }
     let currentUser = await axios.get(`/api/user`);
     await axios.patch(`/api/user/${currentUser.data.id}/isInExam`, {
+      id: reportId,
       values: {
         isInExam: false,
+        moduleId: chapter.id,
+        courseId,
       },
     });
   };
@@ -178,12 +236,16 @@ const Exam = ({
     setExamRecord([]);
     setIsGeneratingExam(true);
     let currentUser = await axios.get(`/api/user`);
-    await axios.post(`/api/user/${currentUser.data.id}/isInExam`, {
+    let report = await axios.post(`/api/user/${currentUser.data.id}/isInExam`, {
+      id: "0",
+      examRecord: {},
+      note: "",
       isInExam: true,
       moduleId: chapter.id,
       date: new Date(),
       courseId,
     });
+    setReportId(report.data.id);
     if (!finishedExam) {
       let questionList = await axios.get(
         `/api/courses/${chapter.courseId}/chapters/${chapter.id}/category/exam/shuffle`
@@ -303,10 +365,10 @@ const Exam = ({
       setOnFinish(true);
       setQuestions([]);
       let currentUser = await axios.get(`/api/user`);
-      await axios.patch(
-        `/api/user/${currentUser.data.id}/examRecord/${chapter.id}`,
-        examRecord
-      );
+      // await axios.patch(
+      //   `/api/user/${currentUser.data.id}/examRecord/${chapter.id}`,
+      //   examRecord
+      // );
       if (totalScore >= chapter.scoreLimit) {
         if (nextChapterId != null) {
           setTimeout(function () {
@@ -318,8 +380,11 @@ const Exam = ({
       }
 
       await axios.patch(`/api/user/${currentUser.data.id}/isInExam`, {
+        id: reportId,
         values: {
           isInExam: false,
+          moduleId: chapter.id,
+          courseId,
         },
       });
     }
@@ -612,7 +677,7 @@ const Exam = ({
                 <span>
                   {currentQuestion + 1} of {questions.length} questions
                 </span>
-                <Countdown time={timeLimit} callback={onTimeOut}></Countdown>
+                <Countdown time={timeLimit}></Countdown>
               </div>
 
               <hr className="my-3" />
@@ -645,9 +710,10 @@ const Exam = ({
                         handleAnswerClick(questions[currentQuestion], option)
                       }
                       className={`cursor-pointer py-2 px-4 mb-2 border ${
-                        selectedAnswers[currentQuestion]?.chooseAnswer.includes(
-                          option
-                        )
+                        selectedAnswers[currentQuestion] != undefined &&
+                        selectedAnswers[currentQuestion]?.chooseAnswer
+                          .map((item: { id: any }) => item.id)
+                          .indexOf(option.id) != -1
                           ? "border-blue-600 text-white dark:text-white bg-blue-600"
                           : "border-gray-300 text-black dark:text-white"
                       } rounded-md hover:border-blue-600 hover:bg-blue-600 hover:text-white`}

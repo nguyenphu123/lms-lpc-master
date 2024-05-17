@@ -161,12 +161,14 @@ export const SidebarRoutes = ({ userId }: any) => {
     if (
       data.userPermission
         .map((item: { permission: { title: any } }) => item.permission.title)
-        .indexOf("User personal management permission") != -1
+        .indexOf("User personal management permission") != -1 &&
+      guestRoutes.map((item) => item.label).indexOf("Personal Information") ==
+        -1
     ) {
       guestRoutes.push({
         icon: UsersRound,
         label: "Personal Information",
-        href: `/users/${userId}`,
+        href: `/user/${userId}`,
       });
     }
     return data;

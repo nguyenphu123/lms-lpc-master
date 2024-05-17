@@ -34,21 +34,33 @@ export async function POST(
 ) {
   try {
     const { userId }: any = auth();
-    const { isInExam, moduleId, date, courseId, id, note }: any =
+
+    const { isInExam, moduleId, date, courseId, id, note, examRecord } =
       await req.json();
 
     if (!userId) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
-    const user = await db.userExamReport.create({
-      data: {
+    const user = await db.userExamReport.upsert({
+      where: { id },
+      create: {
         isInExam,
         userId,
         moduleId: moduleId,
         date: date,
         courseId: courseId,
-        note: "",
+        examRecord,
+        note,
+      },
+      update: {
+        isInExam,
+        userId,
+        moduleId: moduleId,
+        date: date,
+        courseId: courseId,
+        examRecord,
+        note,
       },
     });
 
@@ -69,7 +81,7 @@ export async function GET(
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
-    const user = await db.userExamReport.findFirst({
+    const user: any = await db.userExamReport.findFirst({
       where: {
         isInExam: true,
         userId: params.userId,
