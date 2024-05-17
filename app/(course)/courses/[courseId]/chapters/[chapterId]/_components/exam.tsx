@@ -60,6 +60,15 @@ const Exam = ({
         `/api/user/${currentUser.data.id}/examRecord/${chapter.id}`
       );
       console.log(getLatestExamRecord);
+      let chekIfUserIsInExam: any = await axios.get(
+        `/api/user/${currentUser.data.id}/isInExam`
+      );
+      if (
+        chekIfUserIsInExam?.isInExam &&
+        chapter.id != chekIfUserIsInExam?.moduleId
+      ) {
+        accept();
+      }
     };
     getHistory();
     window.addEventListener("beforeunload", alertUser);

@@ -58,3 +58,27 @@ export async function POST(
     return new NextResponse("Internal Error", { status: 500 });
   }
 }
+export async function GET(
+  req: Request,
+  { params }: { params: { userId: string } }
+) {
+  try {
+    const { userId }: any = auth();
+
+    if (!userId) {
+      return new NextResponse("Unauthorized", { status: 401 });
+    }
+
+    const user = await db.userExamReport.findFirst({
+      where: {
+        isInExam: true,
+        userId: params.userId,
+      },
+    });
+
+    return NextResponse.json(user);
+  } catch (error) {
+    console.log("[USER]", error);
+    return new NextResponse("Internal Error", { status: 500 });
+  }
+}
