@@ -840,35 +840,39 @@ const Exam = ({
         </div>
       </div>
       <AlertDialog>
-        <div className="max-w-6xl mx-auto p-6">
-          <div className="bg-white shadow-lg rounded-lg p-6 dark:bg-slate-600">
-            <h2 className="text-2xl font-bold mb-6">History Exam</h2>
-            <p className="text-lg mb-6">
-              You have taken this test for: {exemRecord.length} times
-            </p>
-            <div className="space-y-6">
-              {exemRecord[0]?.examRecord?.questionList?.map((item: any) => {
-                const isCorrect = checkEqual(item.chooseAnswer, item.answer);
-                return (
-                  <div
-                    className={`p-4 rounded-lg ${
-                      isCorrect ? "bg-green-100" : "bg-red-100"
-                    }`}
-                    key={item.id}
-                  >
-                    <h3
-                      className={`text-base font-semibold ${
-                        isCorrect ? "text-green-700" : "text-red-700"
+        {exemRecord.length > 0 ? (
+          <div className="max-w-6xl mx-auto p-6">
+            <div className="bg-white shadow-lg rounded-lg p-6 dark:bg-slate-600">
+              <h2 className="text-2xl font-bold mb-6">History Exam</h2>
+              <p className="text-lg mb-6">
+                You have taken this test for: {exemRecord.length} times
+              </p>
+              <div className="space-y-6">
+                {exemRecord[0]?.examRecord?.questionList?.map((item: any) => {
+                  const isCorrect = checkEqual(item.chooseAnswer, item.answer);
+                  return (
+                    <div
+                      className={`p-4 rounded-lg ${
+                        isCorrect ? "bg-green-100" : "bg-red-100"
                       }`}
+                      key={item.id}
                     >
-                      {item.question}
-                    </h3>
-                  </div>
-                );
-              })}
+                      <h3
+                        className={`text-base font-semibold ${
+                          isCorrect ? "text-green-700" : "text-red-700"
+                        }`}
+                      >
+                        {item.question}
+                      </h3>
+                    </div>
+                  );
+                })}
+              </div>
             </div>
           </div>
-        </div>
+        ) : (
+          <>No record found</>
+        )}
       </AlertDialog>
     </>
   ) : (
