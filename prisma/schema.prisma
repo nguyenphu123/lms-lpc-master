@@ -302,13 +302,12 @@ model courseWithProgram {
 }
 
 model examRecord {
-  id       String  @id @default(uuid())
-  user     User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId   String
-  module   Module  @relation(fields: [moduleId], references: [id], onDelete: Cascade)
-  moduleId String
-  question String
-  isRight  Boolean
+  id         String @id @default(uuid())
+  user       User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId     String
+  module     Module @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+  moduleId   String
+  examRecord Json?
 
   @@index([userId])
   @@index([moduleId])

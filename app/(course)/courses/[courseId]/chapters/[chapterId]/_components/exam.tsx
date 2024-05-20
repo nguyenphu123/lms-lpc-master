@@ -38,9 +38,9 @@ const Exam = ({
   const [questions, setQuestions]: any = useState([]);
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [examMaxScore, setExamMaxSocre] = useState(0);
-  const [selectedAnswers, setSelectedAnswers]: Array<any> = useState([]);
+  const [selectedAnswers, setSelectedAnswers]: any = useState([]);
   const [onFinish, setOnFinish] = useState(false);
-  const [examRecord, setExamRecord]: Array<any> = useState([]);
+  const [examRecord, setExamRecord]: any = useState([]);
   const [isGeneratingExam, setIsGeneratingExam] = useState(false);
   const [reportId, setReportId] = useState("");
   const [currentUserId, setCurrentUserId] = useState(null);
@@ -73,7 +73,7 @@ const Exam = ({
       );
 
       if (
-        chekIfUserIsInExam?.data?.isInExam &&
+        chekIfUserIsInExam?.data?.isInExam == true &&
         chapter.id == chekIfUserIsInExam?.data?.moduleId
       ) {
         setReportId(chekIfUserIsInExam?.data?.id);
@@ -106,16 +106,13 @@ const Exam = ({
   }, [timeLimitRecord, questions]);
   useEffect(() => {
     if (questions.length > 0) {
-      window.addEventListener("hashchange", alertUser);
       window.addEventListener("beforeunload", alertUser);
       return () => {
-        window.removeEventListener("hashchange", alertUser);
         window.removeEventListener("beforeunload", alertUser);
       };
     }
   }, [questions, reportId, selectedAnswers, timeLimitRecord, currentQuestion]);
   const alertUser = async (e: any) => {
-    debugger;
     navigator.sendBeacon(
       `/api/user/${currentUserId}/isInExam`,
       JSON.stringify({
@@ -127,7 +124,7 @@ const Exam = ({
         date: new Date(),
         examRecord: {
           questionList: questions,
-          timeLimit: parseInt(timeLimitRecord / 60 + "").toFixed(0),
+          timeLimit: parseInt(timeLimitRecord / 60 + "").toFixed(2),
           currentQuestion: currentQuestion,
           selectedAnswers: selectedAnswers,
         },
@@ -193,12 +190,12 @@ const Exam = ({
             });
           }
         }
-        navigator.sendBeacon(
+        await axios.post(
           `/api/user/${currentUserId}/isInExam`,
           JSON.stringify({
             id: reportId,
             isInExam: false,
-            note: "Sudden tabs or browser close.",
+            note: "Finished exam.",
             moduleId: chapter.id,
             courseId,
             date: new Date(),
@@ -275,7 +272,7 @@ const Exam = ({
       id: "0",
       examRecord: {
         questionList: questionLists,
-        timeLimit: parseInt(timeLimitRecord / 60 + "").toFixed(0),
+        timeLimit: parseInt(timeLimitRecord / 60 + "").toFixed(2),
         currentQuestion: 0,
         selectedAnswers: [],
       },
@@ -294,13 +291,18 @@ const Exam = ({
   // State để theo dõi câu hỏi hiện tại, điểm số và đáp án đã chọn cho từng câu hỏi
 
   // Hàm xử lý khi người dùng chọn một đáp án
-  const handleAnswerClick = (question: any, option: any) => {
+  const handleAnswerClick = async (question: any, option: any) => {
+    const updatedAnswers: any = [...selectedAnswers];
+
     if (
       "chooseAnswer" in question &&
-      question["chooseAnswer"].includes(option)
+      question["chooseAnswer"]
+        .map((item: { id: any }) => item.id)
+        .indexOf(option.id) != -1
     ) {
-      const updatedAnswers = [...selectedAnswers];
-      let indexOf = question["chooseAnswer"].indexOf(option);
+      let indexOf = question["chooseAnswer"]
+        .map((item: { id: any }) => item.id)
+        .indexOf(option.id);
       question["chooseAnswer"].splice(indexOf, 1);
       updatedAnswers[currentQuestion] = question;
 
@@ -308,13 +310,11 @@ const Exam = ({
     } else {
       // Lưu câu trả lời đã chọn vào state
       if (question.type == "singleChoice") {
-        const updatedAnswers = [...selectedAnswers];
         question["chooseAnswer"] = [];
         question["chooseAnswer"] = [...question["chooseAnswer"], option];
         updatedAnswers[currentQuestion] = question;
         setSelectedAnswers(updatedAnswers);
       } else {
-        const updatedAnswers = [...selectedAnswers];
         // question["chosedAnswer"] = [];
         if (!("chooseAnswer" in question)) {
           question["chooseAnswer"] = [];
@@ -325,6 +325,23 @@ const Exam = ({
         setSelectedAnswers(updatedAnswers);
       }
     }
+    await axios.post(
+      `/api/user/${currentUserId}/isInExam`,
+      JSON.stringify({
+        id: reportId,
+        isInExam: true,
+        note: "",
+        moduleId: chapter.id,
+        courseId,
+        date: new Date(),
+        examRecord: {
+          questionList: questions,
+          timeLimit: parseInt(timeLimitRecord / 60 + "").toFixed(2),
+          currentQuestion: currentQuestion,
+          selectedAnswers: updatedAnswers,
+        },
+      })
+    );
   };
 
   // Hàm xử lý khi người dùng chọn nút "Next"
@@ -333,6 +350,23 @@ const Exam = ({
     const nextQuestion = currentQuestion + 1;
     if (nextQuestion < questions.length) {
       setCurrentQuestion(nextQuestion);
+      await axios.post(
+        `/api/user/${currentUserId}/isInExam`,
+        JSON.stringify({
+          id: reportId,
+          isInExam: true,
+          note: "",
+          moduleId: chapter.id,
+          courseId,
+          date: new Date(),
+          examRecord: {
+            questionList: questions,
+            timeLimit: parseInt(timeLimitRecord / 60 + "").toFixed(2),
+            currentQuestion: nextQuestion,
+            selectedAnswers: selectedAnswers,
+          },
+        })
+      );
     } else {
       // Nếu đã là câu hỏi cuối cùng, kiểm tra điểm số và hiển thị kết quả
       const { finalScore }: any = calculateScore();
@@ -387,7 +421,7 @@ const Exam = ({
             // router.push(`/search`);
           }
         }
-        navigator.sendBeacon(
+        await axios.post(
           `/api/user/${currentUserId}/isInExam`,
           JSON.stringify({
             id: reportId,
@@ -550,7 +584,7 @@ const Exam = ({
           </li>
           <li className="mb-2">
             You will have{" "}
-            <span className="text-red-600">{timeLimit} minutes</span> to
+            <span className="text-red-600">{chapter.timeLimit} minutes</span> to
             complete the exam.
           </li>
           <li className="mb-2">

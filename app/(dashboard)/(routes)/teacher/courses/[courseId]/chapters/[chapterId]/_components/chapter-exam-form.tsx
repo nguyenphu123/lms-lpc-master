@@ -363,6 +363,7 @@ export default function Exam({ chapter }: any) {
     if (!file) return;
 
     if (isExcelFile(file) && file.size != 0) {
+      setQuizList([]);
       const reader = new FileReader();
       reader.readAsBinaryString(file);
       reader.onload = (e: any) => {

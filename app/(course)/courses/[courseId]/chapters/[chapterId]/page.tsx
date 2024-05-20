@@ -21,11 +21,7 @@ const ChapterIdPage = async ({
   let userInfo: any = await db.user.findUnique({
     where: { id: userId },
     include: {
-      userExamReport: {
-        where: {
-          isInExam: true,
-        },
-      },
+      userExamReport: {},
     },
   });
   const {
