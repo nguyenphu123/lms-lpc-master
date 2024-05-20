@@ -655,7 +655,10 @@ const Exam = ({
         <AlertDialog open={onFinish}>
           <AlertDialogContent className="AlertDialogContent">
             <AlertDialogTitle className="AlertDialogTitle">
-              Your score is {finalScore}
+              <div className="bg-red-400 text-white">
+                Your score is {finalScore}
+              </div>
+
               <br />
               {finalScore >= chapter.scoreLimit || finishedExam
                 ? nextChapterId != null
@@ -663,13 +666,15 @@ const Exam = ({
                   : "Would you like to find another course?"
                 : "Sorry you have failed"}
               {finalScore >= chapter.scoreLimit || finishedExam ? (
-                <Image
-                  src="/congratulation.png"
-                  alt="blog"
-                  height={200}
-                  width={400}
-                  className="select-none object-cover rounded-md border-2 border-white shadow-md drop-shadow-md"
-                />
+                <div className="flex justify-center">
+                  <Image
+                    src="/congratulationLPC.svg"
+                    alt="congratulation"
+                    height={300}
+                    width={500}
+                    className="select-none object-cover rounded-md border-2 border-white shadow-md drop-shadow-md"
+                  />
+                </div>
               ) : (
                 <></>
               )}
