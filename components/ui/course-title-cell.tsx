@@ -14,7 +14,7 @@ export const CourseTitleCell = ({ row }: any) => {
 
     return data;
   };
-  console.log(row.original);
+
   const { data, error, isLoading } = useQuery(
     "userPermission",
     fetchUserPermission

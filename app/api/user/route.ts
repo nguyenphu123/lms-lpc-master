@@ -5,32 +5,31 @@ import { db } from "@/lib/db";
 
 import { clerkClient } from "@clerk/nextjs";
 
-// export async function PATCH(req: Request) {
-//   try {
-//     const { userId }: any = auth();
-//     const { id, role } = await req.json();
-//     const admin: any = await db.user.findUnique({
-//       where: {
-//         id: userId,
-//       },
-//     });
-//     if (!userId || admin.role.toUpperCase() == "STAFF") {
-//       return new NextResponse("Unauthorized", { status: 401 });
-//     }
+export async function PATCH(req: Request) {
+  try {
+    const { userId }: any = auth();
+    const { UserProgress } = await req.json();
 
-//     const user = await db.user.update({
-//       where: { id },
-//       data: {
-//         role,
-//       },
-//     });
+    for (let i = 0; i < UserProgress.length; i++) {
+      await db.userProgress.update({
+        where: {
+          id: UserProgress[i].id,
+          // moduleId: UserProgress[i].moduleId,
+          // userId: UserProgress[i].user.userId,
+          status: "failed",
+        },
+        data: {
+          status: "studying",
+        },
+      });
+    }
 
-//     return NextResponse.json(user);
-//   } catch (error) {
-//     console.log("[PROGRAMS]", error);
-//     return new NextResponse("Internal Error", { status: 500 });
-//   }
-// }
+    return NextResponse.json("");
+  } catch (error) {
+    console.log("[PROGRAMS]", error);
+    return new NextResponse("Internal Error", { status: 500 });
+  }
+}
 export async function POST(req: Request) {
   try {
     const { createdUserId, department, emailAddress } = await req.json();

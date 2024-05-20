@@ -5,6 +5,8 @@ import { db } from "@/lib/db";
 
 import { DataTable } from "./_components/data-table";
 import { columns } from "./_components/columns";
+import Link from "next/link";
+import { ArrowLeft } from "lucide-react";
 
 const CoursesPage = async ({ params }: { params: { courseId: string } }) => {
   const { userId } = auth();
@@ -49,12 +51,25 @@ const CoursesPage = async ({ params }: { params: { courseId: string } }) => {
       type: "Exam",
     },
     include: {
-      UserProgress: true,
+      UserProgress: {
+        include: {
+          user: true,
+        },
+      },
     },
   });
 
   return (
     <div className="p-6">
+      <div className="flex flex-col gap-y-2">
+        <Link
+          href={`/teacher/courses`}
+          className="flex items-center text-sm hover:opacity-75 transition mb-6"
+        >
+          <ArrowLeft className="h-4 w-4 mr-2" />
+          Back to course
+        </Link>
+      </div>
       {course.title}
       <DataTable
         columns={columns}

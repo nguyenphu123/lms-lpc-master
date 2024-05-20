@@ -265,6 +265,7 @@ const Exam = ({
         courseId,
       },
     });
+    router.refresh();
   };
 
   // Danh sách câu hỏi và đáp án
@@ -508,6 +509,8 @@ const Exam = ({
         },
       });
     }
+
+    router.refresh();
   };
   const setBookmark = (index: any) => {
     let newArr = [...questions];
@@ -628,205 +631,231 @@ const Exam = ({
   };
   return questions.length == 0 ? (
     <>
-      <div className=" p-6 rounded-lg">
-        <h1 className="text-2xl font-bold mb-4">Welcome to the Exam</h1>
-        <p className="text-lg mb-4">
-          Before you begin, please take a moment to review the following
-          information about the exam.
-        </p>
-        <ul className="list-disc pl-5 mb-4">
-          <li className="mb-2">
-            This exam consists of multiple-choice questions.
-          </li>
-          <li className="mb-2">
-            You will have{" "}
-            <span className="text-red-600">{chapter.timeLimit} minutes</span> to
-            complete the exam.
-          </li>
-          <li className="mb-2">
-            You need atleast{" "}
-            <span className="text-red-600">{chapter.scoreLimit}%</span> to pass
-            the exam.
-          </li>
-          <li className="mb-2">
-            Make sure you are in a quiet environment to avoid distractions .
-          </li>
-        </ul>
-        <AlertDialog open={onFinish}>
-          <AlertDialogContent className="AlertDialogContent">
-            <AlertDialogTitle className="AlertDialogTitle">
-              <div className="bg-red-400 text-white">
-                Your score is {finalScore}
-              </div>
-
-              <br />
-              {finalScore >= chapter.scoreLimit || finishedExam
-                ? nextChapterId != null
-                  ? "Congratulation on finishing this exam."
-                  : "Would you like to find another course?"
-                : "Sorry you have failed"}
-              {finalScore >= chapter.scoreLimit || finishedExam ? (
-                <div className="flex justify-center">
-                  <Image
-                    src="/congratulationLPC.svg"
-                    alt="congratulation"
-                    height={300}
-                    width={500}
-                    className="select-none object-cover rounded-md border-2 border-white shadow-md drop-shadow-md"
-                  />
+      <div className="max-w-6xl mx-auto p-6 mt-5">
+        <div className="bg-white shadow-lg rounded-lg p-6 dark:bg-slate-600">
+          <h2 className="text-2xl font-bold mb-4">Welcome to the Exam</h2>
+          <p className="text-lg mb-4">
+            Before you begin, please take a moment to review the following
+            information about the exam.
+          </p>
+          <ul className="list-disc pl-5 mb-4">
+            <li className="mb-2">
+              This exam consists of multiple-choice questions.
+            </li>
+            <li className="mb-2">
+              You will have{" "}
+              <span className="text-red-600">{chapter.timeLimit} minutes</span>{" "}
+              to complete the exam.
+            </li>
+            <li className="mb-2">
+              You need atleast{" "}
+              <span className="text-red-600">{chapter.scoreLimit}%</span> to
+              pass the exam.
+            </li>
+            <li className="mb-2">
+              Make sure you are in a quiet environment to avoid distractions.
+            </li>
+          </ul>
+          <AlertDialog open={onFinish}>
+            <AlertDialogContent className="AlertDialogContent">
+              <AlertDialogTitle className="AlertDialogTitle">
+                <div className="bg-red-400 text-white">
+                  Your score is {finalScore}
                 </div>
-              ) : (
-                <></>
-              )}
-            </AlertDialogTitle>
-            <AlertDialogDescription className="AlertDialogDescription"></AlertDialogDescription>
-            <div
-              style={{
-                display: "flex",
-                gap: 25,
-              }}
-            >
-              {finalScore >= chapter.scoreLimit || finishedExam ? (
-                <AlertDialogCancel onClick={() => setOnFinish(false)}>
-                  Stay
-                </AlertDialogCancel>
+
+                <div className="p-4">
+                  {finalScore >= chapter.scoreLimit || finishedExam
+                    ? nextChapterId != null
+                      ? "Congratulation on finishing this exam."
+                      : "Would you like to find another course?"
+                    : "Sorry you have failed"}
+                  {finalScore >= chapter.scoreLimit || finishedExam ? (
+                    <div className="flex justify-center mt-4">
+                      <Image
+                        src="/congratulationLPC.svg"
+                        alt="congratulation"
+                        height={300}
+                        width={500}
+                        className="select-none object-cover rounded-md border-2 border-white shadow-md"
+                      />
+                    </div>
+                  ) : (
+                    <></>
+                  )}
+                </div>
+              </AlertDialogTitle>
+              <AlertDialogDescription className="AlertDialogDescription"></AlertDialogDescription>
+              <div className="flex justify-between">
+                {finalScore >= chapter.scoreLimit || finishedExam ? (
+                  <AlertDialogCancel onClick={() => setOnFinish(false)}>
+                    Stay
+                  </AlertDialogCancel>
+                ) : isCompleted == "failed" ? (
+                  <span className="text-red-500">
+                    Sorry, please wait for the exam reset to retake this test.
+                  </span>
+                ) : (
+                  <AlertDialogCancel
+                    onClick={() => accept()}
+                    className="px-4 py-2 bg-yellow-500 text-white rounded-lg"
+                  >
+                    Retake
+                  </AlertDialogCancel>
+                )}
+                {isCompleted == "failed" ? (
+                  <AlertDialogCancel
+                    onClick={() => setOnFinish(false)}
+                    className="px-4 py-2 bg-gray-500 text-white rounded-lg"
+                  >
+                    Close
+                  </AlertDialogCancel>
+                ) : (
+                  <></>
+                )}
+                {finalScore >= chapter.scoreLimit || finishedExam ? (
+                  <AlertDialogAction asChild>
+                    <button
+                      className="px-4 py-2 bg-green-500 text-white rounded-lg"
+                      onClick={() => onLeaving()}
+                    >
+                      {nextChapterId != null ? "To next chapter" : "Leave"}
+                    </button>
+                  </AlertDialogAction>
+                ) : (
+                  <></>
+                )}
+              </div>
+            </AlertDialogContent>
+          </AlertDialog>
+          <div className="mt-6">
+            <p className="text-lg mb-4">Include:</p>
+            <ul className="list-disc pl-5">
+              {chapter.Category.map((item: any) => {
+                return (
+                  <li key={item.id} className="mb-2">
+                    {item.title}:{" "}
+                    {Math.floor(
+                      (parseInt(item.numOfAppearance) /
+                        parseInt(
+                          chapter.Category.reduce(
+                            (n: number, { numOfAppearance }: any) =>
+                              n + numOfAppearance,
+                            0
+                          )
+                        )) *
+                        100
+                    )}
+                    %
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+          <AlertDialog>
+            <div className="font-bold ml-2 rounded-lg">
+              {isGeneratingExam ? (
+                <div className="">
+                  Please wait while we generate your exam...
+                </div>
               ) : isCompleted == "failed" ? (
+                <></>
+              ) : (
+                <AlertDialogTrigger className="flex justify-center items-center">
+                  <>👉Take an exam </>
+                </AlertDialogTrigger>
+              )}
+              {isCompleted == "failed" ? (
                 <span className="text-red-500">
                   Sorry, please wait for the exam reset to retake this test
                 </span>
               ) : (
-                <AlertDialogCancel onClick={() => accept()}>
-                  Retake
-                </AlertDialogCancel>
-              )}
-              {isCompleted == "failed" ? (
-                <AlertDialogCancel onClick={() => setOnFinish(false)}>
-                  Close
-                </AlertDialogCancel>
-              ) : (
-                <></>
-              )}
-              {finalScore >= chapter.scoreLimit || finishedExam ? (
-                <AlertDialogAction asChild>
-                  <button className="Button red" onClick={() => onLeaving()}>
-                    {nextChapterId != null ? "To next chapter" : "Leave"}
-                  </button>
-                </AlertDialogAction>
-              ) : (
                 <></>
               )}
             </div>
-          </AlertDialogContent>
-        </AlertDialog>
-        <div>
-          <p className="text-lg mb-4">Include:</p>
-          <ul className="list-disc pl-5 mb-4">
-            {chapter.Category.map((item: any) => {
-              return (
-                <li key={item.id}>
-                  {item.title}:
-                  {Math.floor(
-                    (parseInt(item.numOfAppearance) /
-                      parseInt(
-                        chapter.Category.reduce(
-                          (n: number, { numOfAppearance }: any) =>
-                            n + numOfAppearance,
-                          0
-                        )
-                      )) *
-                      100
+            <AlertDialogContent className="AlertDialogContent">
+              <AlertDialogTitle className="AlertDialogTitle">
+                Exam note
+              </AlertDialogTitle>
+              <AlertDialogDescription className="AlertDialogDescription">
+                {finishedExam && isCompleted == "studying" ? (
+                  <>Do you want to do the exam?</>
+                ) : isCompleted == "failed" ? (
+                  <>Please wait until admin reset</>
+                ) : (
+                  <>Do you want to retake this exam?</>
+                )}
+              </AlertDialogDescription>
+              <div
+                style={{
+                  display: "flex",
+                  gap: 25,
+                  justifyContent: "flex-end",
+                }}
+              >
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction asChild>
+                  {isCompleted == "failed" ? (
+                    <></>
+                  ) : (
+                    <button className="Button red" onClick={() => accept()}>
+                      Yes
+                    </button>
                   )}
-                  %
-                </li>
-              );
-            })}
-          </ul>
+                </AlertDialogAction>
+              </div>
+            </AlertDialogContent>
+          </AlertDialog>
         </div>
       </div>
-      {finishedExam ? (
-        <>
-          You have finished this exam, you can retake it but your score will not
-          count.
-          <DoughnutChart
-            score={finalScore}
-            maxScore={examMaxScore}
-          ></DoughnutChart>
-        </>
-      ) : (
-        <DoughnutChart
-          score={finalScore}
-          maxScore={examMaxScore}
-        ></DoughnutChart>
-      )}
-      <AlertDialog>
-        <div className="font-bold ml-2 rounded-lg">
-          {isGeneratingExam ? (
-            <div className="">Please wait while we generate your exam...</div>
-          ) : isCompleted == "failed" ? (
-            <></>
-          ) : (
-            <AlertDialogTrigger className="flex justify-center items-center">
-              <>👉Take an exam </>
-            </AlertDialogTrigger>
-          )}
-          {isCompleted == "failed" ? (
-            <span className="text-red-500">
-              Sorry, please wait for the exam reset to retake this test
-            </span>
-          ) : (
-            <></>
-          )}
-        </div>
-        <div>
-          You have taken this test for: {exemRecord.length} times
-          {exemRecord[0]?.examRecord?.questionList?.map((item: any) => {
-            return (
-              <div
-                className={`${
-                  checkEqual(item.chooseAnswer, item.answer)
-                    ? "text-green-500"
-                    : "text-red-500"
-                }`}
-                key={item.id}
-              >
-                {item.question}
-              </div>
-            );
-          })}
-        </div>
-
-        <AlertDialogContent className="AlertDialogContent">
-          <AlertDialogTitle className="AlertDialogTitle">
-            Exam note
-          </AlertDialogTitle>
-          <AlertDialogDescription className="AlertDialogDescription">
-            {finishedExam && isCompleted == "studying" ? (
-              <>Do you want to do the exam?</>
-            ) : isCompleted == "failed" ? (
-              <>Please wait until admin reset</>
-            ) : (
-              <>Do you want to retake this exam?</>
-            )}
-          </AlertDialogDescription>
-          <div
-            style={{
-              display: "flex",
-              gap: 25,
-              justifyContent: "flex-end",
-            }}
-          >
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction asChild>
-              {isCompleted == "failed" ? (
-                <></>
-              ) : (
-                <button className="Button red" onClick={() => accept()}>
-                  Yes
-                </button>
-              )}
-            </AlertDialogAction>
+      <div className="max-w-6xl mx-auto p-6">
+        <div className="bg-white shadow-lg rounded-lg p-6 dark:bg-slate-600">
+          <h2 className="text-2xl font-bold mb-6">Exam Score</h2>
+          <div className="mb-6">
+            <DoughnutChart score={finalScore} maxScore={examMaxScore} />
           </div>
-        </AlertDialogContent>
+          {finishedExam ? (
+            <div>
+              <p className="text-lg mb-2">
+                You finished the exam. Retakes won't count.
+              </p>
+            </div>
+          ) : (
+            <div>
+              <p className="text-lg mb-2">Your current score. Keep going!</p>
+            </div>
+          )}
+        </div>
+      </div>
+      <AlertDialog>
+        <div className="max-w-6xl mx-auto p-6">
+          <div className="bg-white shadow-lg rounded-lg p-6 dark:bg-slate-600">
+            <h2 className="text-2xl font-bold mb-6">History Exam</h2>
+            <p className="text-lg mb-6">
+              You have taken this test for: {exemRecord.length} times
+            </p>
+            <div className="space-y-6">
+              {exemRecord[0]?.examRecord?.questionList?.map((item: any) => {
+                const isCorrect = checkEqual(item.chooseAnswer, item.answer);
+                return (
+                  <div
+                    className={`p-4 rounded-lg ${
+                      isCorrect ? "bg-green-100" : "bg-red-100"
+                    }`}
+                    key={item.id}
+                  >
+                    <h3
+                      className={`text-base font-semibold ${
+                        isCorrect ? "text-green-700" : "text-red-700"
+                      }`}
+                    >
+                      {item.question}
+                    </h3>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
       </AlertDialog>
     </>
   ) : (
