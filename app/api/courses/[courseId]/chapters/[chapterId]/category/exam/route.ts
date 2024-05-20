@@ -28,7 +28,11 @@ export async function POST(
     ) {
       for (let k = 0; k < values.length; k++) {
         const { id, title, numOfAppearance }: any = values[k];
-
+        await db.category.deleteMany({
+          where: {
+            moduleId: chapter.id.toString(),
+          },
+        });
         const category = await db.category.upsert({
           where: { id: id },
           update: {
