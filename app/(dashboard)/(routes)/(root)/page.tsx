@@ -11,10 +11,17 @@ import { getProgress } from "@/actions/get-progress";
 import { CompletedCourse } from "@/components/completed-course";
 import { AlertInExam } from "@/components/ui/alert-in-exam";
 
-export default async function Dashboard() {
+export default async function Dashboard({
+  params,
+}: {
+  params: { email: string; task: string };
+}) {
   const { sessionClaims }: any = auth();
 
   if (!sessionClaims?.userId) {
+    if (params.email != undefined && params.task != undefined) {
+      return redirect(`/?email=${params.email}&task=${params.task}`);
+    }
     return redirect("/sign-in");
   }
   let userInfo: any = await db.user.findUnique({
@@ -237,7 +244,10 @@ export default async function Dashboard() {
   );
 
   return userInfo.userExamReport[0]?.isInExam ? (
-    <AlertInExam></AlertInExam>
+    <AlertInExam
+      courseId={userInfo.userExamReport[0]?.courseId}
+      moduleId={userInfo.userExamReport[0]?.moduleId}
+    ></AlertInExam>
   ) : (
     <>
       <div className="px-6 pt-6 md:hidden md:mb-0 block">

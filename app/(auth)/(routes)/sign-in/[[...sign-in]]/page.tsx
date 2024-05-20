@@ -1,7 +1,7 @@
 "use client";
 import { useAuth, useSignIn } from "@clerk/clerk-react";
 import axios from "axios";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { EmailCodeFactor, SignInFirstFactor } from "@clerk/types";
 import Link from "next/link";
@@ -13,6 +13,9 @@ const Logo = dynamic(() => import("@/app/(auth)/_component/logo" as string), {
 });
 var CryptoJS = require("crypto-js");
 export default function Page() {
+  const searchParams = useSearchParams();
+  const emailAddressAprrove = searchParams.get("email");
+  const task = searchParams.get("task");
   const [error, setError] = useState("");
   const { isLoaded, signIn, setActive } = useSignIn();
   const [emailAddress, setEmailAddress] = useState("");
@@ -106,8 +109,13 @@ export default function Page() {
           // function code goes here
         }, 2000);
         // setVerificationChecking(false);
-
-        router.push("/");
+        if (emailAddressAprrove != undefined && task != undefined) {
+          router.push(
+            `/teacher/users?email=${emailAddressAprrove}&task=${task}`
+          );
+        } else {
+          router.push("/");
+        }
       } else {
         /*Investigate why the sign-in hasn't completed */
         console.log(result);

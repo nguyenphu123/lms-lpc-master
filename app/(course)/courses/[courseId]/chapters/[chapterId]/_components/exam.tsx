@@ -190,6 +190,23 @@ const Exam = ({
             });
           }
         }
+        navigator.sendBeacon(
+          `/api/user/${currentUserId}/isInExam`,
+          JSON.stringify({
+            id: reportId,
+            isInExam: true,
+            note: "Sudden tabs or browser close.",
+            moduleId: chapter.id,
+            courseId,
+            date: new Date(),
+            examRecord: {
+              questionList: questions,
+              timeLimit: parseInt(timeLimitRecord / 60 + "").toFixed(2),
+              currentQuestion: currentQuestion,
+              selectedAnswers: selectedAnswers,
+            },
+          })
+        );
       }
 
       setOnFinish(true);
@@ -235,17 +252,7 @@ const Exam = ({
     setSelectedAnswers([]);
     setExamRecord([]);
     setIsGeneratingExam(true);
-    let currentUser = await axios.get(`/api/user`);
-    let report = await axios.post(`/api/user/${currentUser.data.id}/isInExam`, {
-      id: "0",
-      examRecord: {},
-      note: "",
-      isInExam: true,
-      moduleId: chapter.id,
-      date: new Date(),
-      courseId,
-    });
-    setReportId(report.data.id);
+
     if (!finishedExam) {
       let questionList = await axios.get(
         `/api/courses/${chapter.courseId}/chapters/${chapter.id}/category/exam/shuffle`
@@ -259,6 +266,22 @@ const Exam = ({
 
       setQuestions(shuffleArray(questionList.data.ExamList));
     }
+    let currentUser = await axios.get(`/api/user`);
+    let report = await axios.post(`/api/user/${currentUser.data.id}/isInExam`, {
+      id: "0",
+      examRecord: {
+        questionList: questions,
+        timeLimit: parseInt(timeLimitRecord / 60 + "").toFixed(2),
+        currentQuestion: 0,
+        selectedAnswers: [],
+      },
+      note: "",
+      isInExam: true,
+      moduleId: chapter.id,
+      date: new Date(),
+      courseId,
+    });
+    setReportId(report.data.id);
     setIsGeneratingExam(false);
   };
   // const cancel = () => {
@@ -360,6 +383,23 @@ const Exam = ({
             // router.push(`/search`);
           }
         }
+        navigator.sendBeacon(
+          `/api/user/${currentUserId}/isInExam`,
+          JSON.stringify({
+            id: reportId,
+            isInExam: true,
+            note: "Finished Exam.",
+            moduleId: chapter.id,
+            courseId,
+            date: new Date(),
+            examRecord: {
+              questionList: questions,
+              timeLimit: parseInt(timeLimitRecord / 60 + "").toFixed(2),
+              currentQuestion: currentQuestion,
+              selectedAnswers: selectedAnswers,
+            },
+          })
+        );
       }
 
       setOnFinish(true);

@@ -59,7 +59,10 @@ const ChapterIdPage = async ({
     (userInfo.userExamReport[0]?.isInExam &&
       chapter.type == "Exam" &&
       chapter.id != userInfo.userExamReport[0]?.moduleId) ? (
-    <AlertInExam></AlertInExam>
+    <AlertInExam
+      courseId={userInfo.userExamReport[0]?.courseId}
+      moduleId={userInfo.userExamReport[0]?.moduleId}
+    ></AlertInExam>
   ) : (
     <div className="pl-6 pt-3">
       {userProgress?.status == "finished" && (

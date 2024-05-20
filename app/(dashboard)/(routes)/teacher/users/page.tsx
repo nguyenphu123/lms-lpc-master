@@ -7,10 +7,17 @@ import { DataTable } from "./_components/data-table";
 import { columns } from "./_components/columns";
 import { getUser } from "@/actions/get-user";
 
-const UsersPage = async () => {
+const UsersPage = async ({
+  params,
+}: {
+  params: { email: string; task: string };
+}) => {
   const { userId, sessionClaims }: any = auth();
 
   if (!userId) {
+    if (params.email != undefined && params.task != undefined) {
+      return redirect(`/?email=${params.email}&task=${params.task}`);
+    }
     return redirect("/");
   }
   const checkUser = await db.userPermission.findMany({

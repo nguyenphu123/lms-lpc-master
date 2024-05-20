@@ -21,7 +21,12 @@ const DashboardLayout = async ({ children }: { children: React.ReactNode }) => {
     return redirect("/");
   }
   if (userInfo.userExamReport[0]?.isInExam) {
-    return <AlertInExam></AlertInExam>;
+    return (
+      <AlertInExam
+        courseId={userInfo.userExamReport[0]?.courseId}
+        moduleId={userInfo.userExamReport[0]?.moduleId}
+      ></AlertInExam>
+    );
   }
   return (
     <div className="h-full">
