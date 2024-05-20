@@ -43,6 +43,7 @@ const Exam = ({
   const [examRecord, setExamRecord]: any = useState([]);
   const [isGeneratingExam, setIsGeneratingExam] = useState(false);
   const [reportId, setReportId] = useState("");
+  const [recordId, setRecordId] = useState("");
   const [currentUserId, setCurrentUserId] = useState(null);
   const confetti = useConfettiStore();
 
@@ -140,6 +141,21 @@ const Exam = ({
 
   const onTimeOut: any = async () => {
     if (questions.length == 0) {
+      await axios.post(
+        `/api/user/${currentUserId}/examRecord`,
+        JSON.stringify({
+          id: recordId,
+
+          moduleId: chapter.id,
+          courseId,
+          date: new Date(),
+          examRecord: {
+            questionList: questions,
+
+            selectedAnswers: selectedAnswers,
+          },
+        })
+      );
     } else {
       const { finalScore }: any = calculateScore();
       const totalScore = finalScore;
@@ -191,23 +207,38 @@ const Exam = ({
           }
         }
         await axios.post(
-          `/api/user/${currentUserId}/isInExam`,
+          `/api/user/${currentUserId}/examRecord`,
           JSON.stringify({
-            id: reportId,
-            isInExam: false,
-            note: "Finished exam.",
+            id: recordId,
+
             moduleId: chapter.id,
             courseId,
             date: new Date(),
             examRecord: {
               questionList: questions,
-              timeLimit: parseInt(timeLimitRecord / 60 + "").toFixed(2),
-              currentQuestion: currentQuestion,
+
               selectedAnswers: selectedAnswers,
             },
           })
         );
       }
+      await axios.post(
+        `/api/user/${currentUserId}/isInExam`,
+        JSON.stringify({
+          id: reportId,
+          isInExam: false,
+          note: "Finished exam.",
+          moduleId: chapter.id,
+          courseId,
+          date: new Date(),
+          examRecord: {
+            questionList: questions,
+            timeLimit: parseInt(timeLimitRecord / 60 + "").toFixed(2),
+            currentQuestion: currentQuestion,
+            selectedAnswers: selectedAnswers,
+          },
+        })
+      );
 
       setOnFinish(true);
       setQuestions([]);
@@ -371,7 +402,21 @@ const Exam = ({
       // Nếu đã là câu hỏi cuối cùng, kiểm tra điểm số và hiển thị kết quả
       const { finalScore }: any = calculateScore();
       const totalScore = finalScore;
+      await axios.post(
+        `/api/user/${currentUserId}/examRecord`,
+        JSON.stringify({
+          id: recordId,
 
+          moduleId: chapter.id,
+          courseId,
+          date: new Date(),
+          examRecord: {
+            questionList: questions,
+
+            selectedAnswers: selectedAnswers,
+          },
+        })
+      );
       if (!finishedExam) {
         const date = new Date();
 

@@ -151,6 +151,7 @@ model Course {
   BookMark           BookMark[]
   CourseOnDepartment CourseOnDepartment[]
   userExamReport     userExamReport[]
+  examRecord         examRecord[]
 
   @@index([userId])
   @@index([updatedBy])
@@ -302,15 +303,19 @@ model courseWithProgram {
 }
 
 model examRecord {
-  id         String @id @default(uuid())
-  user       User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id         String   @id @default(uuid())
+  user       User     @relation(fields: [userId], references: [id])
   userId     String
-  module     Module @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+  course     Course   @relation(fields: [courseId], references: [id])
+  courseId   String
+  module     Module   @relation(fields: [moduleId], references: [id])
   moduleId   String
   examRecord Json?
+  date       DateTime
 
   @@index([userId])
   @@index([moduleId])
+  @@index([courseId])
 }
 
 model userExamReport {

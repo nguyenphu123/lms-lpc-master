@@ -19,25 +19,7 @@ const Link = dynamic(() => import("next/link"), {
   ssr: false,
 });
 export default function Exam({ chapter }: any) {
-  const [quizList, setQuizList]: any = useState<
-    Array<{
-      id: number;
-      title: string;
-      numOfAppearance: number;
-
-      question: Array<{
-        id: number;
-        question: string;
-        type: string;
-        score: number;
-        answer: Array<{
-          id: number;
-          text: string;
-          isCorrect: boolean;
-        }>;
-      }>;
-    }>
-  >([]);
+  const [quizList, setQuizList]: any = useState([]);
   const [textTitle, setTextTitle] = useState(chapter.title);
   const [timeLimit, setTimeLimit]: any = useState(60);
   const [passPercentage, setPassPercentage] = useState(80);
@@ -359,11 +341,11 @@ export default function Exam({ chapter }: any) {
   };
   const handleFileFull = (e: { target: any }) => {
     const file = e.target.files[0];
+    let newQuizList: any = [];
 
     if (!file) return;
 
     if (isExcelFile(file) && file.size != 0) {
-      setQuizList([]);
       const reader = new FileReader();
       reader.readAsBinaryString(file);
       reader.onload = (e: any) => {
@@ -401,29 +383,9 @@ export default function Exam({ chapter }: any) {
 
           readData = [...readData, category];
         }
+        newQuizList = readData;
 
-        for (let i = 0; i < readData.length; i++) {
-          if (
-            quizList
-              .map((item: { title: any }) => item.title)
-              .indexOf(readData[i].title) != -1
-          ) {
-            quizList[
-              quizList
-                .map((item: { title: any }) => item.title)
-                .indexOf(readData[i].title)
-            ].numOfAppearance = readData[i].numOfAppearance;
-            quizList[
-              quizList
-                .map((item: { title: any }) => item.title)
-                .indexOf(readData[i].title)
-            ].question = readData[i].question;
-            setQuizList([...quizList]);
-          } else {
-            setQuizList((prevState: any) => [...prevState, readData[i]]);
-          }
-        }
-
+        setQuizList(newQuizList);
         // setData(parsedData);
       };
       // setFileName(file.name);
