@@ -83,7 +83,7 @@ const Exam = ({
         setQuestions(examObj.questionList);
         setCurrentQuestion(examObj.currentQuestion);
         setTimeLimitRecord(examObj.timeLimit * 60);
-        console.log(examObj);
+
         setSelectedAnswers(examObj.selectedAnswers);
         // accept();
       }
@@ -124,7 +124,7 @@ const Exam = ({
         date: new Date(),
         examRecord: {
           questionList: questions,
-          timeLimit: parseInt(timeLimitRecord / 60 + "").toFixed(2),
+          timeLimit: parseInt(timeLimitRecord / 60 + "").toFixed(0),
           currentQuestion: currentQuestion,
           selectedAnswers: selectedAnswers,
         },
@@ -252,26 +252,27 @@ const Exam = ({
     setSelectedAnswers([]);
     setExamRecord([]);
     setIsGeneratingExam(true);
-
+    let questionLists: any = [];
     if (!finishedExam) {
       let questionList = await axios.get(
         `/api/courses/${chapter.courseId}/chapters/${chapter.id}/category/exam/shuffle`
       );
-
-      setQuestions(shuffleArray(questionList.data.ExamList));
+      questionLists = shuffleArray(questionList.data.ExamList);
+      setQuestions(questionLists);
     } else {
       let questionList = await axios.get(
         `/api/courses/${chapter.courseId}/chapters/${chapter.id}/category/exam/shuffle`
       );
 
-      setQuestions(shuffleArray(questionList.data.ExamList));
+      questionLists = shuffleArray(questionList.data.ExamList);
+      setQuestions(questionLists);
     }
     let currentUser = await axios.get(`/api/user`);
     let report = await axios.post(`/api/user/${currentUser.data.id}/isInExam`, {
       id: "0",
       examRecord: {
-        questionList: questions,
-        timeLimit: parseInt(timeLimitRecord / 60 + "").toFixed(2),
+        questionList: questionLists,
+        timeLimit: parseInt(timeLimitRecord / 60 + "").toFixed(0),
         currentQuestion: 0,
         selectedAnswers: [],
       },
