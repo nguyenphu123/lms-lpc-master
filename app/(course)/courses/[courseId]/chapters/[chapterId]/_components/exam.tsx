@@ -183,17 +183,21 @@ const Exam = ({
                 startDate: date,
               }
             );
-            await axios.put(`/api/courses/${courseId}/progress`, {
-              status: "studying",
-              progress:
-                (course.Module.map((item: { id: any }) => item.id).indexOf(
-                  nextChapterId
-                ) /
-                  course.Module.length) *
-                  100 +
-                "%",
-              startDate: date,
-            });
+
+            if (isCompleted != "finished") {
+              await axios.post(
+                `/api/user/${currentUserId}/examRecord/${chapter.id}`,
+                JSON.stringify({
+                  courseId,
+                  date: new Date(),
+                  examRecord: {
+                    questionList: questions,
+
+                    selectedAnswers: selectedAnswers,
+                  },
+                })
+              );
+            }
             //router.push(`/courses/${courseId}/chapters/${nextChapterId}`);
           } else {
             await axios.put(`/api/courses/${courseId}/progress`, {
@@ -208,18 +212,20 @@ const Exam = ({
             });
           }
         }
-        await axios.post(
-          `/api/user/${currentUserId}/examRecord/${chapter.id}`,
-          JSON.stringify({
-            courseId,
-            date: new Date(),
-            examRecord: {
-              questionList: questions,
+        if (isCompleted != "finished") {
+          await axios.post(
+            `/api/user/${currentUserId}/examRecord/${chapter.id}`,
+            JSON.stringify({
+              courseId,
+              date: new Date(),
+              examRecord: {
+                questionList: questions,
 
-              selectedAnswers: selectedAnswers,
-            },
-          })
-        );
+                selectedAnswers: selectedAnswers,
+              },
+            })
+          );
+        }
       }
       await axios.post(
         `/api/user/${currentUserId}/isInExam`,
@@ -402,19 +408,22 @@ const Exam = ({
       // Nếu đã là câu hỏi cuối cùng, kiểm tra điểm số và hiển thị kết quả
       const { finalScore }: any = calculateScore();
       const totalScore = finalScore;
-      await axios.post(
-        `/api/user/${currentUserId}/examRecord/${chapter.id}`,
-        JSON.stringify({
-          moduleId: chapter.id,
-          courseId,
-          date: new Date(),
-          examRecord: {
-            questionList: questions,
+      if (isCompleted != "finished") {
+        await axios.post(
+          `/api/user/${currentUserId}/examRecord/${chapter.id}`,
+          JSON.stringify({
+            moduleId: chapter.id,
+            courseId,
+            date: new Date(),
+            examRecord: {
+              questionList: questions,
 
-            selectedAnswers: selectedAnswers,
-          },
-        })
-      );
+              selectedAnswers: selectedAnswers,
+            },
+          })
+        );
+      }
+
       if (!finishedExam) {
         const date = new Date();
 
@@ -659,16 +668,20 @@ const Exam = ({
           <AlertDialog open={onFinish}>
             <AlertDialogContent className="AlertDialogContent">
               <AlertDialogTitle className="AlertDialogTitle">
-                <div className="bg-red-400 text-white">
-                  Your score is {finalScore}
+                <div className="bg-red-400 text-white p-4 rounded-t-lg">
+                  <h2 className="text-xl font-semibold">
+                    Your score is {finalScore}
+                  </h2>
                 </div>
 
                 <div className="p-4">
-                  {finalScore >= chapter.scoreLimit || finishedExam
-                    ? nextChapterId != null
-                      ? "Congratulation on finishing this exam."
-                      : "Would you like to find another course?"
-                    : "Sorry you have failed"}
+                  <p className="text-lg mb-4">
+                    {finalScore >= chapter.scoreLimit || finishedExam
+                      ? nextChapterId != null
+                        ? "Congratulation on finishing this exam."
+                        : "Would you like to find another course?"
+                      : "Sorry you have failed"}
+                  </p>
                   {finalScore >= chapter.scoreLimit || finishedExam ? (
                     <div className="flex justify-center mt-4">
                       <Image
