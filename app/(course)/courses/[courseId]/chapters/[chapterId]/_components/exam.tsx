@@ -40,10 +40,10 @@ const Exam = ({
   const [examMaxScore, setExamMaxSocre] = useState(0);
   const [selectedAnswers, setSelectedAnswers]: any = useState([]);
   const [onFinish, setOnFinish] = useState(false);
-  const [examRecord, setExamRecord]: any = useState([]);
+
   const [isGeneratingExam, setIsGeneratingExam] = useState(false);
   const [reportId, setReportId] = useState("");
-  const [recordId, setRecordId] = useState("");
+  // const [recordId, setRecordId] = useState("");
   const [currentUserId, setCurrentUserId] = useState(null);
   const confetti = useConfettiStore();
 
@@ -55,7 +55,10 @@ const Exam = ({
       if (getLatestTestResult.data?.UserProgress[0]?.status == "finished") {
       } else {
       }
-
+      let getLatestExamRecord: any = axios.get(
+        `/api/user/${currentUserId}/examRecord/${chapter.id}`
+      );
+      console.log(getLatestExamRecord);
       setFinishedExam(
         getLatestTestResult.data?.UserProgress[0]?.status == "finished"
           ? true
@@ -142,10 +145,8 @@ const Exam = ({
   const onTimeOut: any = async () => {
     if (questions.length == 0) {
       await axios.post(
-        `/api/user/${currentUserId}/examRecord`,
+        `/api/user/${currentUserId}/examRecord/${chapter.id}`,
         JSON.stringify({
-          id: recordId,
-
           moduleId: chapter.id,
           courseId,
           date: new Date(),
@@ -207,11 +208,8 @@ const Exam = ({
           }
         }
         await axios.post(
-          `/api/user/${currentUserId}/examRecord`,
+          `/api/user/${currentUserId}/examRecord/${chapter.id}`,
           JSON.stringify({
-            id: recordId,
-
-            moduleId: chapter.id,
             courseId,
             date: new Date(),
             examRecord: {
@@ -281,7 +279,7 @@ const Exam = ({
     setTimeLimit(chapter.timeLimit);
     setCurrentQuestion(0);
     setSelectedAnswers([]);
-    setExamRecord([]);
+
     setIsGeneratingExam(true);
     let questionLists: any = [];
     if (!finishedExam) {
@@ -403,10 +401,8 @@ const Exam = ({
       const { finalScore }: any = calculateScore();
       const totalScore = finalScore;
       await axios.post(
-        `/api/user/${currentUserId}/examRecord`,
+        `/api/user/${currentUserId}/examRecord/${chapter.id}`,
         JSON.stringify({
-          id: recordId,
-
           moduleId: chapter.id,
           courseId,
           date: new Date(),
@@ -562,8 +558,6 @@ const Exam = ({
         } else {
           selectedAnswers[i]["isRight"] = false;
         }
-
-        setExamRecord(...examRecord, selectedAnswers[i]);
       } else {
         let correctSelectedAnswer = 0;
         let numberOfCorrectAnswer = selectedAnswers[i].answer.filter(
@@ -594,7 +588,6 @@ const Exam = ({
         } else {
           selectedAnswers[i]["isRight"] = false;
         }
-        setExamRecord(...examRecord, selectedAnswers[i]);
       }
     }
 
@@ -674,17 +667,21 @@ const Exam = ({
                 <AlertDialogCancel onClick={() => setOnFinish(false)}>
                   Stay
                 </AlertDialogCancel>
+              ) : isCompleted == "failed" ? (
+                <span className="text-red-500">
+                  Sorry, please wait for the exam reset to retake this test
+                </span>
               ) : (
                 <AlertDialogCancel onClick={() => accept()}>
                   Retake
-                  {isCompleted == "failed" ? (
-                    <span className="text-red-500">
-                      Sorry, please wait for the exam reset to retake this test
-                    </span>
-                  ) : (
-                    <></>
-                  )}
                 </AlertDialogCancel>
+              )}
+              {isCompleted == "failed" ? (
+                <AlertDialogCancel onClick={() => setOnFinish(false)}>
+                  Close
+                </AlertDialogCancel>
+              ) : (
+                <></>
               )}
               {finalScore >= chapter.scoreLimit || finishedExam ? (
                 <AlertDialogAction asChild>
@@ -742,6 +739,8 @@ const Exam = ({
         <div className="font-bold ml-2 rounded-lg">
           {isGeneratingExam ? (
             <div className="">Please wait while we generate your exam...</div>
+          ) : isCompleted == "failed" ? (
+            <></>
           ) : (
             <AlertDialogTrigger className="flex justify-center items-center">
               <>👉Take an exam </>
@@ -761,10 +760,12 @@ const Exam = ({
             Exam note
           </AlertDialogTitle>
           <AlertDialogDescription className="AlertDialogDescription">
-            {finishedExam && isCompleted != "studying" ? (
-              <>Do you want to retake this exam?</>
-            ) : (
+            {finishedExam && isCompleted == "studying" ? (
               <>Do you want to do the exam?</>
+            ) : isCompleted == "failed" ? (
+              <>Please wait until admin reset</>
+            ) : (
+              <>Do you want to retake this exam?</>
             )}
           </AlertDialogDescription>
           <div
@@ -776,9 +777,13 @@ const Exam = ({
           >
             <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction asChild>
-              <button className="Button red" onClick={() => accept()}>
-                Yes
-              </button>
+              {isCompleted == "failed" ? (
+                <></>
+              ) : (
+                <button className="Button red" onClick={() => accept()}>
+                  Yes
+                </button>
+              )}
             </AlertDialogAction>
           </div>
         </AlertDialogContent>

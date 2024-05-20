@@ -16,6 +16,9 @@ export async function GET(
 
     const userCourse = await db.examRecord.findFirst({
       where: { userId: params.userId, moduleId: params.chapterId },
+      orderBy: {
+        date: "desc",
+      },
     });
 
     return NextResponse.json(userCourse);
@@ -24,31 +27,28 @@ export async function GET(
     return new NextResponse("Internal Error", { status: 500 });
   }
 }
-export async function PATCH(
+export async function POST(
   req: Request,
   { params }: { params: { userId: string; chapterId: string } }
 ) {
   try {
     const { userId }: any = auth();
-    const { examRecord } = await req.json();
-    console.log(examRecord);
+    const { examRecord, courseId, date } = await req.json();
+
     if (!userId) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
-    for (let i = 0; i < examRecord.length; i++) {
-      const userCourse = await db.examRecord.upsert({
-        where: { id: examRecord[i].id },
-        update: { isRight: examRecord[i].isRight },
-        create: {
-          userId: params.userId,
-          moduleId: params.chapterId,
-          question: examRecord[i].question,
-          isRight: examRecord[i].isRight,
-        },
-      });
-    }
+    const userCourse = await db.examRecord.create({
+      data: {
+        examRecord,
+        date,
+        courseId,
+        moduleId: params.chapterId,
+        userId: params.userId,
+      },
+    });
 
-    return NextResponse.json("");
+    return NextResponse.json(userCourse);
   } catch (error) {
     console.log("[PROGRAMS]", error);
     return new NextResponse("Internal Error", { status: 500 });
