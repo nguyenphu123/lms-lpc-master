@@ -40,7 +40,7 @@ const Exam = ({
   const [examMaxScore, setExamMaxSocre] = useState(0);
   const [selectedAnswers, setSelectedAnswers]: any = useState([]);
   const [onFinish, setOnFinish] = useState(false);
-
+  const [exemRecord, setExamRecord]: any = useState([]);
   const [isGeneratingExam, setIsGeneratingExam] = useState(false);
   const [reportId, setReportId] = useState("");
   // const [recordId, setRecordId] = useState("");
@@ -55,10 +55,7 @@ const Exam = ({
       if (getLatestTestResult.data?.UserProgress[0]?.status == "finished") {
       } else {
       }
-      let getLatestExamRecord: any = axios.get(
-        `/api/user/${currentUserId}/examRecord/${chapter.id}`
-      );
-      console.log(getLatestExamRecord);
+
       setFinishedExam(
         getLatestTestResult.data?.UserProgress[0]?.status == "finished"
           ? true
@@ -71,7 +68,11 @@ const Exam = ({
       // let getLatestExamRecord: any = await axios.get(
       //   `/api/user/${currentUser.data.id}/examRecord/${chapter.id}`
       // );
-
+      let getLatestExamRecord: any = await axios.get(
+        `/api/user/${currentUser.data.id}/examRecord/${chapter.id}`
+      );
+      console.log(getLatestExamRecord.data);
+      setExamRecord(getLatestExamRecord.data);
       let chekIfUserIsInExam: any = await axios.get(
         `/api/user/${currentUser.data.id}/isInExam`
       );
@@ -608,6 +609,23 @@ const Exam = ({
     }
     router.refresh();
   };
+  const checkEqual = (array1: any, array2: any) => {
+    for (let i = 0; i < array2.length; i++) {
+      if (
+        !array2[i].isCorrect &&
+        array1.map((item: { id: any }) => item.id).indexOf(array2[i].id) != -1
+      ) {
+        return false;
+      }
+      if (
+        array2[i].isCorrect &&
+        array1.map((item: { id: any }) => item.id).indexOf(array2[i].id) == -1
+      ) {
+        return false;
+      }
+    }
+    return true;
+  };
   return questions.length == 0 ? (
     <>
       <div className=" p-6 rounded-lg">
@@ -643,7 +661,7 @@ const Exam = ({
                 ? nextChapterId != null
                   ? "Congratulation on finishing this exam."
                   : "Would you like to find another course?"
-                : "Sorry you have failed, please try again"}
+                : "Sorry you have failed"}
               {finalScore >= chapter.scoreLimit || finishedExam ? (
                 <Image
                   src="/congratulation.png"
@@ -753,6 +771,23 @@ const Exam = ({
           ) : (
             <></>
           )}
+        </div>
+        <div>
+          You have taken this test for: {exemRecord.length} times
+          {exemRecord[0]?.examRecord?.questionList?.map((item: any) => {
+            return (
+              <div
+                className={`${
+                  checkEqual(item.chooseAnswer, item.answer)
+                    ? "text-green-500"
+                    : "text-red-500"
+                }`}
+                key={item.id}
+              >
+                {item.question}
+              </div>
+            );
+          })}
         </div>
 
         <AlertDialogContent className="AlertDialogContent">
