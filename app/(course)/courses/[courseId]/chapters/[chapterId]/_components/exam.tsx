@@ -106,13 +106,16 @@ const Exam = ({
   }, [timeLimitRecord, questions]);
   useEffect(() => {
     if (questions.length > 0) {
+      window.addEventListener("hashchange", alertUser);
       window.addEventListener("beforeunload", alertUser);
       return () => {
+        window.removeEventListener("hashchange", alertUser);
         window.removeEventListener("beforeunload", alertUser);
       };
     }
   }, [questions, reportId, selectedAnswers, timeLimitRecord, currentQuestion]);
   const alertUser = async (e: any) => {
+    debugger;
     navigator.sendBeacon(
       `/api/user/${currentUserId}/isInExam`,
       JSON.stringify({
@@ -194,7 +197,7 @@ const Exam = ({
           `/api/user/${currentUserId}/isInExam`,
           JSON.stringify({
             id: reportId,
-            isInExam: true,
+            isInExam: false,
             note: "Sudden tabs or browser close.",
             moduleId: chapter.id,
             courseId,
@@ -388,7 +391,7 @@ const Exam = ({
           `/api/user/${currentUserId}/isInExam`,
           JSON.stringify({
             id: reportId,
-            isInExam: true,
+            isInExam: false,
             note: "Finished Exam.",
             moduleId: chapter.id,
             courseId,
