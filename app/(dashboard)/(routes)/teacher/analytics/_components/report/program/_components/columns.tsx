@@ -74,12 +74,12 @@ export const columns: ColumnDef<Program>[] = [
           {new Date(startDate).toLocaleTimeString([], {
             hour: "2-digit",
             minute: "2-digit",
-          })}{" "}
-          {new Date(startDate).toLocaleDateString([], {
+          })}
+          {new Date(startDate).toLocaleDateString("vi-VN", {
             day: "2-digit",
             month: "2-digit",
             year: "numeric",
-          })}{" "}
+          })}
         </div>
       );
     },
@@ -89,7 +89,7 @@ export const columns: ColumnDef<Program>[] = [
     header: ({ column }) => {
       return (
         <span className="flex items-center cursor-pointer">
-          <span className="mr-2">Program's courses</span>
+          <span className="mr-2">Program courses</span>
         </span>
       );
     },
@@ -100,6 +100,7 @@ export const columns: ColumnDef<Program>[] = [
         <div>
           {courseWithProgram.map(
             (item: {
+              id: any | null | undefined;
               course: {
                 title:
                   | string
@@ -113,7 +114,7 @@ export const columns: ColumnDef<Program>[] = [
                   | undefined;
               };
             }) => {
-              return <div>{item.course.title}</div>;
+              return <div key={item.id}>{item.course.title}</div>;
             }
           )}
         </div>

@@ -857,7 +857,7 @@ const Exam = ({
           {finishedExam ? (
             <div>
               <p className="text-lg mb-2">
-                You finished the exam. Retakes won't count.
+                You finished the exam. Retakes will not count.
               </p>
             </div>
           ) : (

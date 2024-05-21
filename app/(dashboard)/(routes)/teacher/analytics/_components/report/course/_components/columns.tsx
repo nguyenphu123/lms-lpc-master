@@ -19,46 +19,46 @@ export const columns: ColumnDef<Course>[] = [
           className="flex items-center cursor-pointer"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          <span className="mr-2">Title</span>
+          <span className="mr-2">Name of Course</span>
         </span>
       );
     },
   },
-  {
-    accessorKey: "user",
-    header: ({ column }) => {
-      return (
-        <span
-          className="flex items-center cursor-pointer"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          <span className="mr-2">Created By</span>
-        </span>
-      );
-    },
-    cell: ({ row }: any) => {
-      const { user } = row.original;
-      return <div>{user.username}</div>;
-    },
-  },
-  {
-    accessorKey: "updatedUser",
-    header: ({ column }) => {
-      return (
-        <span
-          className="flex items-center cursor-pointer"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          <span className="mr-2">Updated By</span>
-        </span>
-      );
-    },
-    cell: ({ row }: any) => {
-      const { updatedUser } = row.original;
+  // {
+  //   accessorKey: "user",
+  //   header: ({ column }) => {
+  //     return (
+  //       <span
+  //         className="flex items-center cursor-pointer"
+  //         onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+  //       >
+  //         <span className="mr-2">Created By</span>
+  //       </span>
+  //     );
+  //   },
+  //   cell: ({ row }: any) => {
+  //     const { user } = row.original;
+  //     return <div>{user.username}</div>;
+  //   },
+  // },
+  // {
+  //   accessorKey: "updatedUser",
+  //   header: ({ column }) => {
+  //     return (
+  //       <span
+  //         className="flex items-center cursor-pointer"
+  //         onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+  //       >
+  //         <span className="mr-2">Updated By</span>
+  //       </span>
+  //     );
+  //   },
+  //   cell: ({ row }: any) => {
+  //     const { updatedUser } = row.original;
 
-      return <div>{updatedUser?.username} </div>;
-    },
-  },
+  //     return <div>{updatedUser?.username} </div>;
+  //   },
+  // },
   {
     accessorKey: "courseInstructor",
     header: ({ column }) => {
@@ -67,7 +67,7 @@ export const columns: ColumnDef<Course>[] = [
           className="flex items-center cursor-pointer"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          <span className="mr-2">Instructed By</span>
+          <span className="mr-2">Instructor</span>
         </span>
       );
     },
@@ -85,7 +85,7 @@ export const columns: ColumnDef<Course>[] = [
           className="flex items-center cursor-pointer"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          <span className="mr-2">Created date</span>
+          <span className="mr-2">Created On</span>
         </span>
       );
     },
@@ -98,7 +98,7 @@ export const columns: ColumnDef<Course>[] = [
             hour: "2-digit",
             minute: "2-digit",
           })}{" "}
-          {new Date(startDate).toLocaleDateString([], {
+          {new Date(startDate).toLocaleDateString("vi-VN", {
             day: "2-digit",
             month: "2-digit",
             year: "numeric",
@@ -115,7 +115,7 @@ export const columns: ColumnDef<Course>[] = [
           className="flex items-center cursor-pointer"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          <span className="mr-2">Course participant</span>
+          <span className="mr-2">Attendees</span>
         </span>
       );
     },
@@ -127,7 +127,7 @@ export const columns: ColumnDef<Course>[] = [
           {ClassSessionRecord.map((item: any) => {
             return (
               <div key={item.id}>
-                {item.user.username}:
+                {item.user.username}:{" "}
                 <span
                   className={`${
                     item.status == "finished"
@@ -136,7 +136,7 @@ export const columns: ColumnDef<Course>[] = [
                   }`}
                 >
                   {item.status}
-                </span>
+                </span>{" "}
                 ({item.progress})
               </div>
             );

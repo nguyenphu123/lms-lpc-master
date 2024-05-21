@@ -31,7 +31,7 @@ export const ExamLastAttemptCell = ({ row }: any) => {
               hour: "2-digit",
               minute: "2-digit",
             })}{" "}
-            {new Date(item.endDate).toLocaleDateString([], {
+            {new Date(item.endDate).toLocaleDateString("vi-VN", {
               day: "2-digit",
               month: "2-digit",
               year: "numeric",

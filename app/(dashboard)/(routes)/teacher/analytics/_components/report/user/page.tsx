@@ -18,15 +18,15 @@ const UserReportPage = () => {
 
   const { data, error, isLoading } = useQuery("allPrograms", fetchAllUsers);
   console.log(data);
-  return (
-    <div className="p-6">
-      {/* <DataTable
-        columns={columns}
-        data={users}
-       
-      /> */}
-    </div>
-  );
+  if (isLoading) {
+    return <></>;
+  } else {
+    return (
+      <div className="p-6">
+        <DataTable columns={columns} data={data} />
+      </div>
+    );
+  }
 };
 
 export default UserReportPage;

@@ -5,7 +5,7 @@ import ReportPageProgram from "./report/program/page";
 import UserReportPage from "./report/user/page";
 export const ReportTabs = () => {
   return (
-    <Tabs aria-label="Options">
+    <Tabs defaultValue="users" aria-label="Options">
       <TabsList className="grid w-full grid-cols-3">
         <TabsTrigger value="users">Users</TabsTrigger>
         <TabsTrigger value="programs">Programs</TabsTrigger>
