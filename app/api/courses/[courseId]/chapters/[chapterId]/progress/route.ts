@@ -58,21 +58,25 @@ export async function GET(
     if (!userId) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
-    let lastDay: any = Date.now() - 24 * 60 * 60 * 1000;
-    lastDay = new Date(lastDay);
-    const userProgress = await db.userProgress.findMany({
+    const checkChapter = await db.userProgress.findMany({
       where: {
         userId,
         moduleId: params.chapterId,
-        status: {
-          not: "finished",
-        },
-        endDate: {
-          gte: lastDay,
-        },
       },
     });
-
+    const userProgress: any = await db.userProgress.findFirst({
+      where: {
+        userId,
+        moduleId: params.chapterId,
+      },
+    });
+    const currentChapterPos = checkChapter
+      .map((item: { id: any }) => item.id)
+      .indexOf(userProgress.id);
+    const nextChapter = checkChapter.map((item: { id: any }) => item.id)[
+      currentChapterPos + 1
+    ];
+    userProgress["nextChapterId"] = nextChapter;
     return NextResponse.json(userProgress);
   } catch (error) {
     console.log("[CHAPTER_ID_PROGRESS]", error);

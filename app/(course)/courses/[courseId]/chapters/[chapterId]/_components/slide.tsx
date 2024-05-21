@@ -118,25 +118,40 @@ const Slide = ({
       }
 
       if (nextChapterId != null) {
-        await axios.put(
-          `/api/courses/${courseId}/chapters/${nextChapterId}/progress`,
-          {
-            status: "studying",
-            progress: "0%",
-            startDate: date,
-          }
+        let checkIfNextChapterIsFinished = await axios.get(
+          `/api/courses/${courseId}/chapters/${nextChapterId}/progress`
         );
-        await axios.put(`/api/courses/${courseId}/progress`, {
-          status: "studying",
-          progress:
-            (course.Module.map((item: { id: any }) => item.id).indexOf(
-              nextChapterId
-            ) /
-              course.Module.length) *
-              100 +
-            "%",
-          startDate: date,
-        });
+        if (checkIfNextChapterIsFinished.data.status == "finished") {
+          if (checkIfNextChapterIsFinished.data.nextChapterId != undefined) {
+          } else {
+            await axios.put(`/api/courses/${courseId}/progress`, {
+              status: "finished",
+              progress: "100%",
+              endDate: date,
+            });
+          }
+        } else {
+          await axios.put(
+            `/api/courses/${courseId}/chapters/${nextChapterId}/progress`,
+            {
+              status: "studying",
+              progress: "0%",
+              startDate: date,
+            }
+          );
+          await axios.put(`/api/courses/${courseId}/progress`, {
+            status: "studying",
+            progress:
+              (course.Module.map((item: { id: any }) => item.id).indexOf(
+                nextChapterId
+              ) /
+                course.Module.length) *
+                100 +
+              "%",
+            startDate: date,
+          });
+        }
+
         router.push(`/courses/${courseId}/chapters/${nextChapterId}`);
         router.refresh();
       } else {
