@@ -78,6 +78,36 @@ export const columns: ColumnDef<Course>[] = [
     },
   },
   {
+    accessorKey: "startDate",
+    header: ({ column }) => {
+      return (
+        <span
+          className="flex items-center cursor-pointer"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          <span className="mr-2">Created date</span>
+        </span>
+      );
+    },
+    cell: ({ row }: any) => {
+      const { startDate } = row.original;
+
+      return (
+        <div>
+          {new Date(startDate).toLocaleTimeString([], {
+            hour: "2-digit",
+            minute: "2-digit",
+          })}{" "}
+          {new Date(startDate).toLocaleDateString([], {
+            day: "2-digit",
+            month: "2-digit",
+            year: "numeric",
+          })}{" "}
+        </div>
+      );
+    },
+  },
+  {
     accessorKey: "ClassSessionRecord",
     header: ({ column }) => {
       return (
@@ -110,6 +140,30 @@ export const columns: ColumnDef<Course>[] = [
                 ({item.progress})
               </div>
             );
+          })}
+        </div>
+      );
+    },
+  },
+  {
+    accessorKey: "CourseOnDepartment",
+    header: ({ column }) => {
+      return (
+        <span
+          className="flex items-center cursor-pointer"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          <span className="mr-2">Course for</span>
+        </span>
+      );
+    },
+    cell: ({ row }: any) => {
+      const { CourseOnDepartment } = row.original;
+
+      return (
+        <div>
+          {CourseOnDepartment.map((item: any) => {
+            return <div key={item.id}>{item.Department.title}</div>;
           })}
         </div>
       );

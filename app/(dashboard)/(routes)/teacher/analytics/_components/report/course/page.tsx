@@ -15,7 +15,7 @@ const ReportPageCourse = () => {
   };
 
   const { data, error, isLoading } = useQuery("allCourse", fetchAllCourses);
-  console.log(data);
+
   // const { userId } = auth();
 
   // if (!userId) {

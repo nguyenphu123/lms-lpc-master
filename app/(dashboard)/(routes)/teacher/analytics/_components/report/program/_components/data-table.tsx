@@ -28,13 +28,11 @@ import { Input } from "@/components/ui/input";
 import axios from "axios";
 
 interface DataTableProps<TData, TValue> {
-  title: string;
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
 }
 
 export function DataTable<TData, TValue>({
-  title,
   columns,
   data,
 }: DataTableProps<TData, TValue>) {
@@ -42,7 +40,8 @@ export function DataTable<TData, TValue>({
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
   );
-
+  const [fromDate, setFromDate] = React.useState(new Date());
+  const [toDate, setToDate] = React.useState(new Date());
   const table = useReactTable({
     data,
     columns,
@@ -67,22 +66,53 @@ export function DataTable<TData, TValue>({
     //let buffer = XLSX.write(workbook, { bookType: "xlsx", type: "buffer" });
     //XLSX.write(workbook, { bookType: "xlsx", type: "binary" });
     const date = new Date();
-    XLSX.writeFile(workbook, `${title}_${date}.xlsx`);
+    XLSX.writeFile(workbook, `${""}_${date}.xlsx`);
   }
+  const onChangeFromDate = (e: any, date: any) => {
+    if (date.getTime() > toDate.getTime()) {
+      setToDate(date);
+      table.getColumn("endDate")?.setFilterValue(date);
+    }
+    setFromDate(date);
+    table.getColumn("startDate")?.setFilterValue(date);
+    table.getColumn("endDate")?.setFilterValue(new Date());
+  };
+  const onChangeToDate = (e: any, date: any) => {
+    if (date.getTime() < fromDate.getTime()) {
+      setFromDate(date);
+
+      table.getColumn("startDate")?.setFilterValue(date);
+    }
+    setToDate(date);
+
+    table.getColumn("endDate")?.setFilterValue(date);
+    table.getColumn("startDate")?.setFilterValue(new Date());
+  };
   return (
     <div>
       <div className="flex items-center py-4 justify-between">
         <Input
-          placeholder="Filter users..."
-          value={
-            (table.getColumn("username")?.getFilterValue() as string) ?? ""
-          }
+          placeholder="Filter title..."
+          value={(table.getColumn("title")?.getFilterValue() as string) ?? ""}
           onChange={(event) =>
-            table.getColumn("username")?.setFilterValue(event.target.value)
+            table.getColumn("title")?.setFilterValue(event.target.value)
           }
           className="max-w-sm"
         />
-
+        <label htmlFor="fromDate">From Date:</label>
+        <input
+          type="date"
+          id="fromDate"
+          name="fromDate"
+          onChange={(e: any) => onChangeFromDate(e, e.target.value)}
+        ></input>
+        <label htmlFor="toDate">To Date:</label>
+        <input
+          type="date"
+          id="toDate"
+          name="toDate"
+          onChange={(e: any) => onChangeToDate(e, e.target.value)}
+        ></input>
         <Button onClick={() => getSheetData()}>
           <FileDown className="h-4 w-4 mr-2" />
           Export report

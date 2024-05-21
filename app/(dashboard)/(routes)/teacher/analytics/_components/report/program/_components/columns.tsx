@@ -4,125 +4,122 @@ import { Program } from "@prisma/client";
 import { ColumnDef } from "@tanstack/react-table";
 import { ArrowUpDown } from "lucide-react";
 import Image from "next/image";
+import {
+  ReactElement,
+  JSXElementConstructor,
+  ReactNode,
+  ReactPortal,
+  PromiseLikeOfReactNode,
+} from "react";
 
 export const columns: ColumnDef<Program>[] = [
   {
-    accessorKey: "username",
+    accessorKey: "title",
     header: () => {
       return <div>Name</div>;
     },
-    cell: ({ row }) => {
-      const { username, imageUrl }: any = row.original;
+  },
+  {
+    accessorKey: "user",
+    header: ({ column }) => {
+      return (
+        <span
+          className="flex items-center cursor-pointer"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          <span className="mr-2">Created By</span>
+        </span>
+      );
+    },
+    cell: ({ row }: any) => {
+      const { user } = row.original;
+      return <div>{user.username}</div>;
+    },
+  },
+  {
+    accessorKey: "updatedUser",
+    header: ({ column }) => {
+      return (
+        <span
+          className="flex items-center cursor-pointer"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          <span className="mr-2">Updated By</span>
+        </span>
+      );
+    },
+    cell: ({ row }: any) => {
+      const { updatedUser } = row.original;
+
+      return <div>{updatedUser?.username} </div>;
+    },
+  },
+  {
+    accessorKey: "startDate",
+    header: ({ column }) => {
+      return (
+        <span
+          className="flex items-center cursor-pointer"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          <span className="mr-2">Created date</span>
+        </span>
+      );
+    },
+    cell: ({ row }: any) => {
+      const { startDate } = row.original;
 
       return (
-        <div className="flex items-center">
-          <Image
-            src={imageUrl === null ? "/figure_605.png" : imageUrl}
-            alt={username}
-            height={32}
-            width={32}
-            className="w-8 h-8 rounded-full mr-2"
-          />
-          <div>{username}</div>
+        <div>
+          {new Date(startDate).toLocaleTimeString([], {
+            hour: "2-digit",
+            minute: "2-digit",
+          })}{" "}
+          {new Date(startDate).toLocaleDateString([], {
+            day: "2-digit",
+            month: "2-digit",
+            year: "numeric",
+          })}{" "}
         </div>
       );
     },
   },
   {
-    accessorKey: "email",
+    accessorKey: "courseWithProgram",
     header: ({ column }) => {
       return (
-        <span
-          className="flex items-center cursor-pointer"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          <span className="mr-2">Email</span>
-          <ArrowUpDown className="h-4 w-4" />
+        <span className="flex items-center cursor-pointer">
+          <span className="mr-2">Program's courses</span>
         </span>
       );
     },
-  },
-  {
-    accessorKey: "department",
-    header: ({ column }) => {
-      return (
-        <span
-          className="flex items-center cursor-pointer"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          <span className="mr-2">Department</span>
-          <ArrowUpDown className="h-4 w-4" />
-        </span>
-      );
-    },
-  },
-  {
-    accessorKey: "progress",
-    header: ({ column }) => {
-      return (
-        <span
-          className="flex items-center cursor-pointer"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          <span className="mr-2">Progress</span>
-          <ArrowUpDown className="h-4 w-4" />
-        </span>
-      );
-    },
-  },
-  // {
-  //   accessorKey: "isPublished",
-  //   header: ({ column }) => {
-  //     return (
-  //       <Button
-  //         variant="ghost"
-  //         onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-  //       >
-  //         Published
-  //         <ArrowUpDown className="ml-2 h-4 w-4" />
-  //       </Button>
-  //     );
-  //   },
-  //   cell: ({ row }) => {
-  //     const isPublished = row.getValue("isPublished") || false;
+    cell: ({ row }: any) => {
+      const { courseWithProgram } = row.original;
 
-  //     return (
-  //       <Badge className={cn("bg-slate-500", isPublished && "bg-sky-700")}>
-  //         {isPublished ? "Published" : "Draft"}
-  //       </Badge>
-  //     );
-  //   },
-  // },
-  // {
-  //   id: "actions",
-  //   accessorKey: "Action",
-  //   cell: ({ row }) => {
-  //     const { id } = row.original;
-
-  //     return (
-  //       <DropdownMenu>
-  //         <DropdownMenuTrigger asChild>
-  //           <Button variant="ghost" className="h-4 w-8 p-0">
-  //             <span className="sr-only">Open menu</span>
-  //             <MoreHorizontal className="h-4 w-4" />
-  //           </Button>
-  //         </DropdownMenuTrigger>
-  //         <DropdownMenuContent align="end">
-  //           <Link href={`/teacher/courses/${id}`}>
-  //             <DropdownMenuItem>
-  //               <Pencil className="h-4 w-4 mr-2" />
-  //               Edit
-  //             </DropdownMenuItem>
-  //           </Link>
-  //           <Link href={`/teacher/courses/${id}/report`}>
-  //             <DropdownMenuItem>
-  //               <ClipboardList className="h-4 w-4 mr-2" />
-  //               Report
-  //             </DropdownMenuItem>
-  //           </Link>
-  //         </DropdownMenuContent>
-  //       </DropdownMenu>
-  //     );
-  //   },
-  // },
+      return courseWithProgram.length > 0 ? (
+        <div>
+          {courseWithProgram.map(
+            (item: {
+              course: {
+                title:
+                  | string
+                  | number
+                  | boolean
+                  | ReactElement<any, string | JSXElementConstructor<any>>
+                  | Iterable<ReactNode>
+                  | ReactPortal
+                  | PromiseLikeOfReactNode
+                  | null
+                  | undefined;
+              };
+            }) => {
+              return <div>{item.course.title}</div>;
+            }
+          )}
+        </div>
+      ) : (
+        <div>No course</div>
+      );
+    },
+  },
 ];
