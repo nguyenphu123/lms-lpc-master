@@ -47,7 +47,7 @@ export const Actions = ({
           link: `http://localhost:3000/courses/${courseId}`,
         };
         await channelAbly.publish("course-publish", payload);
-
+        ably.close();
         confetti.onOpen();
       }
 

@@ -12,9 +12,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import Link from "next/link";
-import { PlusCircle, FileDown } from "lucide-react";
-import * as XLSX from "xlsx";
+
 import {
   Table,
   TableBody,
@@ -25,18 +23,19 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import axios from "axios";
 
 interface DataTableProps<TData, TValue> {
-  title: string;
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
+  canCreate: boolean;
+  canEdit: boolean;
 }
 
 export function DataTable<TData, TValue>({
-  title,
   columns,
   data,
+  canCreate,
+  canEdit,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
@@ -57,18 +56,7 @@ export function DataTable<TData, TValue>({
       columnFilters,
     },
   });
-  async function getSheetData() {
-    data.forEach((a: any) => {
-      delete a.imageUrl;
-    });
-    const worksheet = XLSX.utils.json_to_sheet(data);
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
-    //let buffer = XLSX.write(workbook, { bookType: "xlsx", type: "buffer" });
-    //XLSX.write(workbook, { bookType: "xlsx", type: "binary" });
-    const date = new Date();
-    XLSX.writeFile(workbook, `${title}_${date}.xlsx`);
-  }
+
   return (
     <div>
       <div className="flex items-center py-4 justify-between">
@@ -82,11 +70,12 @@ export function DataTable<TData, TValue>({
           }
           className="max-w-sm"
         />
-
-        <Button onClick={() => getSheetData()}>
-          <FileDown className="h-4 w-4 mr-2" />
-          Export report
-        </Button>
+        {/* <Link href="/teacher/createProgram">
+          <Button>
+            <PlusCircle className="h-4 w-4 mr-2" />
+            New program
+          </Button>
+        </Link> */}
       </div>
       <div className="rounded-md border">
         <Table>

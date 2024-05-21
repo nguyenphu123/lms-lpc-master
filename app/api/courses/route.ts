@@ -38,3 +38,52 @@ export async function POST(req: Request) {
     return new NextResponse("Internal Error", { status: 500 });
   }
 }
+export async function GET(req: Request) {
+  try {
+    const { userId, sessionClaims }: any = auth();
+
+    const course = await db.course.findMany({
+      include: {
+        courseInstructor: true,
+        courseWithProgram: {
+          include: {
+            program: true,
+          },
+        },
+        Module: {
+          include: {
+            Slide: true,
+            examRecord: {
+              include: {
+                user: true,
+              },
+            },
+            UserProgress: {
+              include: {
+                user: true,
+              },
+            },
+          },
+        },
+
+        ClassSessionRecord: {
+          include: {
+            user: true,
+          },
+        },
+        CourseOnDepartment: {
+          include: {
+            Department: true,
+          },
+        },
+        user: true,
+        updatedUser: true,
+      },
+    });
+
+    return NextResponse.json(course);
+  } catch (error) {
+    console.log("[COURSES]", error);
+    return new NextResponse("Internal Error", { status: 500 });
+  }
+}

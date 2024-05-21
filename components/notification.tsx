@@ -19,7 +19,9 @@ export const Notification = () => {
     const history = notifications.slice(-199);
 
     setNotifications([...history, message]);
+    ably.close();
   });
+
   return (
     <div>
       <Popover>
