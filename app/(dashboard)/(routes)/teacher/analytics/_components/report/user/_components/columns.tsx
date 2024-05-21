@@ -168,6 +168,7 @@ export const columns: ColumnDef<User>[] = [
                               ).map((item: any) => {
                                 return (
                                   <div key={item.id}>
+                                    {item.module.title}
                                     <span
                                       className={`${
                                         item.status == "finished"

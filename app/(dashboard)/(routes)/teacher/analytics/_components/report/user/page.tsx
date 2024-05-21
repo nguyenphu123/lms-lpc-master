@@ -1,11 +1,7 @@
-import { auth } from "@clerk/nextjs";
-import { redirect } from "next/navigation";
-
-import { db } from "@/lib/db";
-
+"use client";
 import { DataTable } from "./_components/data-table";
 import { columns } from "./_components/columns";
-import { getUser } from "@/actions/get-user";
+
 import axios from "axios";
 import { useQuery } from "react-query";
 
@@ -16,8 +12,10 @@ const UserReportPage = () => {
     return data;
   };
 
-  const { data, error, isLoading } = useQuery("allPrograms", fetchAllUsers);
-  console.log(data);
+  const { data, error, isLoading } = useQuery("allUsers", fetchAllUsers, {
+    refetchOnWindowFocus: false,
+  });
+
   if (isLoading) {
     return <></>;
   } else {

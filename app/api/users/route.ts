@@ -25,7 +25,11 @@ export async function GET(req: Request) {
               include: {
                 Module: {
                   include: {
-                    UserProgress: true,
+                    UserProgress: {
+                      include: {
+                        module: true,
+                      },
+                    },
                   },
                 },
               },
