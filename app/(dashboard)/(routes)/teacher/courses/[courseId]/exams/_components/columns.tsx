@@ -3,9 +3,6 @@
 import { Module } from "@prisma/client";
 import { ColumnDef } from "@tanstack/react-table";
 import { ArrowUpDown } from "lucide-react";
-
-import { CourseActionCell } from "@/components/ui/course-action-cell";
-
 import { ExamTitleCell } from "@/components/ui/exam-title-cell";
 import { ExamActionCell } from "@/components/ui/exam-action-cell";
 
