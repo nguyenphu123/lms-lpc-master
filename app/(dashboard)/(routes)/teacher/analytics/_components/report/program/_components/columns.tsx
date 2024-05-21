@@ -19,41 +19,41 @@ export const columns: ColumnDef<Program>[] = [
       return <div>Name</div>;
     },
   },
-  {
-    accessorKey: "user",
-    header: ({ column }) => {
-      return (
-        <span
-          className="flex items-center cursor-pointer"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          <span className="mr-2">Created By</span>
-        </span>
-      );
-    },
-    cell: ({ row }: any) => {
-      const { user } = row.original;
-      return <div>{user.username}</div>;
-    },
-  },
-  {
-    accessorKey: "updatedUser",
-    header: ({ column }) => {
-      return (
-        <span
-          className="flex items-center cursor-pointer"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          <span className="mr-2">Updated By</span>
-        </span>
-      );
-    },
-    cell: ({ row }: any) => {
-      const { updatedUser } = row.original;
+  // {
+  //   accessorKey: "user",
+  //   header: ({ column }) => {
+  //     return (
+  //       <span
+  //         className="flex items-center cursor-pointer"
+  //         onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+  //       >
+  //         <span className="mr-2">Created By</span>
+  //       </span>
+  //     );
+  //   },
+  //   cell: ({ row }: any) => {
+  //     const { user } = row.original;
+  //     return <div>{user.username}</div>;
+  //   },
+  // },
+  // {
+  //   accessorKey: "updatedUser",
+  //   header: ({ column }) => {
+  //     return (
+  //       <span
+  //         className="flex items-center cursor-pointer"
+  //         onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+  //       >
+  //         <span className="mr-2">Updated By</span>
+  //       </span>
+  //     );
+  //   },
+  //   cell: ({ row }: any) => {
+  //     const { updatedUser } = row.original;
 
-      return <div>{updatedUser?.username} </div>;
-    },
-  },
+  //     return <div>{updatedUser?.username} </div>;
+  //   },
+  // },
   {
     accessorKey: "startDate",
     header: ({ column }) => {
