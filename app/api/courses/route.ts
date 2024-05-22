@@ -51,6 +51,9 @@ export async function GET(req: Request) {
           },
         },
         Module: {
+          orderBy: {
+            position: "asc",
+          },
           include: {
             Slide: true,
             examRecord: {

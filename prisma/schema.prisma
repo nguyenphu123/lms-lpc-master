@@ -80,15 +80,16 @@ model ProgramOnDepartment {
 }
 
 model User {
-  id           String      @id @default(uuid())
-  email        String      @unique
-  Department   Department? @relation(fields: [departmentId], references: [id])
-  departmentId String?
-  username     String
+  id             String      @id @default(uuid())
+  email          String      @unique
+  Department     Department? @relation(fields: [departmentId], references: [id])
+  departmentId   String?
+  username       String
   // role                     String
-  star         Int?
-  imageUrl     String?
-  status       String      @default("active")
+  starUpdateDate DateTime?   @default(now())
+  star           Int?
+  imageUrl       String?
+  status         String      @default("active")
 
   Course             Course[]             @relation("userId")
   updatedCourse      Course[]             @relation("updatedBy")

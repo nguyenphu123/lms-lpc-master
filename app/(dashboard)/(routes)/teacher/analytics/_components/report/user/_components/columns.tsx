@@ -86,13 +86,41 @@ export const columns: ColumnDef<User>[] = [
     },
   },
 
+  // {
+  //   accessorKey: "star",
+  //   header: ({ column }) => {
+  //     return (
+  //       <span className="flex items-center cursor-pointer">
+  //         <span className="mr-2">Star</span>
+  //       </span>
+  //     );
+  //   },
+  // },
   {
-    accessorKey: "star",
+    accessorKey: "departmentId",
     header: ({ column }) => {
+      return <span className="flex items-center cursor-pointer">hidden</span>;
+    },
+  },
+  {
+    accessorKey: "endDate",
+    header: ({ column }) => {
+      return <span className="flex items-center cursor-pointer">hidden</span>;
+    },
+
+    cell: ({ row }) => {
+      const { id, ClassSessionRecord }: any = row.original;
+
       return (
-        <span className="flex items-center cursor-pointer">
-          <span className="mr-2">Star</span>
-        </span>
+        <div className="flex items-center">
+          <div>
+            {ClassSessionRecord.map(
+              (item: { endDate: any }) => item.endDate
+            ).map((item: any) => {
+              return <div key={item.id}>item</div>;
+            })}
+          </div>
+        </div>
       );
     },
   },
@@ -163,19 +191,24 @@ export const columns: ColumnDef<User>[] = [
                       <AccordionItem
                         startContent={
                           <div>
-                            {item.course.title}:{item.progress}(
-                            <span
-                              className={`${
-                                item.status == "finished"
-                                  ? "text-green-500"
-                                  : item.status == "studying"
-                                  ? "text-yellow-500"
-                                  : "text-red-500"
-                              }`}
-                            >
-                              {item.status}
-                            </span>
-                            )
+                            {item.course.title}:{" "}
+                            {item.status === "finished" ? (
+                              <span className="text-green-500 font-medium">
+                                Completed
+                              </span>
+                            ) : item.progress === "0%" ? (
+                              <span className="text-red-500 font-medium">
+                                Uncomplete
+                              </span>
+                            ) : item.status === "studying" ? (
+                              <span className="text-yellow-500 font-medium">
+                                Studying ({item.progress})
+                              </span>
+                            ) : (
+                              <>
+                                {item.progress} (<span>{item.status}</span>)
+                              </>
+                            )}
                           </div>
                         }
                       >
@@ -188,25 +221,28 @@ export const columns: ColumnDef<User>[] = [
                             <>No exam result</>
                           ) : (
                             <div key={item.id}>
-                              All course exam result:
+                              - All exam result:
                               {item.UserProgress.filter(
                                 (item: any) => item.userId == id
                               ).map((item: any) => {
                                 return (
                                   <div key={item.id}>
-                                    {item.module.title}
+                                    • {item.module.title}
+                                    {": "}
                                     <span
                                       className={`${
                                         item.status == "finished"
-                                          ? "text-green-500"
+                                          ? "text-green-500 font-medium"
                                           : item.status == "studying"
-                                          ? "text-yellow-500"
-                                          : "text-red-500"
+                                          ? "text-yellow-500 font-medium"
+                                          : ""
                                       }`}
                                     >
-                                      {item.status}
-                                    </span>
-                                    ({item.score}%) on{" "}
+                                      {item.status === "finished"
+                                        ? `Pass (${item.score}%)`
+                                        : `Fail (${item.score}%)`}
+                                    </span>{" "}
+                                    on{" "}
                                     {new Date(item.endDate).toLocaleTimeString(
                                       [],
                                       {
@@ -222,6 +258,9 @@ export const columns: ColumnDef<User>[] = [
                                         year: "numeric",
                                       }
                                     )}{" "}
+                                    {item.attempt > 1 && (
+                                      <span>({item.attempt - 1} 🐓)</span>
+                                    )}
                                   </div>
                                 );
                               })}

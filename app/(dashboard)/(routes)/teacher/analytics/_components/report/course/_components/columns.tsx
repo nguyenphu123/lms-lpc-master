@@ -172,6 +172,76 @@ export const columns: ColumnDef<Course>[] = [
     },
   },
   {
+    accessorKey: "Module",
+    header: ({ column }) => {
+      return (
+        <span
+          className="flex items-center cursor-pointer"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          <span className="mr-2">Exams</span>
+        </span>
+      );
+    },
+    cell: ({ row }: any) => {
+      const { Module } = row.original;
+
+      return (
+        <div>
+          {Module.map((item: any) => {
+            return item.type == "Exam" ? (
+              <div key={item.id}>
+                {item.title}
+                {item.UserProgress.map((item: any) => {
+                  return (
+                    <div key={item.id}>
+                      {item.user.username}:{item.score}%
+                    </div>
+                  );
+                })}
+              </div>
+            ) : (
+              <></>
+            );
+          })}
+        </div>
+      );
+    },
+  },
+  {
+    accessorKey: "Module",
+    header: ({ column }) => {
+      return (
+        <span
+          className="flex items-center cursor-pointer"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          <span className="mr-2">Study pages</span>
+        </span>
+      );
+    },
+    cell: ({ row }: any) => {
+      const { Module } = row.original;
+
+      return (
+        <div>
+          {Module.map((item: any) => {
+            return item.type == "slide" ? (
+              <div key={item.id}>
+                {item.title}
+                {/* {item.UserProgress.map((item: any) => {
+                  return <div key={item.id}>{item.user.username}</div>;
+                })} */}
+              </div>
+            ) : (
+              <></>
+            );
+          })}
+        </div>
+      );
+    },
+  },
+  {
     accessorKey: "CourseOnDepartment",
     header: ({ column }) => {
       return (

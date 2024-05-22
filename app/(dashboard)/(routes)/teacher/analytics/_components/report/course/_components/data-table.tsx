@@ -50,11 +50,14 @@ export function DataTable<TData, TValue>({
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
   );
+  const [courseList, setCourseList] = React.useState(data);
   const [instructors, setInstructors] = React.useState([]);
-  const [dateRange, setDateRange] = React.useState<DateRange | undefined>();
+  const [dateRange, setDateRange]: any = React.useState<
+    DateRange | undefined
+  >();
   const [rowSelection, setRowSelection] = React.useState({});
   const table = useReactTable({
-    data,
+    data: courseList,
     columns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
@@ -83,8 +86,18 @@ export function DataTable<TData, TValue>({
 
   React.useEffect(() => {
     if (dateRange?.from && dateRange?.to) {
-      table.getColumn("startDate")?.setFilterValue(dateRange.from);
-      table.getColumn("endDate")?.setFilterValue(dateRange.to);
+      let tempUserList = [...courseList].filter((item: any) => {
+        let dateFrom: any = new Date(dateRange.from.toISOString());
+        let date: any = new Date(new Date(item.startDate).toISOString());
+        let dateTo: any = new Date(dateRange.to.toISOString());
+        return dateFrom < date && date < dateTo;
+      });
+
+      setCourseList(tempUserList);
+      // table.getColumn("startDate")?.setFilterValue(dateRange.from);
+      // table.getColumn("endDate")?.setFilterValue(dateRange.to);
+    } else {
+      setCourseList(data);
     }
   }, [dateRange, table]);
 
@@ -98,7 +111,7 @@ export function DataTable<TData, TValue>({
     const date = new Date();
     XLSX.writeFile(workbook, `${""}_${date}.xlsx`);
   }
-
+  console.log(data);
   return (
     <div>
       <div className="flex items-center py-4 justify-between">
@@ -245,7 +258,7 @@ function DatePickerWithRange({
                 format(date.from, "LLL dd, y")
               )
             ) : (
-              <span>Pick a date</span>
+              <span>Check course created between</span>
             )}
           </Button>
         </PopoverTrigger>

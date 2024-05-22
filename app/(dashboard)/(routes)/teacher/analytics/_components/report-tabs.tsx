@@ -7,19 +7,21 @@ import UserReportPage from "./report/user/page";
 export const ReportTabs = () => {
   return (
     <Tabs defaultValue="users" aria-label="Options">
-      <TabsList className="grid w-full grid-cols-3">
+      <TabsList className="grid w-full grid-cols-4">
         <TabsTrigger value="users">Users</TabsTrigger>
-        <TabsTrigger value="programs">Programs</TabsTrigger>
         <TabsTrigger value="courses">Courses</TabsTrigger>
+        <TabsTrigger value="ranking">Ranking</TabsTrigger>
+        <TabsTrigger value="programs">Programs</TabsTrigger>
       </TabsList>
       <TabsContent value="users">
         <UserReportPage></UserReportPage>
       </TabsContent>
-      <TabsContent value="programs">
-        <ReportPageProgram></ReportPageProgram>
-      </TabsContent>
       <TabsContent value="courses">
         <ReportPageCourse />
+      </TabsContent>
+      <TabsContent value="ranking"></TabsContent>
+      <TabsContent value="programs">
+        <ReportPageProgram></ReportPageProgram>
       </TabsContent>
     </Tabs>
   );
