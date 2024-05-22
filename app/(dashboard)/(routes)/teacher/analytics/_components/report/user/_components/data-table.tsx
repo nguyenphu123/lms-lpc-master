@@ -12,7 +12,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-
+import * as XLSX from "xlsx";
 import {
   Table,
   TableBody,
@@ -24,7 +24,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { addDays, format } from "date-fns";
-import { Calendar as CalendarIcon } from "lucide-react";
+import { Calendar as CalendarIcon, FileDown } from "lucide-react";
 import { DateRange } from "react-day-picker";
 import { cn } from "@/lib/utils";
 import { Calendar } from "@/components/ui/calendar";
@@ -46,6 +46,7 @@ export function DataTable<TData, TValue>({
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
   );
+  const [rowSelection, setRowSelection] = React.useState({});
   const [dateRange, setDateRange] = React.useState<DateRange | undefined>();
   const table = useReactTable({
     data,
@@ -56,12 +57,27 @@ export function DataTable<TData, TValue>({
     getSortedRowModel: getSortedRowModel(),
     onColumnFiltersChange: setColumnFilters,
     getFilteredRowModel: getFilteredRowModel(),
+    enableRowSelection: true, //enable row selection for all rows
+    // enableRowSelection: row => row.original.age > 18, // or enable row selection conditionally per row
+    onRowSelectionChange: setRowSelection,
     state: {
       sorting,
       columnFilters,
+      rowSelection,
     },
   });
-
+  async function getSheetData() {
+    data.forEach((a: any) => {
+      delete a.imageUrl;
+    });
+    const worksheet = XLSX.utils.json_to_sheet(data);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
+    //let buffer = XLSX.write(workbook, { bookType: "xlsx", type: "buffer" });
+    //XLSX.write(workbook, { bookType: "xlsx", type: "binary" });
+    const date = new Date();
+    XLSX.writeFile(workbook, `${""}_${date}.xlsx`);
+  }
   return (
     <div>
       <div className="flex items-center py-4 justify-between">
@@ -80,12 +96,10 @@ export function DataTable<TData, TValue>({
           setDate={setDateRange}
           className="max-w-sm"
         />
-        {/* <Link href="/teacher/createProgram">
-          <Button>
-            <PlusCircle className="h-4 w-4 mr-2" />
-            New program
-          </Button>
-        </Link> */}
+        <Button onClick={() => getSheetData()}>
+          <FileDown className="h-4 w-4 mr-2" />
+          Export report
+        </Button>
       </div>
       <div className="rounded-md border">
         <Table>

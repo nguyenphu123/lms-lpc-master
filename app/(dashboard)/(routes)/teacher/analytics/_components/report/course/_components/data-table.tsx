@@ -52,7 +52,7 @@ export function DataTable<TData, TValue>({
   );
   const [instructors, setInstructors] = React.useState([]);
   const [dateRange, setDateRange] = React.useState<DateRange | undefined>();
-
+  const [rowSelection, setRowSelection] = React.useState({});
   const table = useReactTable({
     data,
     columns,
@@ -62,9 +62,13 @@ export function DataTable<TData, TValue>({
     getSortedRowModel: getSortedRowModel(),
     onColumnFiltersChange: setColumnFilters,
     getFilteredRowModel: getFilteredRowModel(),
+    enableRowSelection: true, //enable row selection for all rows
+    // enableRowSelection: row => row.original.age > 18, // or enable row selection conditionally per row
+    onRowSelectionChange: setRowSelection,
     state: {
       sorting,
       columnFilters,
+      rowSelection,
     },
   });
 
@@ -110,7 +114,9 @@ export function DataTable<TData, TValue>({
           name="status"
           id="filterByStatus"
           onChange={(event) =>
-            table.getColumn("status")?.setFilterValue(event.target.value)
+            table
+              .getColumn("courseInstructedBy")
+              ?.setFilterValue(event.target.value)
           }
           className="max-w-sm p-2 border rounded text-muted-foreground dark:bg-slate-950"
         >

@@ -11,9 +11,35 @@ import {
   ReactNode,
   ReactPortal,
   PromiseLikeOfReactNode,
+  HTMLProps,
 } from "react";
+import React from "react";
 
 export const columns: ColumnDef<User>[] = [
+  {
+    id: "select",
+    header: ({ table }) => (
+      <IndeterminateCheckbox
+        {...{
+          checked: table.getIsAllRowsSelected(),
+          indeterminate: table.getIsSomeRowsSelected(),
+          onChange: table.getToggleAllRowsSelectedHandler(),
+        }}
+      />
+    ),
+    cell: ({ row }) => (
+      <div className="px-1">
+        <IndeterminateCheckbox
+          {...{
+            checked: row.getIsSelected(),
+            disabled: !row.getCanSelect(),
+            indeterminate: row.getIsSomeSelected(),
+            onChange: row.getToggleSelectedHandler(),
+          }}
+        />
+      </div>
+    ),
+  },
   {
     accessorKey: "username",
     header: () => {
@@ -70,16 +96,16 @@ export const columns: ColumnDef<User>[] = [
       );
     },
   },
-  {
-    accessorKey: "status",
-    header: ({ column }) => {
-      return (
-        <span className="flex items-center cursor-pointer">
-          <span className="mr-2">Status</span>
-        </span>
-      );
-    },
-  },
+  // {
+  //   accessorKey: "status",
+  //   header: ({ column }) => {
+  //     return (
+  //       <span className="flex items-center cursor-pointer">
+  //         <span className="mr-2">Status</span>
+  //       </span>
+  //     );
+  //   },
+  // },
   {
     accessorKey: "ClassSessionRecord",
     header: ({ column }) => {
@@ -214,3 +240,25 @@ export const columns: ColumnDef<User>[] = [
     },
   },
 ];
+function IndeterminateCheckbox({
+  indeterminate,
+  className = "",
+  ...rest
+}: { indeterminate?: boolean } & HTMLProps<HTMLInputElement>) {
+  const ref = React.useRef<HTMLInputElement>(null!);
+
+  React.useEffect(() => {
+    if (typeof indeterminate === "boolean") {
+      ref.current.indeterminate = !rest.checked && indeterminate;
+    }
+  }, [ref, indeterminate]);
+
+  return (
+    <input
+      type="checkbox"
+      ref={ref}
+      className={className + " cursor-pointer"}
+      {...rest}
+    />
+  );
+}

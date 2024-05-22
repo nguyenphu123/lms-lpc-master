@@ -26,6 +26,17 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import axios from "axios";
+import { useQuery } from "react-query";
+import { addDays, format } from "date-fns";
+import { Calendar as CalendarIcon } from "lucide-react";
+import { DateRange } from "react-day-picker";
+import { cn } from "@/lib/utils";
+import { Calendar } from "@/components/ui/calendar";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -40,8 +51,8 @@ export function DataTable<TData, TValue>({
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
   );
-  const [fromDate, setFromDate] = React.useState(new Date());
-  const [toDate, setToDate] = React.useState(new Date());
+  const [rowSelection, setRowSelection] = React.useState({});
+  const [dateRange, setDateRange] = React.useState<DateRange | undefined>();
   const table = useReactTable({
     data,
     columns,
@@ -51,9 +62,13 @@ export function DataTable<TData, TValue>({
     getSortedRowModel: getSortedRowModel(),
     onColumnFiltersChange: setColumnFilters,
     getFilteredRowModel: getFilteredRowModel(),
+    enableRowSelection: true, //enable row selection for all rows
+    // enableRowSelection: row => row.original.age > 18, // or enable row selection conditionally per row
+    onRowSelectionChange: setRowSelection,
     state: {
       sorting,
       columnFilters,
+      rowSelection,
     },
   });
   async function getSheetData() {
@@ -68,26 +83,12 @@ export function DataTable<TData, TValue>({
     const date = new Date();
     XLSX.writeFile(workbook, `${""}_${date}.xlsx`);
   }
-  const onChangeFromDate = (e: any, date: any) => {
-    if (date.getTime() > toDate.getTime()) {
-      setToDate(date);
-      table.getColumn("endDate")?.setFilterValue(date);
+  React.useEffect(() => {
+    if (dateRange?.from && dateRange?.to) {
+      table.getColumn("startDate")?.setFilterValue(dateRange.from);
+      table.getColumn("endDate")?.setFilterValue(dateRange.to);
     }
-    setFromDate(date);
-    table.getColumn("startDate")?.setFilterValue(date);
-    table.getColumn("endDate")?.setFilterValue(new Date());
-  };
-  const onChangeToDate = (e: any, date: any) => {
-    if (date.getTime() < fromDate.getTime()) {
-      setFromDate(date);
-
-      table.getColumn("startDate")?.setFilterValue(date);
-    }
-    setToDate(date);
-
-    table.getColumn("endDate")?.setFilterValue(date);
-    table.getColumn("startDate")?.setFilterValue(new Date());
-  };
+  }, [dateRange, table]);
   return (
     <div>
       <div className="flex items-center py-4 justify-between">
@@ -100,19 +101,11 @@ export function DataTable<TData, TValue>({
           className="max-w-sm"
         />
         <label htmlFor="fromDate">From Date:</label>
-        <input
-          type="date"
-          id="fromDate"
-          name="fromDate"
-          onChange={(e: any) => onChangeFromDate(e, e.target.value)}
-        ></input>
-        <label htmlFor="toDate">To Date:</label>
-        <input
-          type="date"
-          id="toDate"
-          name="toDate"
-          onChange={(e: any) => onChangeToDate(e, e.target.value)}
-        ></input>
+        <DatePickerWithRange
+          date={dateRange}
+          setDate={setDateRange}
+          className="max-w-sm"
+        />
         <Button onClick={() => getSheetData()}>
           <FileDown className="h-4 w-4 mr-2" />
           Export report
@@ -186,6 +179,56 @@ export function DataTable<TData, TValue>({
           Next
         </Button>
       </div>
+    </div>
+  );
+}
+function DatePickerWithRange({
+  className,
+  date,
+  setDate,
+}: {
+  className?: string;
+  date: DateRange | undefined;
+  setDate: React.Dispatch<React.SetStateAction<DateRange | undefined>>;
+}) {
+  return (
+    <div className={cn("grid gap-2", className)}>
+      <Popover>
+        <PopoverTrigger asChild>
+          <Button
+            id="date"
+            variant={"outline"}
+            className={cn(
+              "w-[300px] justify-start text-left font-normal",
+              !date && "text-muted-foreground"
+            )}
+          >
+            <CalendarIcon className="mr-2 h-4 w-4" />
+            {date?.from ? (
+              date.to ? (
+                <>
+                  {format(date.from, "LLL dd, y")} -{" "}
+                  {format(date.to, "LLL dd, y")}
+                </>
+              ) : (
+                format(date.from, "LLL dd, y")
+              )
+            ) : (
+              <span>Pick a date</span>
+            )}
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent className="w-auto p-0" align="start">
+          <Calendar
+            initialFocus
+            mode="range"
+            defaultMonth={date?.from}
+            selected={date}
+            onSelect={setDate}
+            numberOfMonths={2}
+          />
+        </PopoverContent>
+      </Popover>
     </div>
   );
 }
