@@ -167,6 +167,17 @@ export function DataTable<TData, TValue>({
             </option>
           ))}
         </select>
+        <select
+          name="status"
+          id="filterByStatus"
+          // onChange={(event) => onDepartmentChange(event.target.value)}
+          className="max-w-sm p-2 border rounded text-muted-foreground dark:bg-slate-950"
+        >
+          <option value="">All time</option>
+          <option value="week">this week</option>
+          <option value="month">this month</option>
+          <option value="year">this year</option>
+        </select>
         <div className="inline-flex gap-2">
           <DatePickerWithRange
             placeHolder={"check course end in a period"}
