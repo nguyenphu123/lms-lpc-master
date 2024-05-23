@@ -9,8 +9,7 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 
 import { useConfettiStore } from "@/hooks/use-confetti-store";
-import io from "socket.io-client";
-let socket: any;
+
 interface ActionsProps {
   disabled: boolean;
   courseId: string;
