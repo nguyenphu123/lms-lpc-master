@@ -180,7 +180,7 @@ export function DataTable<TData, TValue>({
             <></>
           )}
         </div>
-        <div className="inline-flex gap-2">
+        {/* <div className="inline-flex gap-2">
           <DatePickerWithRange
             placeHolder={"check course start in a period"}
             date={dateRangeStart}
@@ -192,7 +192,7 @@ export function DataTable<TData, TValue>({
           ) : (
             <></>
           )}
-        </div>
+        </div> */}
       </div>
       <Button onClick={() => getSheetData()}>
         <FileDown className="h-4 w-4 mr-2" />
