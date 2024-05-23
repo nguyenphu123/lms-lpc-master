@@ -84,10 +84,20 @@ const Exam = ({
         setReportId(chekIfUserIsInExam?.data?.id);
         const examObj: any = chekIfUserIsInExam?.data
           ?.examRecord as Prisma.JsonObject;
-        setTimeLimit(examObj.timeLimit);
+
         setQuestions(examObj.questionList);
         setCurrentQuestion(examObj.currentQuestion);
-        setTimeLimitRecord(examObj.timeLimit * 60);
+        if (!examObj.isEmergency) {
+          let timeLeft =
+            Math.round(
+              new Date().getTime() - chekIfUserIsInExam?.data?.date.getTime()
+            ) / 60000;
+          setTimeLimit(timeLeft);
+          setTimeLimitRecord(timeLeft);
+        } else {
+          setTimeLimit(examObj.timeLimit);
+          setTimeLimitRecord(examObj.timeLimit * 60);
+        }
 
         setSelectedAnswers(examObj.selectedAnswers);
         // accept();
@@ -132,6 +142,7 @@ const Exam = ({
           timeLimit: parseInt(timeLimitRecord / 60 + "").toFixed(2),
           currentQuestion: currentQuestion,
           selectedAnswers: selectedAnswers,
+          isEmergency: false,
         },
       })
     );
