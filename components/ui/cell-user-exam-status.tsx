@@ -34,9 +34,12 @@ export const CellUserExamStatus = ({ row }: any) => {
     refetchOnWindowFocus: false,
   });
   async function onChangeStatus(id: string): Promise<void> {
+    let examRecord = userExamReport[0].examRecord;
+    examRecord["isEmergency"] = true;
     await axios.patch(`/api/user/${id}/isInExam`, {
+      id,
       values: {
-        isInExam: false,
+        examRecord,
         note: note,
       },
     });
