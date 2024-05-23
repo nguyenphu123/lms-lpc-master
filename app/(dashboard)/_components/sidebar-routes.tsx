@@ -13,6 +13,7 @@ import {
   CircuitBoard,
   Cctv,
   Waypoints,
+  Building,
 } from "lucide-react";
 import { usePathname } from "next/navigation";
 
@@ -155,6 +156,14 @@ export const SidebarRoutes = ({ userId }: any) => {
           icon: UsersRound,
           label: "Users",
           href: "/teacher/users",
+        },
+      ]);
+      setTeacherRoutes((prevState: any) => [
+        ...prevState,
+        {
+          icon: Building,
+          label: "Departments",
+          href: "/teacher/departments",
         },
       ]);
     }

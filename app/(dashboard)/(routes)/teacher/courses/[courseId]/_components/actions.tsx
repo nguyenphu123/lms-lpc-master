@@ -1,15 +1,16 @@
 "use client";
 
 import axios from "axios";
-import { Trash } from "lucide-react";
+
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
-import Ably from "ably/promises";
-import { Button } from "@/components/ui/button";
-import { ConfirmModal } from "@/components/modals/confirm-modal";
-import { useConfettiStore } from "@/hooks/use-confetti-store";
 
+import { Button } from "@/components/ui/button";
+
+import { useConfettiStore } from "@/hooks/use-confetti-store";
+import io from "socket.io-client";
+let socket: any;
 interface ActionsProps {
   disabled: boolean;
   courseId: string;
@@ -37,17 +38,20 @@ export const Actions = ({
       } else {
         await axios.patch(`/api/courses/${courseId}/publish`);
         toast.success("Course published");
-        var ably = new Ably.Realtime({
-          key: "n-gD0A.W4KQCg:GyPm6YTLBQsr4KhgPj1dLCwr0eg4y7OVFrBuyztiiWg",
-        });
-        const channelAbly = ably.channels.get("course-publish");
-        let payload = {
-          type: "course-publish",
-          message: `<div style="border: 1px solid #ccc; border-radius: 10px; padding: 10px;"><strong>${title}</strong> has been published 🎉🎉🎉</div><br/>`,
-          link: `http://localhost:3000/courses/${courseId}`,
-        };
-        await channelAbly.publish("course-publish", payload);
-        ably.close();
+
+        // var ably = new Ably.Realtime({
+        //   key: "n-gD0A.W4KQCg:GyPm6YTLBQsr4KhgPj1dLCwr0eg4y7OVFrBuyztiiWg",
+        // });
+        // const channelAbly = ably.channels.get("course-publish");
+        // let payload = {
+        //   type: "course-publish",
+        //   message: `<div style="border: 1px solid #ccc; border-radius: 10px; padding: 10px;"><strong>${title}</strong> has been published 🎉🎉🎉</div><br/>`,
+        //   link: `http://localhost:3000/courses/${courseId}`,
+        // };
+        // socket = io();
+        // socket.emit("course", payload);
+        // await channelAbly.publish("course-publish", payload);
+        // ably.close();
         confetti.onOpen();
       }
 

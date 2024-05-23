@@ -6,21 +6,45 @@ import {
   PopoverTrigger,
   PopoverContent,
 } from "@/components/ui/popover";
-import { useState } from "react";
-import Ably from "ably/promises";
+import { SetStateAction, useEffect, useState } from "react";
+import io from "socket.io-client";
+
+let socket: any;
 import Link from "next/link";
+import axios from "axios";
 export const Notification = () => {
   const [notifications, setNotifications]: any = useState([]);
-  var ably = new Ably.Realtime({
-    key: "n-gD0A.W4KQCg:GyPm6YTLBQsr4KhgPj1dLCwr0eg4y7OVFrBuyztiiWg",
-  });
-  const channelAbly = ably.channels.get("course-publish");
-  channelAbly.subscribe("course-publish", function (message: any) {
-    const history = notifications.slice(-199);
+  const [isConnected, setIsConnected] = useState(false);
+  const [transport, setTransport] = useState("N/A");
 
-    setNotifications([...history, message]);
-    ably.close();
-  });
+  useEffect(() => {
+    socketInitializer();
+
+    return () => {
+      // socket.disconnect();
+    };
+  }, []);
+
+  async function socketInitializer() {
+    await axios.get("/api/notifications");
+
+    socket = io();
+
+    socket.on("course", (message: any) => {
+      const history = notifications.slice(-199);
+      setNotifications([...history, message]);
+    });
+  }
+  // var ably = new Ably.Realtime({
+  //   key: "n-gD0A.W4KQCg:GyPm6YTLBQsr4KhgPj1dLCwr0eg4y7OVFrBuyztiiWg",
+  // });
+  // const channelAbly = ably.channels.get("course-publish");
+  // channelAbly.subscribe("course-publish", function (message: any) {
+  //   const history = notifications.slice(-199);
+
+  //   setNotifications([...history, message]);
+  //   ably.close();
+  // });
 
   return (
     <div>

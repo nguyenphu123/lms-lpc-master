@@ -10,7 +10,7 @@ import { IsTeacher } from "@/lib/teacher";
 
 import { SearchInput } from "./search-input";
 import { MyCourse } from "./my-course";
-import { Notification } from "./notification";
+// import { Notification } from "./notification";
 import { ModeToggle } from "./ui/theme-button";
 import axios from "axios";
 
@@ -43,9 +43,9 @@ export const NavbarRoutes = ({ userId }: any) => {
             <Button size="sm" variant="ghost" asChild>
               <MyCourse data={data} />
             </Button>
-            <div className="flex items-center ml-5 mr-3">
+            {/* <div className="flex items-center ml-5 mr-3">
               <Notification />
-            </div>
+            </div> */}
             <div className="flex items-center ml-5 mr-3">
               <ModeToggle />
             </div>

@@ -22,3 +22,21 @@ export async function GET(req: Request) {
     return new NextResponse("Internal Error", { status: 500 });
   }
 }
+export async function POST(req: Request) {
+  const { userId } = auth();
+  const { title } = await req.json();
+  try {
+    if (!userId) {
+      return new NextResponse("Unauthorized", { status: 401 });
+    }
+    const department = await db.department.create({
+      data: {
+        title,
+      },
+    });
+    return NextResponse.json(department);
+  } catch (error) {
+    console.log("DEPARTMENT_GET_ERROR", error);
+    return new NextResponse("Internal Error", { status: 500 });
+  }
+}

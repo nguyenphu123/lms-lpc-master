@@ -49,9 +49,9 @@ function CreatePage() {
   // }, [programList]);
   const onSubmitProgram = async (values: z.infer<typeof formSchema>) => {
     try {
-      const response = await axios.post("/api/permission", values);
-      router.push(`/teacher/permissions/${response.data.id}`);
-      toast.success("Permission created");
+      const response = await axios.post("/api/department", values);
+      router.push(`/teacher/departments/${response.data.id}`);
+      toast.success("Department created");
     } catch {
       toast.error("Something went wrong");
     }
@@ -84,14 +84,14 @@ function CreatePage() {
                         {...field}
                       />
                     </FormControl>
-                    <FormDescription>Permission name?</FormDescription>
+                    <FormDescription>Department name?</FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
               />
 
               <div className="flex items-center gap-x-2">
-                <Link href="/teacher/permissions">
+                <Link href="/teacher/departments">
                   <Button type="button" variant="ghost">
                     Cancel
                   </Button>

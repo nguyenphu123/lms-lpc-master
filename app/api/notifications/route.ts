@@ -1,14 +1,25 @@
-import Ably from "ably/promises";
+import { Server } from "socket.io";
 
-export async function GET() {
+export async function GET(req: Request, res: any) {
   try {
-    const client: any = new Ably.Realtime(
-      "n-gD0A.W4KQCg:GyPm6YTLBQsr4KhgPj1dLCwr0eg4y7OVFrBuyztiiWg"
-    );
-    const tokenRequestData = await client.auth.createTokenRequest({
-      clientId: "ably-nextjs-demo",
+    if (res.socket.server.io) {
+      console.log("Already set up");
+      res.end();
+      return;
+    }
+
+    const io = new Server(res.socket.server);
+    res.socket.server.io = io;
+
+    io.on("connection", (socket) => {
+      socket.on("send-message", (obj) => {
+        io.emit("receive-message", obj);
+      });
     });
-    return Response.json(tokenRequestData);
+
+    console.log("Setting up socket");
+    res.end();
+    return Response.json("");
   } catch (e) {
     console.log(e);
   }

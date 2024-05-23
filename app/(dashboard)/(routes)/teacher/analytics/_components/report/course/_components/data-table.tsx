@@ -85,6 +85,7 @@ export function DataTable<TData, TValue>({
   }, []);
 
   React.useEffect(() => {
+    setCourseList(data);
     if (dateRange?.from && dateRange?.to) {
       let tempUserList = [...courseList].filter((item: any) => {
         let dateFrom: any = new Date(dateRange.from.toISOString());
@@ -133,7 +134,7 @@ export function DataTable<TData, TValue>({
           }
           className="max-w-sm p-2 border rounded text-muted-foreground dark:bg-slate-950"
         >
-          <option value="">All</option>
+          <option value="">All Instructors</option>
           {instructors.map((item: any) => (
             <option
               key={item.id}
