@@ -85,13 +85,12 @@ export function DataTable<TData, TValue>({
   }, []);
 
   React.useEffect(() => {
-    setCourseList(data);
     if (dateRange?.from && dateRange?.to) {
-      let tempUserList = [...courseList].filter((item: any) => {
+      let tempUserList = [...data].filter((item: any) => {
         let dateFrom: any = new Date(dateRange.from.toISOString());
         let date: any = new Date(new Date(item.startDate).toISOString());
         let dateTo: any = new Date(dateRange.to.toISOString());
-        return dateFrom < date && date < dateTo;
+        return dateFrom <= date && date <= dateTo;
       });
 
       setCourseList(tempUserList);

@@ -90,12 +90,12 @@ export function DataTable<TData, TValue>({
     if (dateRange?.from && dateRange?.to) {
       // table.getColumn("startDate")?.setFilterValue(dateRange.from);
       // table.getColumn("endDate")?.setFilterValue(dateRange.to);
-      let tempUserList = [...programList].filter((item: any) =>
+      let tempUserList = [...data].filter((item: any) =>
         item.ClassSessionRecord.some((item: any) => {
           let dateFrom: any = new Date(dateRange.from.toISOString());
           let date: any = new Date(new Date(item.startDate).toISOString());
           let dateTo: any = new Date(dateRange.to.toISOString());
-          return dateFrom < date && date < dateTo;
+          return dateFrom <= date && date <= dateTo;
         })
       );
 

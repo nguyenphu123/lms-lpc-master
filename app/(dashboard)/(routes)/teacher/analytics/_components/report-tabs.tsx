@@ -3,6 +3,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import ReportPageCourse from "./report/course/page";
 import ReportPageProgram from "./report/program/page";
 import UserReportPage from "./report/user/page";
+import RankingReportPage from "./report/ranking/page";
 
 export const ReportTabs = () => {
   return (
@@ -19,7 +20,9 @@ export const ReportTabs = () => {
       <TabsContent value="courses">
         <ReportPageCourse />
       </TabsContent>
-      <TabsContent value="ranking"></TabsContent>
+      <TabsContent value="ranking">
+        <RankingReportPage></RankingReportPage>
+      </TabsContent>
       <TabsContent value="programs">
         <ReportPageProgram></ReportPageProgram>
       </TabsContent>

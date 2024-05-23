@@ -5,7 +5,7 @@ import { columns } from "./_components/columns";
 import axios from "axios";
 import { useQuery } from "react-query";
 
-const UserReportPage = () => {
+const RankingReportPage = () => {
   const fetchAllUsers = async () => {
     const { data } = await axios.get(`/api/users`);
 
@@ -31,4 +31,4 @@ const UserReportPage = () => {
   }
 };
 
-export default UserReportPage;
+export default RankingReportPage;

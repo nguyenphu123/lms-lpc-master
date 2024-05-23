@@ -93,12 +93,12 @@ export function DataTable<TData, TValue>({
     if (dateRangeEnd?.from && dateRangeEnd?.to) {
       // table.getColumn("startDate")?.setFilterValue(dateRange.from);
       // table.getColumn("endDate")?.setFilterValue(dateRange.to);
-      let tempUserList = [...userList].filter((item: any) =>
+      let tempUserList = [...data].filter((item: any) =>
         item.ClassSessionRecord.some((item: any) => {
           let dateFrom: any = new Date(dateRangeEnd.from.toISOString());
           let date: any = new Date(new Date(item.endDate).toISOString());
           let dateTo: any = new Date(dateRangeEnd.to.toISOString());
-          return dateFrom < date && date < dateTo;
+          return dateFrom <= date && date <= dateTo;
         })
       );
 
@@ -107,24 +107,10 @@ export function DataTable<TData, TValue>({
       setUserList(data);
     }
   }, [dateRangeEnd, table]);
-  React.useEffect(() => {
-    if (dateRangeStart?.from && dateRangeStart?.to) {
-      // table.getColumn("startDate")?.setFilterValue(dateRange.from);
-      // table.getColumn("endDate")?.setFilterValue(dateRange.to);
-      let tempUserList = [...userList].filter((item: any) =>
-        item.ClassSessionRecord.some((item: any) => {
-          let dateFrom: any = new Date(dateRangeStart.from.toISOString());
-          let date: any = new Date(new Date(item.startDate).toISOString());
-          let dateTo: any = new Date(dateRangeStart.to.toISOString());
-          return dateFrom < date && date < dateTo;
-        })
-      );
+  // React.useEffect(() => {
 
-      setUserList(tempUserList);
-    } else {
-      setUserList(data);
-    }
-  }, [dateRangeStart, table]);
+  // }, [dateRangeStart, table]);
+
   async function getSheetData() {
     const worksheet = XLSX.utils.json_to_sheet(data);
     const workbook = XLSX.utils.book_new();
@@ -139,7 +125,7 @@ export function DataTable<TData, TValue>({
   }
   return (
     <div>
-      <div className=" grid grid-cols-2 gap-1">
+      <div className="flex items-center py-4 justify-between">
         <Input
           placeholder="Filter users..."
           value={
@@ -156,20 +142,20 @@ export function DataTable<TData, TValue>({
           onChange={(event) => onDepartmentChange(event.target.value)}
           className="max-w-sm p-2 border rounded text-muted-foreground dark:bg-slate-950"
         >
-          <option value="">All Department</option>
+          <option value="">All Departments</option>
           {departments.map((item: any) => (
             <option
               key={item.id}
               value={item.id}
-              className="text-black dark:text-white"
+              className="max-w-sm p-2 border rounded text-muted-foreground dark:bg-slate-950"
             >
               {item.title}
             </option>
           ))}
         </select>
-        <div className="inline-flex gap-2">
+        <div className="flex gap-2 items-center">
           <DatePickerWithRange
-            placeHolder={"check course end in a period"}
+            placeHolder={"Filter by date for complete course"}
             date={dateRangeEnd}
             setDate={setDateRangeEnd}
             className="max-w-sm"
@@ -180,24 +166,25 @@ export function DataTable<TData, TValue>({
             <></>
           )}
         </div>
-        {/* <div className="inline-flex gap-2">
+        {/* <div className="flex gap-2 items-center">
           <DatePickerWithRange
-            placeHolder={"check course start in a period"}
+            placeHolder={"Filter by date range of course start"}
             date={dateRangeStart}
             setDate={setDateRangeStart}
             className="max-w-sm"
           />
           {dateRangeStart != undefined ? (
-            <button onClick={() => setDateRangeStart()}>X</button>
+            <button onClick={() => setDateRangeStart(undefined)}className="text-red-500">X</button>
           ) : (
             <></>
           )}
         </div> */}
+        <Button onClick={() => getSheetData()}>
+          <FileDown className="h-4 w-4 mr-2" />
+          Export report
+        </Button>
       </div>
-      <Button onClick={() => getSheetData()}>
-        <FileDown className="h-4 w-4 mr-2" />
-        Export report
-      </Button>
+
       <div className="rounded-md border">
         <Table>
           <TableHeader>
