@@ -23,7 +23,7 @@ export default function Exam({ chapter }: any) {
   const [textTitle, setTextTitle] = useState(chapter.title);
   const [timeLimit, setTimeLimit]: any = useState(60);
   const [passPercentage, setPassPercentage] = useState(80);
-
+  const [retakeTime, setRetakeTime] = useState(1);
   useEffect(() => {
     async function loadQuestion() {
       let questionList = await axios.get(
@@ -32,6 +32,7 @@ export default function Exam({ chapter }: any) {
 
       setQuizList(questionList.data.Category);
       setPassPercentage(chapter.scoreLimit == null ? 80 : chapter.scoreLimit);
+      setRetakeTime(chapter.maxAttempt == null ? 1 : chapter.maxAttempt);
 
       setTimeLimit(chapter.timeLimit == null ? 60 : chapter.timeLimit);
     }
@@ -267,6 +268,7 @@ export default function Exam({ chapter }: any) {
     let values = {
       timeLimit: parseFloat(timeLimit),
       scoreLimit: passPercentage,
+      maxAttempt: retakeTime,
     };
     await axios.patch(
       `/api/courses/${chapter?.courseId}/chapters/${chapter?.id}`,
@@ -488,6 +490,24 @@ export default function Exam({ chapter }: any) {
               onChange={(e: any) => setTimeLimit(e.target.value)}
             />
             <span className="px-4">minutes</span>
+          </div>
+          <div className="grow-0 mr-2">
+            <label
+              className="block text-sm font-medium text-gray-700 mb-1"
+              htmlFor="retakeTime"
+            >
+              Enter exam attempt
+            </label>
+            <select
+              name="attempt"
+              id="retakeTime"
+              value={retakeTime}
+              onChange={(e: any) => setRetakeTime(e.target.value)}
+            >
+              <option value="1">1</option>
+              <option value="3">3</option>
+              {/* <option value="5">5</option> */}
+            </select>
           </div>
         </div>
         <span>

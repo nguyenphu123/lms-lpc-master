@@ -200,9 +200,9 @@ model Module {
   isPublished  Boolean
   UserProgress UserProgress[]
   Slide        Slide[]
-
-  timeLimit  Float?
-  scoreLimit Int?
+  maxAttempt   Int            @default(1)
+  timeLimit    Float?
+  scoreLimit   Int?
 
   Category       Category[]
   Resource       Resource[]
@@ -274,17 +274,18 @@ model Answer {
 }
 
 model UserProgress {
-  id        String    @id @default(uuid())
-  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId    String
-  module    Module    @relation(fields: [moduleId], references: [id], onDelete: Cascade)
-  moduleId  String
-  progress  String    @db.Text
-  status    String
-  startDate DateTime
-  endDate   DateTime?
-  score     Int?
-  attempt   Int?
+  id         String    @id @default(uuid())
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId     String
+  module     Module    @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+  moduleId   String
+  progress   String    @db.Text
+  status     String
+  startDate  DateTime
+  endDate    DateTime?
+  score      Int?
+  attempt    Int?
+  retakeTime Int?      @default(0)
 
   @@unique([moduleId, userId])
   @@index([moduleId])

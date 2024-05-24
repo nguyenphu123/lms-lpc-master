@@ -34,6 +34,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import axios from "axios";
+
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
@@ -43,7 +44,9 @@ export function DataTable<TData, TValue>({
   columns,
   data,
 }: DataTableProps<TData, TValue>) {
-  const [sorting, setSorting] = React.useState<SortingState>([]);
+  const [sorting, setSorting] = React.useState<SortingState>([
+    { id: "star", desc: true },
+  ]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
   );
@@ -78,6 +81,7 @@ export function DataTable<TData, TValue>({
       },
     },
   });
+
   React.useEffect(() => {
     async function getDepartments() {
       let departmentList = await axios.get(`/api/departments`);
@@ -89,8 +93,6 @@ export function DataTable<TData, TValue>({
 
   React.useEffect(() => {
     if (dateRangeEnd?.from && dateRangeEnd?.to) {
-      // table.getColumn("startDate")?.setFilterValue(dateRange.from);
-      // table.getColumn("endDate")?.setFilterValue(dateRange.to);
       let tempUserList = [...userList].filter((item: any) =>
         item.ClassSessionRecord.some((item: any) => {
           let dateFrom: any = new Date(dateRangeEnd.from.toISOString());
@@ -105,6 +107,7 @@ export function DataTable<TData, TValue>({
       setUserList(data);
     }
   }, [dateRangeEnd, table]);
+
   const onSelectPeriod = (value: string) => {
     switch (value) {
       case "week":
@@ -117,18 +120,19 @@ export function DataTable<TData, TValue>({
         break;
     }
   };
+
   async function getSheetData() {
     const worksheet = XLSX.utils.json_to_sheet(data);
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
-    //let buffer = XLSX.write(workbook, { bookType: "xlsx", type: "buffer" });
-    //XLSX.write(workbook, { bookType: "xlsx", type: "binary" });
     const date = new Date();
     XLSX.writeFile(workbook, `${""}_${date}.xlsx`);
   }
+
   function onDepartmentChange(departmentId: any) {
     table.getColumn("departmentId")?.setFilterValue(departmentId);
   }
+
   return (
     <div>
       <div className=" grid grid-cols-2 gap-1">
@@ -178,7 +182,7 @@ export function DataTable<TData, TValue>({
             className="max-w-sm"
           />
           {dateRangeEnd != undefined ? (
-            <button onClick={() => setDateRangeEnd()}>X</button>
+            <button onClick={() => setDateRangeEnd(undefined)}>X</button>
           ) : (
             <></>
           )}
@@ -260,6 +264,7 @@ export function DataTable<TData, TValue>({
     </div>
   );
 }
+
 function DatePickerWithRange({
   placeHolder,
   className,

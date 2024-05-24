@@ -20,6 +20,7 @@ export async function PATCH(req: Request) {
         },
         data: {
           status: "studying",
+          retakeTime: 0,
         },
       });
     }

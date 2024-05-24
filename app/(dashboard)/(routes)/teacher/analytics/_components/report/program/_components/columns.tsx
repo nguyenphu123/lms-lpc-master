@@ -1,18 +1,11 @@
 "use client";
 
+import { HTMLProps, useState } from "react";
 import { Program } from "@prisma/client";
 import { ColumnDef } from "@tanstack/react-table";
 import { ArrowUpDown } from "lucide-react";
-import Image from "next/image";
 import React from "react";
-import {
-  ReactElement,
-  JSXElementConstructor,
-  ReactNode,
-  ReactPortal,
-  PromiseLikeOfReactNode,
-  HTMLProps,
-} from "react";
+import { Modal } from "@/components/modals/modal";
 
 export const columns: ColumnDef<Program>[] = [
   {
@@ -45,41 +38,6 @@ export const columns: ColumnDef<Program>[] = [
       return <div>Name</div>;
     },
   },
-  // {
-  //   accessorKey: "user",
-  //   header: ({ column }) => {
-  //     return (
-  //       <span
-  //         className="flex items-center cursor-pointer"
-  //         onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-  //       >
-  //         <span className="mr-2">Created By</span>
-  //       </span>
-  //     );
-  //   },
-  //   cell: ({ row }: any) => {
-  //     const { user } = row.original;
-  //     return <div>{user.username}</div>;
-  //   },
-  // },
-  // {
-  //   accessorKey: "updatedUser",
-  //   header: ({ column }) => {
-  //     return (
-  //       <span
-  //         className="flex items-center cursor-pointer"
-  //         onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-  //       >
-  //         <span className="mr-2">Updated By</span>
-  //       </span>
-  //     );
-  //   },
-  //   cell: ({ row }: any) => {
-  //     const { updatedUser } = row.original;
-
-  //     return <div>{updatedUser?.username} </div>;
-  //   },
-  // },
   {
     accessorKey: "startDate",
     header: ({ column }) => {
@@ -100,7 +58,7 @@ export const columns: ColumnDef<Program>[] = [
           {new Date(startDate).toLocaleTimeString([], {
             hour: "2-digit",
             minute: "2-digit",
-          })}
+          })}{" "}
           {new Date(startDate).toLocaleDateString("vi-VN", {
             day: "2-digit",
             month: "2-digit",
@@ -121,31 +79,27 @@ export const columns: ColumnDef<Program>[] = [
     },
     cell: ({ row }: any) => {
       const { courseWithProgram } = row.original;
+      const [isModalOpen, setModalOpen] = useState(false);
 
-      return courseWithProgram.length > 0 ? (
-        <div>
-          {courseWithProgram.map(
-            (item: {
-              id: any | null | undefined;
-              course: {
-                title:
-                  | string
-                  | number
-                  | boolean
-                  | ReactElement<any, string | JSXElementConstructor<any>>
-                  | Iterable<ReactNode>
-                  | ReactPortal
-                  | PromiseLikeOfReactNode
-                  | null
-                  | undefined;
-              };
-            }) => {
-              return <div key={item.id}>{item.course.title}</div>;
-            }
-          )}
-        </div>
-      ) : (
-        <div>No course</div>
+      const courseTitles = courseWithProgram.map(
+        (item: { course: { title: string } }) => item.course.title
+      );
+
+      return (
+        <>
+          <button
+            className="text-blue-500 underline"
+            onClick={() => setModalOpen(true)}
+          >
+            Detail ({courseWithProgram.length})
+          </button>
+          <Modal
+            isOpen={isModalOpen}
+            onClose={() => setModalOpen(false)}
+            title="Program Courses"
+            items={courseTitles}
+          />
+        </>
       );
     },
   },

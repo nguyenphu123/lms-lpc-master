@@ -1,5 +1,6 @@
-"use client";
+"use client"; // Ensure this is at the top of your file
 
+import { useState } from "react";
 import { ColumnDef } from "@tanstack/react-table";
 import { ArrowUpDown } from "lucide-react";
 
@@ -7,11 +8,13 @@ import { cn } from "@/lib/utils";
 
 import { Badge } from "@/components/ui/badge";
 import { DepartmentActionCell } from "@/components/ui/department-action-cell";
+import { Modal } from "@/components/modals/modal"; // Import your modal component
 
 export const columns: ColumnDef<{
   id: string;
   title: string;
   status: string;
+  User: { id: string; username: string }[];
 }>[] = [
   {
     accessorKey: "title",
@@ -42,19 +45,28 @@ export const columns: ColumnDef<{
     },
     cell: ({ row }: any) => {
       const { User } = row.original;
+      const [isModalOpen, setModalOpen] = useState(false);
+
+      const memberNames = User.map(
+        (member: { username: string }) => member.username
+      );
 
       return (
-        <div className="grid grid-cols-3 gap-0">
-          {User.map((item: any) => {
-            return <div key={item.id}>{item.username}</div>;
-          })}
-        </div>
+        <>
+          <button
+            className="text-blue-500 underline"
+            onClick={() => setModalOpen(true)}
+          >
+            Detail ({User.length})
+          </button>
+          <Modal
+            isOpen={isModalOpen}
+            onClose={() => setModalOpen(false)}
+            title="Department Members"
+            items={memberNames}
+          />
+        </>
       );
     },
-  },
-  {
-    id: "actions",
-    accessorKey: "Action",
-    cell: DepartmentActionCell,
   },
 ];

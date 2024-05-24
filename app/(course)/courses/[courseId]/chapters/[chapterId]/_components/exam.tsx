@@ -32,6 +32,7 @@ const Exam = ({
   const [finishedExam, setFinishedExam] = useState(false);
   const [finalScore, setFinalScore] = useState(0);
   const [timeLimit, setTimeLimit]: any = useState(chapter.timeLimit);
+  const [maxAttempt, setMaxAttempt]: any = useState(chapter.maxAttempt);
   const [timeLimitRecord, setTimeLimitRecord]: any = useState(
     chapter.timeLimit * 60
   );
@@ -46,7 +47,7 @@ const Exam = ({
   // const [recordId, setRecordId] = useState("");
   const [currentUserId, setCurrentUserId] = useState(null);
   const confetti = useConfettiStore();
-
+  const [currentAttempt, setCurrentAttempt] = useState(0);
   useEffect(() => {
     const getHistory = async () => {
       let getLatestTestResult: any = await axios.get(
@@ -61,13 +62,12 @@ const Exam = ({
           ? true
           : false
       );
+      setCurrentAttempt(getLatestTestResult.data?.UserProgress[0]?.retakeTime);
       setFinalScore(getLatestTestResult.data?.UserProgress[0]?.score);
       setCategoryList(getLatestTestResult.data?.Category);
       let currentUser = await axios.get(`/api/user`);
       setCurrentUserId(currentUser.data.id);
-      // let getLatestExamRecord: any = await axios.get(
-      //   `/api/user/${currentUser.data.id}/examRecord/${chapter.id}`
-      // );
+
       let getLatestExamRecord: any = await axios.get(
         `/api/user/${currentUser.data.id}/examRecord/${chapter.id}`
       );
@@ -100,6 +100,7 @@ const Exam = ({
         }
 
         setSelectedAnswers(examObj.selectedAnswers);
+        setCurrentAttempt(examObj.currentAttempt);
         // accept();
       }
     };
@@ -143,6 +144,7 @@ const Exam = ({
           currentQuestion: currentQuestion,
           selectedAnswers: selectedAnswers,
           isEmergency: false,
+          currentAttempt: currentAttempt,
         },
       })
     );
@@ -175,15 +177,31 @@ const Exam = ({
 
       if (!finishedExam) {
         const date = new Date();
-        await axios.put(
-          `/api/courses/${courseId}/chapters/${chapter.id}/progress`,
-          {
-            status: totalScore >= chapter.scoreLimit ? "finished" : "failed",
-            score: parseInt(finalScore),
-            progress: "100%",
-            endDate: date,
-          }
-        );
+        if (currentAttempt == maxAttempt) {
+          await axios.put(
+            `/api/courses/${courseId}/chapters/${chapter.id}/progress`,
+            {
+              status: totalScore >= chapter.scoreLimit ? "finished" : "failed",
+              score: parseInt(finalScore),
+              progress: "100%",
+              endDate: date,
+              retakeTime: currentAttempt,
+            }
+          );
+        } else {
+          await axios.put(
+            `/api/courses/${courseId}/chapters/${chapter.id}/progress`,
+            {
+              status:
+                totalScore >= chapter.scoreLimit ? "finished" : "studying",
+              score: parseInt(finalScore),
+              progress: "100%",
+              endDate: date,
+              retakeTime: currentAttempt,
+            }
+          );
+        }
+
         if (totalScore >= chapter.scoreLimit) {
           if (nextChapterId != null) {
             let checkIfNextChapterIsFinished = await axios.get(
@@ -265,6 +283,7 @@ const Exam = ({
             timeLimit: parseInt(timeLimitRecord / 60 + "").toFixed(2),
             currentQuestion: currentQuestion,
             selectedAnswers: selectedAnswers,
+            currentAttempt: currentAttempt,
           },
         })
       );
@@ -315,6 +334,7 @@ const Exam = ({
     setIsGeneratingExam(true);
     let questionLists: any = [];
     if (!finishedExam) {
+      setCurrentAttempt(currentAttempt + 1);
       let questionList = await axios.get(
         `/api/courses/${chapter.courseId}/chapters/${chapter.id}/category/exam/shuffle`
       );
@@ -336,6 +356,7 @@ const Exam = ({
         timeLimit: parseInt(timeLimitRecord / 60 + "").toFixed(2),
         currentQuestion: 0,
         selectedAnswers: [],
+        currentAttempt: currentAttempt,
       },
       note: "",
       isInExam: true,
@@ -400,6 +421,7 @@ const Exam = ({
           timeLimit: parseInt(timeLimitRecord / 60 + "").toFixed(2),
           currentQuestion: currentQuestion,
           selectedAnswers: updatedAnswers,
+          currentAttempt: currentAttempt,
         },
       })
     );
@@ -425,6 +447,7 @@ const Exam = ({
             timeLimit: parseInt(timeLimitRecord / 60 + "").toFixed(2),
             currentQuestion: nextQuestion,
             selectedAnswers: selectedAnswers,
+            currentAttempt: currentAttempt,
           },
         })
       );
@@ -451,15 +474,30 @@ const Exam = ({
       if (!finishedExam) {
         const date = new Date();
 
-        await axios.put(
-          `/api/courses/${courseId}/chapters/${chapter.id}/progress`,
-          {
-            status: totalScore >= chapter.scoreLimit ? "finished" : "failed",
-            score: parseInt(finalScore),
-            progress: "100%",
-            endDate: date,
-          }
-        );
+        if (currentAttempt == maxAttempt) {
+          await axios.put(
+            `/api/courses/${courseId}/chapters/${chapter.id}/progress`,
+            {
+              status: totalScore >= chapter.scoreLimit ? "finished" : "failed",
+              score: parseInt(finalScore),
+              progress: totalScore >= chapter.scoreLimit ? "100%" : "0%",
+              endDate: date,
+              retakeTime: currentAttempt,
+            }
+          );
+        } else {
+          await axios.put(
+            `/api/courses/${courseId}/chapters/${chapter.id}/progress`,
+            {
+              status:
+                totalScore >= chapter.scoreLimit ? "finished" : "studying",
+              score: parseInt(finalScore),
+              progress: totalScore >= chapter.scoreLimit ? "100%" : "0%",
+              endDate: date,
+              retakeTime: currentAttempt,
+            }
+          );
+        }
         if (totalScore >= chapter.scoreLimit) {
           if (nextChapterId != null) {
             let checkIfNextChapterIsFinished = await axios.get(
@@ -528,6 +566,7 @@ const Exam = ({
               timeLimit: parseInt(timeLimitRecord / 60 + "").toFixed(2),
               currentQuestion: currentQuestion,
               selectedAnswers: selectedAnswers,
+              currentAttempt: currentAttempt,
             },
           })
         );
@@ -691,6 +730,11 @@ const Exam = ({
           <ul className="list-disc pl-5 mb-4">
             <li className="mb-2">
               This exam consists of multiple-choice questions.
+            </li>
+            <li className="mb-2">
+              You will have{" "}
+              <span className="text-red-600">{chapter.maxAttempt} times</span>{" "}
+              to do the exam.
             </li>
             <li className="mb-2">
               You will have{" "}

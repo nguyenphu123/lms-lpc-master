@@ -1,19 +1,10 @@
 // @refresh reset
 "use client";
+
 import { User } from "@prisma/client";
 import { ColumnDef } from "@tanstack/react-table";
-
 import { Accordion, AccordionItem } from "@nextui-org/react";
-
-import {
-  ReactElement,
-  JSXElementConstructor,
-  ReactNode,
-  ReactPortal,
-  PromiseLikeOfReactNode,
-  HTMLProps,
-} from "react";
-import React from "react";
+import React, { HTMLProps } from "react";
 
 export const columns: ColumnDef<User>[] = [
   {
@@ -42,12 +33,9 @@ export const columns: ColumnDef<User>[] = [
   },
   {
     accessorKey: "username",
-    header: () => {
-      return <div>Name</div>;
-    },
+    header: () => <div>Name</div>,
     cell: ({ row }) => {
       const { username }: any = row.original;
-
       return (
         <div className="flex items-center">
           <div>{username}</div>
@@ -55,19 +43,15 @@ export const columns: ColumnDef<User>[] = [
       );
     },
   },
-
   {
     accessorKey: "department",
-    header: ({ column }) => {
-      return (
-        <span className="flex items-center cursor-pointer">
-          <span className="mr-2">Department</span>
-        </span>
-      );
-    },
+    header: ({ column }) => (
+      <span className="flex items-center cursor-pointer">
+        <span className="mr-2">Department</span>
+      </span>
+    ),
     cell: ({ row }) => {
       const { Department }: any = row.original;
-
       return (
         <div className="flex items-center">
           <div>{Department.title}</div>
@@ -75,35 +59,22 @@ export const columns: ColumnDef<User>[] = [
       );
     },
   },
-
   {
     accessorKey: "star",
-    header: ({ column }) => {
-      return (
-        <span className="flex items-center cursor-pointer">
-          <span className="mr-2">Star</span>
-        </span>
-      );
-    },
+    header: ({ column }) => (
+      <span className="flex items-center cursor-pointer">
+        <span className="mr-2">Star</span>
+      </span>
+    ),
   },
   {
     accessorKey: "departmentId",
-    header: ({ column }) => {
-      return <span className="flex items-center cursor-pointer">hidden</span>;
-    },
+    header: ({ column }) => (
+      <span className="flex items-center cursor-pointer">hidden</span>
+    ),
   },
-
-  // {
-  //   accessorKey: "status",
-  //   header: ({ column }) => {
-  //     return (
-  //       <span className="flex items-center cursor-pointer">
-  //         <span className="mr-2">Status</span>
-  //       </span>
-  //     );
-  //   },
-  // },
 ];
+
 function IndeterminateCheckbox({
   indeterminate,
   className = "",
