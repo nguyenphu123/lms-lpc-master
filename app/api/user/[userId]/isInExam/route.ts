@@ -45,7 +45,7 @@ export async function POST(
     const user = await db.userExamReport.upsert({
       where: { id },
       create: {
-        isInExam,
+        isInExam: true,
         userId,
         moduleId: moduleId,
         date: date,

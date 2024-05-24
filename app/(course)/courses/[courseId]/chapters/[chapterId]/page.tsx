@@ -48,7 +48,9 @@ const ChapterIdPage = async ({
         nextChapterId={nextChapter}
         courseId={params.courseId}
         course={course}
-        isCompleted={userProgress?.status}
+        isCompleted={
+          userProgress?.status != undefined ? userProgress?.status : "studying"
+        }
       />
     </>
   ) : (userInfo.userExamReport[0]?.isInExam && chapter.type != "Exam") ||

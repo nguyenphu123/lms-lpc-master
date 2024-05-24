@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 const CourseHistory = ({ userId, coursesJoined }: any) => {
   const [courses, setCourses] = useState(coursesJoined);
   useEffect(() => {}, []);
-  console.log(courses);
+
   return courses.length == 0 ? (
     <div className="text-black dark:text-white">
       You have not finished any course.

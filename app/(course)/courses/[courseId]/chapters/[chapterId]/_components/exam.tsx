@@ -62,7 +62,11 @@ const Exam = ({
           ? true
           : false
       );
-      setCurrentAttempt(getLatestTestResult.data?.UserProgress[0]?.retakeTime);
+      setCurrentAttempt(
+        getLatestTestResult.data?.UserProgress[0]?.retakeTime != undefined
+          ? getLatestTestResult.data?.UserProgress[0]?.retakeTime
+          : 0
+      );
       setFinalScore(getLatestTestResult.data?.UserProgress[0]?.score);
       setCategoryList(getLatestTestResult.data?.Category);
       let currentUser = await axios.get(`/api/user`);
@@ -90,7 +94,7 @@ const Exam = ({
         if (!examObj.isEmergency) {
           let timeLeft =
             Math.round(
-              new Date().getTime() - chekIfUserIsInExam?.data?.date.getTime()
+              new Date().getTime() - chekIfUserIsInExam?.data?.date?.getTime()
             ) / 60000;
           setTimeLimit(timeLeft);
           setTimeLimitRecord(timeLeft);
@@ -718,6 +722,7 @@ const Exam = ({
     }
     return true;
   };
+
   return questions.length == 0 ? (
     <>
       <div className="max-w-6xl mx-auto p-6 mt-5">
@@ -731,11 +736,18 @@ const Exam = ({
             <li className="mb-2">
               This exam consists of multiple-choice questions.
             </li>
-            <li className="mb-2">
-              You will have{" "}
-              <span className="text-red-600">{chapter.maxAttempt} times</span>{" "}
-              to do the exam.
-            </li>
+            {isCompleted == "finished" ? (
+              <></>
+            ) : (
+              <li className="mb-2">
+                You will have{" "}
+                <span className="text-red-600">
+                  {chapter.maxAttempt - currentAttempt} times
+                </span>{" "}
+                to do the exam.
+              </li>
+            )}
+
             <li className="mb-2">
               You will have{" "}
               <span className="text-red-600">{chapter.timeLimit} minutes</span>{" "}
@@ -875,7 +887,7 @@ const Exam = ({
                 Exam note
               </AlertDialogTitle>
               <AlertDialogDescription className="AlertDialogDescription">
-                {finishedExam && isCompleted == "studying" ? (
+                {!finishedExam && isCompleted == "studying" ? (
                   <>Do you want to do the exam?</>
                 ) : isCompleted == "failed" ? (
                   <>Please wait until admin reset</>

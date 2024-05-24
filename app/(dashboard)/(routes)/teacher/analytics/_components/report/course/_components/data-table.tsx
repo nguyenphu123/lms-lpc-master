@@ -111,7 +111,7 @@ export function DataTable<TData, TValue>({
     const date = new Date();
     XLSX.writeFile(workbook, `${""}_${date}.xlsx`);
   }
-  console.log(data);
+
   return (
     <div>
       <div className="flex items-center py-4 justify-between">

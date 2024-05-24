@@ -268,7 +268,7 @@ export default function Exam({ chapter }: any) {
     let values = {
       timeLimit: parseFloat(timeLimit),
       scoreLimit: passPercentage,
-      maxAttempt: retakeTime,
+      maxAttempt: parseInt(retakeTime + ""),
     };
     await axios.patch(
       `/api/courses/${chapter?.courseId}/chapters/${chapter?.id}`,
