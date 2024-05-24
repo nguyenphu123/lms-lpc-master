@@ -15,6 +15,7 @@ export default authMiddleware({
     "/api/notifications",
     "/api/signup",
     "/api/departments",
+    "/api/department",
     // "https://rest.ably.io/**",
   ],
   // debug: true,
