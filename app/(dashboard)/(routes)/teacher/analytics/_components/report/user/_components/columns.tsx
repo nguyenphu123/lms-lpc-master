@@ -1,4 +1,3 @@
-// @refresh reset
 "use client";
 import { User } from "@prisma/client";
 import { ColumnDef } from "@tanstack/react-table";
@@ -202,7 +201,8 @@ export const columns: ColumnDef<User>[] = [
                               </span>
                             ) : item.status === "studying" ? (
                               <span className="text-yellow-500 font-medium">
-                                Studying ({item.progress})
+                                Studying (
+                                {parseFloat(item.progress + "").toFixed(0)}%)
                               </span>
                             ) : (
                               <>
