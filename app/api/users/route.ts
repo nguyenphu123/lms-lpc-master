@@ -24,6 +24,7 @@ export async function GET(req: Request) {
             course: {
               include: {
                 Module: {
+                  orderBy: { position: "asc" },
                   include: {
                     UserProgress: {
                       include: {

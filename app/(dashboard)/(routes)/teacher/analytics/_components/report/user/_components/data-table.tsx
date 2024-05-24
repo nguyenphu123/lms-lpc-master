@@ -12,7 +12,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { jsPDF } from "jspdf";
+import * as XLSX from "xlsx";
 import {
   Table,
   TableBody,
@@ -45,7 +45,7 @@ interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: any[];
 }
-const doc = new jsPDF();
+// const doc = new jsPDF();
 export function DataTable<TData, TValue>({
   columns,
   data,
@@ -113,7 +113,54 @@ export function DataTable<TData, TValue>({
   }, [dateRangeEnd, table]);
 
   async function getSheetData() {
-    console.log(table.getSelectedRowModel().rows);
+    const workbook = XLSX.utils.book_new();
+    let newList = [...userList];
+    let exportList = [];
+    for (let i = 0; i < newList.length; i++) {
+      console.log(newList[i]);
+
+      let studiedCourse = "";
+      for (let j = 0; j < newList[i].ClassSessionRecord.length; j++) {
+        studiedCourse =
+          studiedCourse +
+          " \n" +
+          newList[i].ClassSessionRecord[j].course.title +
+          " \n" +
+          newList[i].ClassSessionRecord[j].status +
+          " on " +
+          newList[i].ClassSessionRecord[j].endDate +
+          "\n";
+        for (
+          let k = 0;
+          k < newList[i].ClassSessionRecord[j].course.Module.length;
+          k++
+        ) {
+          studiedCourse =
+            studiedCourse +
+            " \n" +
+            newList[i].ClassSessionRecord[j].course.Module[k].title +
+            ": " +
+            newList[i].ClassSessionRecord[j].course.Module[k].UserProgress[0]
+              .status +
+            "\n";
+        }
+      }
+      console.log(studiedCourse);
+      let newItem = {
+        name: newList[i].username,
+        score: newList[i].star,
+        email: newList[i].email,
+        department: newList[i].Department.title,
+        progress_report: studiedCourse,
+      };
+      exportList.push(newItem);
+    }
+    const worksheet = XLSX.utils.json_to_sheet(exportList);
+
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
+
+    const date = new Date();
+    XLSX.writeFile(workbook, `${""}_${date}.xlsx`);
   }
 
   function onDepartmentChange(departmentId: any) {
@@ -179,23 +226,42 @@ export function DataTable<TData, TValue>({
                 Select report <ChevronDown />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent>
-              <DropdownMenuItem onClick={() => getSheetData()}>
-                Report (All)
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => getSheetData()}>
-                Report (Selected Rows)
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => getSheetData()}>
-                Report (This Week)
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => getSheetData()}>
-                Report (This Month)
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => getSheetData()}>
-                Report (This Year)
-              </DropdownMenuItem>
-            </DropdownMenuContent>
+            {userList.length == 0 ? (
+              <></>
+            ) : (
+              <DropdownMenuContent>
+                {table.getSelectedRowModel().rows.length == 0 ? (
+                  <DropdownMenuItem onClick={() => getSheetData()}>
+                    Report (All)
+                  </DropdownMenuItem>
+                ) : (
+                  <DropdownMenuItem onClick={() => getSheetData()}>
+                    Report (Selected Rows)
+                  </DropdownMenuItem>
+                )}
+                {table.getSelectedRowModel().rows.length == 0 ? (
+                  <DropdownMenuItem onClick={() => getSheetData()}>
+                    Report (This Week)
+                  </DropdownMenuItem>
+                ) : (
+                  <></>
+                )}
+                {table.getSelectedRowModel().rows.length == 0 ? (
+                  <DropdownMenuItem onClick={() => getSheetData()}>
+                    Report (This Month)
+                  </DropdownMenuItem>
+                ) : (
+                  <></>
+                )}
+                {table.getSelectedRowModel().rows.length == 0 ? (
+                  <DropdownMenuItem onClick={() => getSheetData()}>
+                    Report (This Year)
+                  </DropdownMenuItem>
+                ) : (
+                  <></>
+                )}
+              </DropdownMenuContent>
+            )}
           </DropdownMenu>
         </div>
       </div>
