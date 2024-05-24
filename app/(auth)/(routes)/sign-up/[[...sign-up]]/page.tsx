@@ -11,6 +11,7 @@ import dynamic from "next/dynamic";
 import { ModeToggle } from "@/components/ui/theme-button";
 
 import { Loader2 } from "lucide-react";
+import { useQuery } from "react-query";
 const Logo = dynamic(() => import("@/app/(auth)/_component/logo" as string), {
   ssr: false,
 });
@@ -21,17 +22,15 @@ export default function Page() {
   const [username, setUsername] = useState("");
   const [confirmCode, setConfirmCode]: any = useState("");
   const confetti = useConfettiStore();
-  const departmentOptions = [
-    "DSC",
-    "SCC",
-    "BU2",
-    "DEV",
-    "AF",
-    "AD",
-    "QA",
-    "BP",
-    "BOD",
-  ];
+  const [departmentOptions, setDepartmentOptions] = useState([]);
+  useEffect(() => {
+    async function getDepartments() {
+      let departmentList = await axios.get(`/api/departments`);
+      setDepartmentOptions(departmentList.data);
+    }
+
+    getDepartments();
+  }, []);
   const [pendingVerification, setPendingVerification] = useState(false);
   const [department, setDepartment] = useState("");
   const [verificationChecking, setVerificationChecking] = useState(false);
@@ -190,9 +189,9 @@ export default function Page() {
             className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring focus:ring-blue-400"
           >
             <option value="">Select department</option>
-            {departmentOptions.map((option) => (
-              <option key={option} value={option}>
-                {option}
+            {departmentOptions.map((option: any) => (
+              <option key={option.id} value={option.title}>
+                {option.title}
               </option>
             ))}
           </select>

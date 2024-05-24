@@ -36,7 +36,7 @@ import {
 import axios from "axios";
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
-  data: TData[];
+  data: any[];
 }
 
 export function DataTable<TData, TValue>({
@@ -53,9 +53,7 @@ export function DataTable<TData, TValue>({
   const [dateRangeEnd, setDateRangeEnd]: any = React.useState<
     DateRange | undefined
   >();
-  const [dateRangeStart, setDateRangeStart]: any = React.useState<
-    DateRange | undefined
-  >();
+
   const [columnVisibility, setColumnVisibility] = React.useState({});
   const table = useReactTable({
     data: userList,
@@ -80,6 +78,7 @@ export function DataTable<TData, TValue>({
       },
     },
   });
+
   React.useEffect(() => {
     async function getDepartments() {
       let departmentList = await axios.get(`/api/departments`);
@@ -93,15 +92,26 @@ export function DataTable<TData, TValue>({
     if (dateRangeEnd?.from && dateRangeEnd?.to) {
       // table.getColumn("startDate")?.setFilterValue(dateRange.from);
       // table.getColumn("endDate")?.setFilterValue(dateRange.to);
-      let tempUserList = [...data].filter((item: any) =>
-        item.ClassSessionRecord.some((item: any) => {
+      let tempUserList = [...data].filter((item: any) => {
+        return item.ClassSessionRecord.some((item: any) => {
           let dateFrom: any = new Date(dateRangeEnd.from.toISOString());
-          let date: any = new Date(new Date(item.endDate).toISOString());
+          let date: any = new Date(new Date(item.startDate).toISOString());
           let dateTo: any = new Date(dateRangeEnd.to.toISOString());
           return dateFrom <= date && date <= dateTo;
-        })
-      );
+        });
+      });
+      // for (let i = 0; i < tempUserList.length; i++) {
+      //   let tempRecordList = tempUserList[i].ClassSessionRecord.filter(
+      //     (item: any) => {
+      //       let dateFrom: any = new Date(dateRangeEnd.from.toISOString());
+      //       let date: any = new Date(new Date(item.endDate).toISOString());
+      //       let dateTo: any = new Date(dateRangeEnd.to.toISOString());
+      //       return dateFrom <= date && date <= dateTo;
+      //     }
+      //   );
 
+      //   tempUserList[i].ClassSessionRecord = tempRecordList;
+      // }
       setUserList(tempUserList);
     } else {
       setUserList(data);
@@ -112,20 +122,44 @@ export function DataTable<TData, TValue>({
   // }, [dateRangeStart, table]);
 
   async function getSheetData() {
-    const worksheet = XLSX.utils.json_to_sheet(data);
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
-    //let buffer = XLSX.write(workbook, { bookType: "xlsx", type: "buffer" });
-    //XLSX.write(workbook, { bookType: "xlsx", type: "binary" });
-    const date = new Date();
-    XLSX.writeFile(workbook, `${""}_${date}.xlsx`);
+    console.log(table.getSelectedRowModel().rows);
+    // const worksheet = XLSX.utils.json_to_sheet(data);
+    // const workbook = XLSX.utils.book_new();
+    // XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
+    // //let buffer = XLSX.write(workbook, { bookType: "xlsx", type: "buffer" });
+    // //XLSX.write(workbook, { bookType: "xlsx", type: "binary" });
+    // const date = new Date();
+    // XLSX.writeFile(workbook, `${""}_${date}.xlsx`);
   }
   function onDepartmentChange(departmentId: any) {
     table.getColumn("departmentId")?.setFilterValue(departmentId);
   }
   return (
     <div>
-      <div className="flex items-center py-4 justify-between">
+      <div className="grid grid-cols-4 gap-1">
+        <Button onClick={() => getSheetData()}>
+          <FileDown className="h-4 w-4 mr-2" />
+          Preview report
+        </Button>
+        <Button onClick={() => getSheetData()}>
+          <FileDown className="h-4 w-4 mr-2" />
+          Preview report(single)
+        </Button>
+        <Button onClick={() => getSheetData()}>
+          <FileDown className="h-4 w-4 mr-2" />
+          Preview report this week
+        </Button>
+        <Button onClick={() => getSheetData()}>
+          <FileDown className="h-4 w-4 mr-2" />
+          Preview report this month
+        </Button>
+        <Button onClick={() => getSheetData()}>
+          <FileDown className="h-4 w-4 mr-2" />
+          Preview report this year
+        </Button>
+      </div>
+
+      <div className="grid grid-cols-4 gap-1">
         <Input
           placeholder="Filter users..."
           value={
@@ -179,10 +213,6 @@ export function DataTable<TData, TValue>({
             <></>
           )}
         </div> */}
-        <Button onClick={() => getSheetData()}>
-          <FileDown className="h-4 w-4 mr-2" />
-          Export report
-        </Button>
       </div>
 
       <div className="rounded-md border">

@@ -43,14 +43,14 @@ const PermissionsPage = async () => {
             .map(
               (item: { permission: { title: any } }) => item.permission.title
             )
-            .indexOf("User management permission") == -1
+            .indexOf("User management permission") != -1
         }
         canEdit={
           checkUser
             .map(
               (item: { permission: { title: any } }) => item.permission.title
             )
-            .indexOf("User management permission") == -1
+            .indexOf("User management permission") != -1
         }
       />
     </div>

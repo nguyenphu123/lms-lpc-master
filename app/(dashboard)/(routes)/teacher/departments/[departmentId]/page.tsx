@@ -9,10 +9,10 @@ import { IconBadge } from "@/components/icon-badge";
 
 import { TitleForm } from "./_components/title-form";
 
-const PermissionIdPage = async ({
+const DepartmentIdPage = async ({
   params,
 }: {
-  params: { permissionId: string };
+  params: { departmentId: string };
 }) => {
   const { userId } = auth();
 
@@ -30,24 +30,24 @@ const PermissionIdPage = async ({
   if (
     checkUser
       .map((item: { permission: { title: any } }) => item.permission.title)
-      .indexOf("Manage permission permission") == -1
+      .indexOf("User management permission") == -1
   ) {
     return redirect("/");
   }
   // try {
-  const permission: any = await db.permission.findUnique({
+  const department: any = await db.department.findUnique({
     where: {
-      id: params.permissionId,
+      id: params.departmentId,
       // userId,
     },
   });
 
-  if (!permission) {
+  if (!department) {
     return redirect("/");
   }
 
   const requiredFields = [
-    permission.title,
+    department.title,
 
     // program.startDate,
     // Add more fields as needed for your program
@@ -66,13 +66,13 @@ const PermissionIdPage = async ({
         <div className="flex items-center justify-between">
           <div className="flex flex-col gap-y-2">
             <Link
-              href={`/teacher/permissions`}
+              href={`/teacher/departments`}
               className="flex items-center text-sm hover:opacity-75 transition mb-6"
             >
               <ArrowLeft className="h-4 w-4 mr-2" />
-              Back to permission
+              Back to department
             </Link>
-            <h1 className="text-2xl font-medium">Permission setup</h1>
+            <h1 className="text-2xl font-medium">Department setup</h1>
             <span className="text-sm text-slate-700">
               Complete all fields {completionText}
             </span>
@@ -84,7 +84,7 @@ const PermissionIdPage = async ({
               <IconBadge icon={LayoutDashboard} />
               <h2 className="text-xl">Customize your permission</h2>
             </div>
-            <TitleForm initialData={permission} permissionId={permission.id} />
+            <TitleForm initialData={department} departmentId={department.id} />
           </div>
         </div>
       </div>
@@ -92,4 +92,4 @@ const PermissionIdPage = async ({
   );
 };
 
-export default PermissionIdPage;
+export default DepartmentIdPage;

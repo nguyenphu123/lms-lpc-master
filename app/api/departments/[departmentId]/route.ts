@@ -4,14 +4,14 @@ import { db } from "@/lib/db";
 
 export async function PATCH(
   req: Request,
-  { params }: { params: { permissionId: string } }
+  { params }: { params: { departmentId: string } }
 ) {
   try {
     const { userId }: any = auth();
     const { title } = await req.json();
-    const permission = await db.permission.update({
+    const permission = await db.department.update({
       where: {
-        id: params.permissionId,
+        id: params.departmentId,
       },
       data: {
         title,
@@ -27,7 +27,7 @@ export async function PATCH(
 
 export async function GET(
   req: Request,
-  { params }: { params: { permissionId: string } }
+  { params }: { params: { departmentId: string } }
 ) {
   try {
     const { userId }: any = auth();
@@ -35,9 +35,9 @@ export async function GET(
     if (!userId) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
-    const permission = await db.permission.findUnique({
+    const permission = await db.department.findUnique({
       where: {
-        id: params.permissionId,
+        id: params.departmentId,
       },
     });
     return NextResponse.json(permission);

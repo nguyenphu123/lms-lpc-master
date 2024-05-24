@@ -53,9 +53,7 @@ export function DataTable<TData, TValue>({
   const [dateRangeEnd, setDateRangeEnd]: any = React.useState<
     DateRange | undefined
   >();
-  const [dateRangeStart, setDateRangeStart]: any = React.useState<
-    DateRange | undefined
-  >();
+
   const [columnVisibility, setColumnVisibility] = React.useState({});
   const table = useReactTable({
     data: userList,
@@ -107,24 +105,18 @@ export function DataTable<TData, TValue>({
       setUserList(data);
     }
   }, [dateRangeEnd, table]);
-  React.useEffect(() => {
-    if (dateRangeStart?.from && dateRangeStart?.to) {
-      // table.getColumn("startDate")?.setFilterValue(dateRange.from);
-      // table.getColumn("endDate")?.setFilterValue(dateRange.to);
-      let tempUserList = [...userList].filter((item: any) =>
-        item.ClassSessionRecord.some((item: any) => {
-          let dateFrom: any = new Date(dateRangeStart.from.toISOString());
-          let date: any = new Date(new Date(item.startDate).toISOString());
-          let dateTo: any = new Date(dateRangeStart.to.toISOString());
-          return dateFrom < date && date < dateTo;
-        })
-      );
-
-      setUserList(tempUserList);
-    } else {
-      setUserList(data);
+  const onSelectPeriod = (value: string) => {
+    switch (value) {
+      case "week":
+        break;
+      case "month":
+        break;
+      case "year":
+        break;
+      default:
+        break;
     }
-  }, [dateRangeStart, table]);
+  };
   async function getSheetData() {
     const worksheet = XLSX.utils.json_to_sheet(data);
     const workbook = XLSX.utils.book_new();
@@ -170,7 +162,7 @@ export function DataTable<TData, TValue>({
         <select
           name="status"
           id="filterByStatus"
-          // onChange={(event) => onDepartmentChange(event.target.value)}
+          onChange={(event) => onSelectPeriod(event.target.value)}
           className="max-w-sm p-2 border rounded text-muted-foreground dark:bg-slate-950"
         >
           <option value="">All time</option>
@@ -180,7 +172,7 @@ export function DataTable<TData, TValue>({
         </select>
         <div className="inline-flex gap-2">
           <DatePickerWithRange
-            placeHolder={"check course end in a period"}
+            placeHolder={"check ranking in a period"}
             date={dateRangeEnd}
             setDate={setDateRangeEnd}
             className="max-w-sm"
@@ -191,19 +183,7 @@ export function DataTable<TData, TValue>({
             <></>
           )}
         </div>
-        <div className="inline-flex gap-2">
-          <DatePickerWithRange
-            placeHolder={"check course start in a period"}
-            date={dateRangeStart}
-            setDate={setDateRangeStart}
-            className="max-w-sm"
-          />
-          {dateRangeStart != undefined ? (
-            <button onClick={() => setDateRangeStart()}>X</button>
-          ) : (
-            <></>
-          )}
-        </div>
+        <div className="inline-flex gap-2"></div>
       </div>
       <Button onClick={() => getSheetData()}>
         <FileDown className="h-4 w-4 mr-2" />

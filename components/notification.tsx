@@ -7,9 +7,7 @@ import {
   PopoverContent,
 } from "@/components/ui/popover";
 import { SetStateAction, useEffect, useState } from "react";
-import io from "socket.io-client";
 
-let socket: any;
 import Link from "next/link";
 import axios from "axios";
 export const Notification = () => {
@@ -17,24 +15,8 @@ export const Notification = () => {
   const [isConnected, setIsConnected] = useState(false);
   const [transport, setTransport] = useState("N/A");
 
-  useEffect(() => {
-    socketInitializer();
+  useEffect(() => {}, []);
 
-    return () => {
-      // socket.disconnect();
-    };
-  }, []);
-
-  async function socketInitializer() {
-    await axios.get("/api/notifications");
-
-    socket = io();
-
-    socket.on("course", (message: any) => {
-      const history = notifications.slice(-199);
-      setNotifications([...history, message]);
-    });
-  }
   // var ably = new Ably.Realtime({
   //   key: "n-gD0A.W4KQCg:GyPm6YTLBQsr4KhgPj1dLCwr0eg4y7OVFrBuyztiiWg",
   // });

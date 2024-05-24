@@ -43,7 +43,13 @@ export const columns: ColumnDef<{
     cell: ({ row }: any) => {
       const { User } = row.original;
 
-      return <div>{User.map((item: { username: any }) => item.username)}</div>;
+      return (
+        <div className="grid grid-cols-3 gap-0">
+          {User.map((item: any) => {
+            return <div key={item.id}>{item.username}</div>;
+          })}
+        </div>
+      );
     },
   },
   {

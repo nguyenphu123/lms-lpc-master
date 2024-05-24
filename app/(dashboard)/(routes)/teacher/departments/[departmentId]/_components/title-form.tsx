@@ -23,7 +23,7 @@ interface TitleFormProps {
   initialData: {
     title: string;
   };
-  permissionId: string;
+  departmentId: string;
 }
 
 const formSchema = z.object({
@@ -32,7 +32,7 @@ const formSchema = z.object({
   }),
 });
 
-export const TitleForm = ({ initialData, permissionId }: TitleFormProps) => {
+export const TitleForm = ({ initialData, departmentId }: TitleFormProps) => {
   const [isEditing, setIsEditing] = useState(false);
 
   const toggleEdit = () => setIsEditing((current) => !current);
@@ -48,8 +48,8 @@ export const TitleForm = ({ initialData, permissionId }: TitleFormProps) => {
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      await axios.patch(`/api/permission/${permissionId}`, values);
-      toast.success("Permission updated");
+      await axios.patch(`/api/departments/${departmentId}`, values);
+      toast.success("Department updated");
       toggleEdit();
       router.refresh();
     } catch {
