@@ -12,7 +12,8 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import * as XLSX from "xlsx";
+// import * as XLSX from "xlsx";
+import { jsPDF } from "jspdf";
 import {
   Table,
   TableBody,
@@ -38,7 +39,7 @@ interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: any[];
 }
-
+const doc = new jsPDF();
 export function DataTable<TData, TValue>({
   columns,
   data,
