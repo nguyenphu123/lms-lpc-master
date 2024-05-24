@@ -6,6 +6,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import { ArrowUpDown } from "lucide-react";
 import React from "react";
 import { Modal } from "@/components/modals/modal";
+import { ProgramCourseCell } from "@/components/ui/program-courses-cell";
 
 export const columns: ColumnDef<Program>[] = [
   {
@@ -77,31 +78,7 @@ export const columns: ColumnDef<Program>[] = [
         </span>
       );
     },
-    cell: ({ row }: any) => {
-      const { courseWithProgram } = row.original;
-      const [isModalOpen, setModalOpen] = useState(false);
-
-      const courseTitles = courseWithProgram.map(
-        (item: { course: { title: string } }) => item.course.title
-      );
-
-      return (
-        <>
-          <button
-            className="text-blue-500 underline"
-            onClick={() => setModalOpen(true)}
-          >
-            Detail ({courseWithProgram.length})
-          </button>
-          <Modal
-            isOpen={isModalOpen}
-            onClose={() => setModalOpen(false)}
-            title="Program Courses"
-            items={courseTitles}
-          />
-        </>
-      );
-    },
+    cell: ProgramCourseCell,
   },
 ];
 function IndeterminateCheckbox({

@@ -9,6 +9,7 @@ import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { DepartmentActionCell } from "@/components/ui/department-action-cell";
 import { Modal } from "@/components/modals/modal"; // Import your modal component
+import { DepartmentUserCell } from "@/components/ui/department-user-cell";
 
 export const columns: ColumnDef<{
   id: string;
@@ -43,30 +44,6 @@ export const columns: ColumnDef<{
         </span>
       );
     },
-    cell: ({ row }: any) => {
-      const { User } = row.original;
-      const [isModalOpen, setModalOpen] = useState(false);
-
-      const memberNames = User.map(
-        (member: { username: string }) => member.username
-      );
-
-      return (
-        <>
-          <button
-            className="text-blue-500 underline"
-            onClick={() => setModalOpen(true)}
-          >
-            Detail ({User.length})
-          </button>
-          <Modal
-            isOpen={isModalOpen}
-            onClose={() => setModalOpen(false)}
-            title="Department Members"
-            items={memberNames}
-          />
-        </>
-      );
-    },
+    cell: DepartmentUserCell,
   },
 ];
