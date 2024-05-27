@@ -116,12 +116,21 @@ export function DataTable<TData, TValue>({
     }
   }, [dateRangeEnd, table]);
 
-  async function getSheetData() {
-    const worksheet = XLSX.utils.json_to_sheet(data);
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
-    const date = new Date();
-    XLSX.writeFile(workbook, `${""}_${date}.xlsx`);
+  async function getSheetData(filter: any) {
+    if (filter == "All") {
+      const worksheet = XLSX.utils.json_to_sheet(data);
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
+      const date = new Date();
+      XLSX.writeFile(workbook, `${filter}_Ranking_${date}.xlsx`);
+    } else {
+      let newList: any = [...table.getSelectedRowModel().rows];
+      const worksheet = XLSX.utils.json_to_sheet(newList.original);
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
+      const date = new Date();
+      XLSX.writeFile(workbook, `${filter}_Ranking_${date}.xlsx`);
+    }
   }
 
   async function getSheetDataByType(type: string) {
@@ -237,10 +246,10 @@ export function DataTable<TData, TValue>({
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent>
-              <DropdownMenuItem onClick={() => getSheetData()}>
+              <DropdownMenuItem onClick={() => getSheetData("All")}>
                 Report (All)
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => getSheetData()}>
+              <DropdownMenuItem onClick={() => getSheetData("Selected Rows")}>
                 Report (Selected Rows)
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => getSheetDataByType("week")}>

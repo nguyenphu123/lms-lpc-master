@@ -111,17 +111,11 @@ export function DataTable<TData, TValue>({
         exportList.push(newItem);
       }
 
-      const worksheet = XLSX.utils.json_to_sheet(programList);
+      const worksheet = XLSX.utils.json_to_sheet(exportList);
 
       XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
 
-      worksheet["!cols"] = [
-        { wch: 10 },
-        { wch: 10 },
-        { wch: 10 },
-        { wch: 10 },
-        { wch: 50 },
-      ];
+      worksheet["!cols"] = [{ wch: 10 }, { wch: 10 }, { wch: 50 }];
       const date = new Date();
       XLSX.writeFile(workbook, `${filter}_Program_${date}.xlsx`);
     }
@@ -146,17 +140,11 @@ export function DataTable<TData, TValue>({
         exportList.push(newItem);
       }
 
-      const worksheet = XLSX.utils.json_to_sheet(programList);
+      const worksheet = XLSX.utils.json_to_sheet(exportList);
 
       XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
 
-      worksheet["!cols"] = [
-        { wch: 10 },
-        { wch: 10 },
-        { wch: 10 },
-        { wch: 10 },
-        { wch: 50 },
-      ];
+      worksheet["!cols"] = [{ wch: 10 }, { wch: 10 }, { wch: 50 }];
       const date = new Date();
       XLSX.writeFile(workbook, `${filter}_Program_${date}.xlsx`);
     }
@@ -186,17 +174,11 @@ export function DataTable<TData, TValue>({
         exportList.push(newItem);
       }
 
-      const worksheet = XLSX.utils.json_to_sheet(programList);
+      const worksheet = XLSX.utils.json_to_sheet(exportList);
 
       XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
 
-      worksheet["!cols"] = [
-        { wch: 10 },
-        { wch: 10 },
-        { wch: 10 },
-        { wch: 10 },
-        { wch: 50 },
-      ];
+      worksheet["!cols"] = [{ wch: 10 }, { wch: 10 }, { wch: 50 }];
       const date = new Date();
       XLSX.writeFile(workbook, `${filter}_Program_${date}.xlsx`);
     }
@@ -229,17 +211,11 @@ export function DataTable<TData, TValue>({
         exportList.push(newItem);
       }
 
-      const worksheet = XLSX.utils.json_to_sheet(programList);
+      const worksheet = XLSX.utils.json_to_sheet(exportList);
 
       XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
 
-      worksheet["!cols"] = [
-        { wch: 10 },
-        { wch: 10 },
-        { wch: 10 },
-        { wch: 10 },
-        { wch: 50 },
-      ];
+      worksheet["!cols"] = [{ wch: 10 }, { wch: 10 }, { wch: 50 }];
       const date = new Date();
       XLSX.writeFile(workbook, `${filter}_Program_${date}.xlsx`);
     }
@@ -272,17 +248,11 @@ export function DataTable<TData, TValue>({
         exportList.push(newItem);
       }
 
-      const worksheet = XLSX.utils.json_to_sheet(programList);
+      const worksheet = XLSX.utils.json_to_sheet(exportList);
 
       XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
 
-      worksheet["!cols"] = [
-        { wch: 10 },
-        { wch: 10 },
-        { wch: 10 },
-        { wch: 10 },
-        { wch: 50 },
-      ];
+      worksheet["!cols"] = [{ wch: 10 }, { wch: 10 }, { wch: 50 }];
       const date = new Date();
       XLSX.writeFile(workbook, `${filter}_Program_${date}.xlsx`);
     }

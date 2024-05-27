@@ -176,7 +176,12 @@ export function DataTable<TData, TValue>({
         { wch: 50 },
       ];
       const date = new Date();
-      XLSX.writeFile(workbook, `${filter}_${date}.xlsx`);
+      XLSX.writeFile(
+        workbook,
+        `${filter}_${
+          dateRangeEnd?.from + "-" + dateRangeEnd?.to
+        }_User_${date}.xlsx`
+      );
     }
     if (filter == "Selected Rows") {
       let newList = [...table.getSelectedRowModel().rows];
@@ -233,7 +238,7 @@ export function DataTable<TData, TValue>({
         { wch: 50 },
       ];
       const date = new Date();
-      XLSX.writeFile(workbook, `${filter}_${date}.xlsx`);
+      XLSX.writeFile(workbook, `${filter}_User_${date}.xlsx`);
     }
     if (filter == "This Week") {
       let newList = [...userList].filter((item: any) => {
@@ -292,7 +297,14 @@ export function DataTable<TData, TValue>({
         { wch: 50 },
       ];
       const date = new Date();
-      XLSX.writeFile(workbook, `${filter}_${date}.xlsx`);
+      XLSX.writeFile(
+        workbook,
+        `${filter}_${
+          getMonday(new Date()).toISOString() +
+          "-" +
+          new Date(new Date().toISOString())
+        }_User_${date}.xlsx`
+      );
     }
     if (filter == "This Month") {
       let newList = [...userList].filter((item: any) => {
@@ -359,7 +371,16 @@ export function DataTable<TData, TValue>({
         { wch: 50 },
       ];
       const date = new Date();
-      XLSX.writeFile(workbook, `${filter}_${date}.xlsx`);
+      let currDate = new Date();
+      let firstDay = new Date(currDate.getFullYear(), currDate.getMonth(), 1);
+
+      let dateFrom: any = new Date(firstDay.toISOString());
+      XLSX.writeFile(
+        workbook,
+        `${filter}_${
+          dateFrom + "-" + new Date(new Date().toISOString())
+        }_User_${date}.xlsx`
+      );
     }
     if (filter == "This Year") {
       let newList = [...userList].filter((item: any) => {
@@ -422,7 +443,16 @@ export function DataTable<TData, TValue>({
         { wch: 50 },
       ];
       const date = new Date();
-      XLSX.writeFile(workbook, `${filter}_${date}.xlsx`);
+      let currDate = new Date();
+      let firstDay = new Date(currDate.getFullYear(), 0, 1);
+
+      let dateFrom: any = new Date(firstDay.toISOString());
+      XLSX.writeFile(
+        workbook,
+        `${filter}_${
+          dateFrom + "-" + new Date(new Date().toISOString())
+        }_User_${date}.xlsx`
+      );
     }
   }
 
