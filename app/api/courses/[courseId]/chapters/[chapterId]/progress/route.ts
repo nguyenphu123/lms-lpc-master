@@ -8,12 +8,9 @@ export async function PUT(
   { params }: { params: { courseId: string; chapterId: string } }
 ) {
   try {
-    const { userId } = auth();
+    const { userId }: any = auth();
     const { progress, status, endDate, score, retakeTime } = await req.json();
 
-    if (!userId) {
-      return new NextResponse("Unauthorized", { status: 401 });
-    }
     const year = new Date();
     const date = new Date();
     const userProgress = await db.userProgress.upsert({

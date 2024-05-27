@@ -212,59 +212,65 @@ export const columns: ColumnDef<User>[] = [
                           </div>
                         }
                       >
+                        - All exam result:
                         {item.course.Module.filter(
                           (item: { type: string }) => item.type == "Exam"
                         ).map((item: any) => {
-                          return item.UserProgress.filter(
-                            (item: any) => item.userId == id
-                          ).length < 1 ? (
-                            <>No exam result</>
-                          ) : (
-                            <div key={item.id}>
-                              - All exam result:
+                          return (
+                            <>
                               {item.UserProgress.filter(
                                 (item: any) => item.userId == id
-                              ).map((item: any) => {
-                                return (
-                                  <div key={item.id}>
-                                    • {item.module.title}
-                                    {": "}
-                                    <span
-                                      className={`${
-                                        item.status == "finished"
-                                          ? "text-green-500 font-medium"
-                                          : item.status == "studying"
-                                          ? "text-yellow-500 font-medium"
-                                          : ""
-                                      }`}
-                                    >
-                                      {item.status === "finished"
-                                        ? `Pass (${item.score}%)`
-                                        : `Fail (${item.score}%)`}
-                                    </span>{" "}
-                                    on{" "}
-                                    {new Date(item.endDate).toLocaleTimeString(
-                                      [],
-                                      {
-                                        hour: "2-digit",
-                                        minute: "2-digit",
-                                      }
-                                    )}{" "}
-                                    {new Date(item.endDate).toLocaleDateString(
-                                      "vi-VN",
-                                      {
-                                        day: "2-digit",
-                                        month: "2-digit",
-                                        year: "numeric",
-                                      }
-                                    )}{" "}
-                                    {item.attempt > 1 && (
-                                      <span>({item.attempt - 1} 🐓)</span>
-                                    )}
-                                  </div>
-                                );
-                              })}
-                            </div>
+                              ).length < 1 ? (
+                                <div key={item.id}>
+                                  {" "}
+                                  • {item.title}
+                                  {": "}No exam result
+                                </div>
+                              ) : (
+                                <div key={item.id}>
+                                  {item.UserProgress.filter(
+                                    (item: any) => item.userId == id
+                                  ).map((item: any) => {
+                                    return (
+                                      <div key={item.id}>
+                                        • {item.module.title}
+                                        {": "}
+                                        <span
+                                          className={`${
+                                            item.status == "finished"
+                                              ? "text-green-500 font-medium"
+                                              : item.status == "studying"
+                                              ? "text-yellow-500 font-medium"
+                                              : ""
+                                          }`}
+                                        >
+                                          {item.status === "finished"
+                                            ? `Pass (${item.score}%)`
+                                            : `Fail (${item.score}%)`}
+                                        </span>{" "}
+                                        on{" "}
+                                        {new Date(
+                                          item.endDate
+                                        ).toLocaleTimeString([], {
+                                          hour: "2-digit",
+                                          minute: "2-digit",
+                                        })}{" "}
+                                        {new Date(
+                                          item.endDate
+                                        ).toLocaleDateString("vi-VN", {
+                                          day: "2-digit",
+                                          month: "2-digit",
+                                          year: "numeric",
+                                        })}{" "}
+                                        {item.attempt > 1 && (
+                                          <span>({item.attempt - 1} 🐓)</span>
+                                        )}
+                                      </div>
+                                    );
+                                  })}
+                                </div>
+                              )}
+                            </>
                           );
                         })}
                       </AccordionItem>
