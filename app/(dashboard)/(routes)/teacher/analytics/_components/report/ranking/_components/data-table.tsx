@@ -23,8 +23,8 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { addDays, format } from "date-fns";
-import { Calendar as CalendarIcon, FileDown } from "lucide-react";
+import { format } from "date-fns";
+import { Calendar as CalendarIcon, FileDown, ChevronDown } from "lucide-react";
 import { DateRange } from "react-day-picker";
 import { cn } from "@/lib/utils";
 import { Calendar } from "@/components/ui/calendar";
@@ -33,6 +33,12 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+} from "@/components/ui/dropdown-menu";
 import axios from "axios";
 
 interface DataTableProps<TData, TValue> {
@@ -56,6 +62,7 @@ export function DataTable<TData, TValue>({
   const [dateRangeEnd, setDateRangeEnd]: any = React.useState<
     DateRange | undefined
   >();
+  const [datePickerDisabled, setDatePickerDisabled] = React.useState(false); // State to manage date picker disable
 
   const [columnVisibility, setColumnVisibility] = React.useState({});
   const table = useReactTable({
@@ -93,7 +100,7 @@ export function DataTable<TData, TValue>({
 
   React.useEffect(() => {
     if (dateRangeEnd?.from && dateRangeEnd?.to) {
-      let tempUserList = [...userList].filter((item: any) =>
+      let tempUserList = [...data].filter((item: any) =>
         item.ClassSessionRecord.some((item: any) => {
           let dateFrom: any = new Date(dateRangeEnd.from.toISOString());
           let date: any = new Date(new Date(item.endDate).toISOString());
@@ -103,23 +110,11 @@ export function DataTable<TData, TValue>({
       );
 
       setUserList(tempUserList);
+      setDatePickerDisabled(true); // Disable date picker after selecting date range
     } else {
       setUserList(data);
     }
   }, [dateRangeEnd, table]);
-
-  const onSelectPeriod = (value: string) => {
-    switch (value) {
-      case "week":
-        break;
-      case "month":
-        break;
-      case "year":
-        break;
-      default:
-        break;
-    }
-  };
 
   async function getSheetData() {
     const worksheet = XLSX.utils.json_to_sheet(data);
@@ -129,13 +124,62 @@ export function DataTable<TData, TValue>({
     XLSX.writeFile(workbook, `${""}_${date}.xlsx`);
   }
 
+  async function getSheetDataByType(type: string) {
+    let filteredData = [...userList];
+    const currentDate = new Date();
+    if (type === "week") {
+      const startOfWeek = currentDate.getDate() - currentDate.getDay();
+      const endOfWeek = startOfWeek + 6;
+      filteredData = userList.filter((item: any) =>
+        item.ClassSessionRecord.some((session: any) => {
+          const sessionDate = new Date(session.endDate);
+          return (
+            sessionDate >= new Date(currentDate.setDate(startOfWeek)) &&
+            sessionDate <= new Date(currentDate.setDate(endOfWeek))
+          );
+        })
+      );
+    } else if (type === "month") {
+      const startOfMonth = new Date(
+        currentDate.getFullYear(),
+        currentDate.getMonth(),
+        1
+      );
+      const endOfMonth = new Date(
+        currentDate.getFullYear(),
+        currentDate.getMonth() + 1,
+        0
+      );
+      filteredData = userList.filter((item: any) =>
+        item.ClassSessionRecord.some((session: any) => {
+          const sessionDate = new Date(session.endDate);
+          return sessionDate >= startOfMonth && sessionDate <= endOfMonth;
+        })
+      );
+    } else if (type === "year") {
+      const startOfYear = new Date(currentDate.getFullYear(), 0, 1);
+      const endOfYear = new Date(currentDate.getFullYear(), 11, 31);
+      filteredData = userList.filter((item: any) =>
+        item.ClassSessionRecord.some((session: any) => {
+          const sessionDate = new Date(session.endDate);
+          return sessionDate >= startOfYear && sessionDate <= endOfYear;
+        })
+      );
+    }
+    const worksheet = XLSX.utils.json_to_sheet(filteredData);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
+    const date = new Date();
+    XLSX.writeFile(workbook, `${type}_${date}.xlsx`);
+  }
+
   function onDepartmentChange(departmentId: any) {
     table.getColumn("departmentId")?.setFilterValue(departmentId);
   }
 
   return (
     <div>
-      <div className=" grid grid-cols-2 gap-1">
+      <div className="flex items-center py-4 justify-between">
         <Input
           placeholder="Filter users..."
           value={
@@ -157,42 +201,62 @@ export function DataTable<TData, TValue>({
             <option
               key={item.id}
               value={item.id}
-              className="text-black dark:text-white"
+              className="max-w-sm p-2 border rounded text-muted-foreground dark:bg-slate-950"
             >
               {item.title}
             </option>
           ))}
         </select>
-        <select
-          name="status"
-          id="filterByStatus"
-          onChange={(event) => onSelectPeriod(event.target.value)}
-          className="max-w-sm p-2 border rounded text-muted-foreground dark:bg-slate-950"
-        >
-          <option value="">All time</option>
-          <option value="week">this week</option>
-          <option value="month">this month</option>
-          <option value="year">this year</option>
-        </select>
-        <div className="inline-flex gap-2">
+        <div className="flex gap-2 items-center">
           <DatePickerWithRange
-            placeHolder={"check ranking in a period"}
+            placeHolder={"Filter date range"}
             date={dateRangeEnd}
             setDate={setDateRangeEnd}
             className="max-w-sm"
+            disabled={datePickerDisabled} // Pass the disabled state to the date picker
           />
           {dateRangeEnd != undefined ? (
-            <button onClick={() => setDateRangeEnd(undefined)}>X</button>
+            <button
+              onClick={() => {
+                setDateRangeEnd(undefined);
+                setDatePickerDisabled(false); // Enable date picker on cancel
+              }}
+            >
+              X
+            </button>
           ) : (
             <></>
           )}
         </div>
-        <div className="inline-flex gap-2"></div>
+        <div>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button>
+                <FileDown className="h-4 w-4 mr-2" />
+                Select report <ChevronDown />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              <DropdownMenuItem onClick={() => getSheetData()}>
+                Report (All)
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => getSheetData()}>
+                Report (Selected Rows)
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => getSheetDataByType("week")}>
+                Report (This Week)
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => getSheetDataByType("month")}>
+                Report (This Month)
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => getSheetDataByType("year")}>
+                Report (This Year)
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
       </div>
-      <Button onClick={() => getSheetData()}>
-        <FileDown className="h-4 w-4 mr-2" />
-        Export report
-      </Button>
+
       <div className="rounded-md border">
         <Table>
           <TableHeader>
@@ -270,11 +334,13 @@ function DatePickerWithRange({
   className,
   date,
   setDate,
+  disabled,
 }: {
   placeHolder?: string;
   className?: string;
   date: DateRange | undefined;
   setDate: React.Dispatch<React.SetStateAction<DateRange | undefined>>;
+  disabled?: boolean; // Accept disabled prop
 }) {
   return (
     <div className={cn("grid gap-2", className)}>
@@ -285,8 +351,10 @@ function DatePickerWithRange({
             variant={"outline"}
             className={cn(
               "w-[300px] justify-start text-left font-normal",
-              !date && "text-muted-foreground"
+              !date && "text-muted-foreground",
+              disabled && "opacity-50 cursor-not-allowed" // Apply styles when disabled
             )}
+            disabled={disabled} // Disable button when disabled prop is true
           >
             <CalendarIcon className="mr-2 h-4 w-4" />
             {date?.from ? (

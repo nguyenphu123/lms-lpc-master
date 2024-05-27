@@ -12,7 +12,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { PlusCircle, FileDown } from "lucide-react";
+import { PlusCircle, FileDown, ChevronDown } from "lucide-react";
 import * as XLSX from "xlsx";
 import {
   Table,
@@ -36,6 +36,12 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+  DropdownMenuItem,
+} from "@/components/ui/dropdown-menu";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -149,10 +155,33 @@ export function DataTable<TData, TValue>({
           setDate={setDateRange}
           className="max-w-sm"
         />
-        <Button onClick={() => getSheetData()}>
-          <FileDown className="h-4 w-4 mr-2" />
-          Export report
-        </Button>
+        <div>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button>
+                <FileDown className="h-4 w-4 mr-2" />
+                Select report <ChevronDown />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              <DropdownMenuItem onClick={() => getSheetData()}>
+                Report (All)
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => getSheetData()}>
+                Report (Selected Rows)
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => getSheetData()}>
+                Report (This Week)
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => getSheetData()}>
+                Report (This Month)
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => getSheetData()}>
+                Report (This Year)
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
       </div>
       <div className="rounded-md border">
         <Table>

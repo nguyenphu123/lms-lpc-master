@@ -11,6 +11,8 @@ import {
   PromiseLikeOfReactNode,
   HTMLProps,
 } from "react";
+import { AttendeesCell } from "@/components/ui/attendees-cell";
+import { ExamsCell } from "@/components/ui/exam-cell";
 
 export const columns: ColumnDef<Course>[] = [
   {
@@ -120,10 +122,10 @@ export const columns: ColumnDef<Course>[] = [
 
       return (
         <div>
-          {new Date(startDate).toLocaleTimeString([], {
+          {/* {new Date(startDate).toLocaleTimeString([], {
             hour: "2-digit",
             minute: "2-digit",
-          })}{" "}
+          })}{" "} */}
           {new Date(startDate).toLocaleDateString("vi-VN", {
             day: "2-digit",
             month: "2-digit",
@@ -135,41 +137,12 @@ export const columns: ColumnDef<Course>[] = [
   },
   {
     accessorKey: "ClassSessionRecord",
-    header: ({ column }) => {
-      return (
-        <span
-          className="flex items-center cursor-pointer"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          <span className="mr-2">Attendees</span>
-        </span>
-      );
-    },
-    cell: ({ row }: any) => {
-      const { ClassSessionRecord } = row.original;
-
-      return (
-        <div>
-          {ClassSessionRecord.map((item: any) => {
-            return (
-              <div key={item.id}>
-                {item.user.username}:{" "}
-                <span
-                  className={`${
-                    item.status == "finished"
-                      ? "text-green-500"
-                      : "text-yellow-500"
-                  }`}
-                >
-                  {item.status}
-                </span>{" "}
-                ({item.progress})
-              </div>
-            );
-          })}
-        </div>
-      );
-    },
+    header: ({ column }) => (
+      <span className="flex items-center cursor-pointer">
+        <span className="mr-2">Attendees</span>
+      </span>
+    ),
+    cell: AttendeesCell,
   },
   {
     accessorKey: "Module",
@@ -183,64 +156,41 @@ export const columns: ColumnDef<Course>[] = [
         </span>
       );
     },
-    cell: ({ row }: any) => {
-      const { Module } = row.original;
-
-      return (
-        <div>
-          {Module.map((item: any) => {
-            return item.type == "Exam" ? (
-              <div key={item.id}>
-                {item.title}
-                {item.UserProgress.map((item: any) => {
-                  return (
-                    <div key={item.id}>
-                      {item.user.username}:{item.score}%
-                    </div>
-                  );
-                })}
-              </div>
-            ) : (
-              <></>
-            );
-          })}
-        </div>
-      );
-    },
+    cell: ExamsCell,
   },
-  {
-    accessorKey: "Module",
-    header: ({ column }) => {
-      return (
-        <span
-          className="flex items-center cursor-pointer"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          <span className="mr-2">Study pages</span>
-        </span>
-      );
-    },
-    cell: ({ row }: any) => {
-      const { Module } = row.original;
+  // {
+  //   accessorKey: "Module",
+  //   header: ({ column }) => {
+  //     return (
+  //       <span
+  //         className="flex items-center cursor-pointer"
+  //         onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+  //       >
+  //         <span className="mr-2">Study pages</span>
+  //       </span>
+  //     );
+  //   },
+  //   cell: ({ row }: any) => {
+  //     const { Module } = row.original;
 
-      return (
-        <div>
-          {Module.map((item: any) => {
-            return item.type == "slide" ? (
-              <div key={item.id}>
-                {item.title}
-                {/* {item.UserProgress.map((item: any) => {
-                  return <div key={item.id}>{item.user.username}</div>;
-                })} */}
-              </div>
-            ) : (
-              <></>
-            );
-          })}
-        </div>
-      );
-    },
-  },
+  //     return (
+  //       <div>
+  //         {Module.map((item: any) => {
+  //           return item.type == "slide" ? (
+  //             <div key={item.id}>
+  //               {item.title}
+  //               {/* {item.UserProgress.map((item: any) => {
+  //                 return <div key={item.id}>{item.user.username}</div>;
+  //               })} */}
+  //             </div>
+  //           ) : (
+  //             <></>
+  //           );
+  //         })}
+  //       </div>
+  //     );
+  //   },
+  // },
   {
     accessorKey: "CourseOnDepartment",
     header: ({ column }) => {

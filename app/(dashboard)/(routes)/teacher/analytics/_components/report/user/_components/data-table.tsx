@@ -111,56 +111,319 @@ export function DataTable<TData, TValue>({
       setUserList(data);
     }
   }, [dateRangeEnd, table]);
+  function getMonday(d: any) {
+    d = new Date(d);
+    const day = d.getDay();
+    const diff = d.getDate() - day + (day == 0 ? -6 : 1);
+    return new Date(d.setDate(diff));
+  }
 
-  async function getSheetData() {
+  async function getSheetData(filter: any) {
     const workbook = XLSX.utils.book_new();
-    let newList = [...userList];
-    let exportList = [];
-    for (let i = 0; i < newList.length; i++) {
-      console.log(newList[i]);
 
-      let studiedCourse = "";
-      for (let j = 0; j < newList[i].ClassSessionRecord.length; j++) {
-        studiedCourse =
-          studiedCourse +
-          " \n" +
-          newList[i].ClassSessionRecord[j].course.title +
-          " \n" +
-          newList[i].ClassSessionRecord[j].status +
-          " on " +
-          newList[i].ClassSessionRecord[j].endDate +
-          "\n";
+    if (filter == "All") {
+      let newList = [...userList];
+      let exportList = [];
+      for (let i = 0; i < newList.length; i++) {
+        let studiedCourse = "";
+        for (let j = 0; j < newList[i].ClassSessionRecord.length; j++) {
+          studiedCourse =
+            studiedCourse +
+            " \n" +
+            newList[i].ClassSessionRecord[j].course.title +
+            " \n" +
+            newList[i].ClassSessionRecord[j].status +
+            " on " +
+            newList[i].ClassSessionRecord[j].endDate +
+            "\n";
+          for (
+            let k = 0;
+            k < newList[i].ClassSessionRecord[j].course.Module.length;
+            k++
+          ) {
+            studiedCourse =
+              studiedCourse +
+              " \n" +
+              newList[i].ClassSessionRecord[j].course.Module[k].title +
+              ": " +
+              newList[i].ClassSessionRecord[j].course.Module[k].UserProgress[0]
+                .status +
+              "\n";
+          }
+        }
+
+        let newItem = {
+          name: newList[i].username,
+          score: newList[i].star,
+          email: newList[i].email,
+          department: newList[i].Department.title,
+          progress_report: studiedCourse,
+        };
+        exportList.push(newItem);
+      }
+      const worksheet = XLSX.utils.json_to_sheet(exportList);
+
+      XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
+      // XLSX.utils.sheet_add_aoa(worksheet, [["progress_report"]], {
+      //   origin: "E1",
+      //   cellStyles: true,
+      // });
+      worksheet["!cols"] = [
+        { wch: 10 },
+        { wch: 10 },
+        { wch: 10 },
+        { wch: 10 },
+        { wch: 50 },
+      ];
+      const date = new Date();
+      XLSX.writeFile(workbook, `${filter}_${date}.xlsx`);
+    }
+    if (filter == "Selected Rows") {
+      let newList = [...table.getSelectedRowModel().rows];
+      let exportList = [];
+      for (let i = 0; i < newList.length; i++) {
+        let studiedCourse = "";
         for (
-          let k = 0;
-          k < newList[i].ClassSessionRecord[j].course.Module.length;
-          k++
+          let j = 0;
+          j < newList[i].original.ClassSessionRecord.length;
+          j++
         ) {
           studiedCourse =
             studiedCourse +
             " \n" +
-            newList[i].ClassSessionRecord[j].course.Module[k].title +
-            ": " +
-            newList[i].ClassSessionRecord[j].course.Module[k].UserProgress[0]
-              .status +
+            newList[i].original.ClassSessionRecord[j].course.title +
+            " \n" +
+            newList[i].original.ClassSessionRecord[j].status +
+            " on " +
+            newList[i].original.ClassSessionRecord[j].endDate +
             "\n";
+          for (
+            let k = 0;
+            k < newList[i].original.ClassSessionRecord[j].course.Module.length;
+            k++
+          ) {
+            studiedCourse =
+              studiedCourse +
+              " \n" +
+              newList[i].original.ClassSessionRecord[j].course.Module[k].title +
+              ": " +
+              newList[i].original.ClassSessionRecord[j].course.Module[k]
+                .UserProgress[0].status +
+              "\n";
+          }
         }
+
+        let newItem = {
+          name: newList[i].original.username,
+          score: newList[i].original.star,
+          email: newList[i].original.email,
+          department: newList[i].original.Department.title,
+          progress_report: studiedCourse,
+        };
+        exportList.push(newItem);
       }
-      console.log(studiedCourse);
-      let newItem = {
-        name: newList[i].username,
-        score: newList[i].star,
-        email: newList[i].email,
-        department: newList[i].Department.title,
-        progress_report: studiedCourse,
-      };
-      exportList.push(newItem);
+      const worksheet = XLSX.utils.json_to_sheet(exportList);
+
+      XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
+      worksheet["!cols"] = [
+        { wch: 10 },
+        { wch: 10 },
+        { wch: 10 },
+        { wch: 10 },
+        { wch: 50 },
+      ];
+      const date = new Date();
+      XLSX.writeFile(workbook, `${filter}_${date}.xlsx`);
     }
-    const worksheet = XLSX.utils.json_to_sheet(exportList);
+    if (filter == "This Week") {
+      let newList = [...userList].filter((item: any) => {
+        return item.ClassSessionRecord.some((item: any) => {
+          let dateFrom: any = getMonday(new Date()).toISOString();
+          let date: any = new Date(new Date(item.endDate).toISOString());
+          // let dateTo: any = getSunday(new Date()).toISOString();
+          return dateFrom <= date;
+        });
+      });
+      let exportList = [];
+      for (let i = 0; i < newList.length; i++) {
+        let studiedCourse = "";
+        for (let j = 0; j < newList[i].ClassSessionRecord.length; j++) {
+          studiedCourse =
+            studiedCourse +
+            " \n" +
+            newList[i].ClassSessionRecord[j].course.title +
+            " \n" +
+            newList[i].ClassSessionRecord[j].status +
+            " on " +
+            newList[i].ClassSessionRecord[j].endDate +
+            "\n";
+          for (
+            let k = 0;
+            k < newList[i].ClassSessionRecord[j].course.Module.length;
+            k++
+          ) {
+            studiedCourse =
+              studiedCourse +
+              " \n" +
+              newList[i].ClassSessionRecord[j].course.Module[k].title +
+              ": " +
+              newList[i].ClassSessionRecord[j].course.Module[k].UserProgress[0]
+                .status +
+              "\n";
+          }
+        }
 
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
+        let newItem = {
+          name: newList[i].username,
+          score: newList[i].star,
+          email: newList[i].email,
+          department: newList[i].Department.title,
+          progress_report: studiedCourse,
+        };
+        exportList.push(newItem);
+      }
+      const worksheet = XLSX.utils.json_to_sheet(exportList);
+      XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
+      worksheet["!cols"] = [
+        { wch: 10 },
+        { wch: 10 },
+        { wch: 10 },
+        { wch: 10 },
+        { wch: 50 },
+      ];
+      const date = new Date();
+      XLSX.writeFile(workbook, `${filter}_${date}.xlsx`);
+    }
+    if (filter == "This Month") {
+      let newList = [...userList].filter((item: any) => {
+        return item.ClassSessionRecord.some((item: any) => {
+          let currDate = new Date();
+          let firstDay = new Date(
+            currDate.getFullYear(),
+            currDate.getMonth(),
+            1
+          );
 
-    const date = new Date();
-    XLSX.writeFile(workbook, `${""}_${date}.xlsx`);
+          let dateFrom: any = new Date(firstDay.toISOString());
+          let date: any = new Date(new Date(item.startDate).toISOString());
+          // let dateTo: any = new Date(dateRangeEnd.to.toISOString());
+          return dateFrom <= date;
+        });
+      });
+      let exportList = [];
+      for (let i = 0; i < newList.length; i++) {
+        let studiedCourse = "";
+        for (let j = 0; j < newList[i].ClassSessionRecord.length; j++) {
+          studiedCourse =
+            studiedCourse +
+            " \n" +
+            newList[i].ClassSessionRecord[j].course.title +
+            " \n" +
+            newList[i].ClassSessionRecord[j].status +
+            " on " +
+            newList[i].ClassSessionRecord[j].endDate +
+            "\n";
+          for (
+            let k = 0;
+            k < newList[i].ClassSessionRecord[j].course.Module.length;
+            k++
+          ) {
+            studiedCourse =
+              studiedCourse +
+              " \n" +
+              newList[i].ClassSessionRecord[j].course.Module[k].title +
+              ": " +
+              newList[i].ClassSessionRecord[j].course.Module[k].UserProgress[0]
+                .status +
+              "\n";
+          }
+        }
+
+        let newItem = {
+          name: newList[i].username,
+          score: newList[i].star,
+          email: newList[i].email,
+          department: newList[i].Department.title,
+          progress_report: studiedCourse,
+        };
+        exportList.push(newItem);
+      }
+      const worksheet = XLSX.utils.json_to_sheet(exportList);
+
+      XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
+      worksheet["!cols"] = [
+        { wch: 10 },
+        { wch: 10 },
+        { wch: 10 },
+        { wch: 10 },
+        { wch: 50 },
+      ];
+      const date = new Date();
+      XLSX.writeFile(workbook, `${filter}_${date}.xlsx`);
+    }
+    if (filter == "This Year") {
+      let newList = [...userList].filter((item: any) => {
+        return item.ClassSessionRecord.some((item: any) => {
+          let currDate = new Date();
+          let firstDay = new Date(currDate.getFullYear(), 0, 1);
+
+          let dateFrom: any = new Date(firstDay.toISOString());
+          let date: any = new Date(new Date(item.startDate).toISOString());
+          // let dateTo: any = new Date(dateRangeEnd.to.toISOString());
+          return dateFrom <= date;
+        });
+      });
+      let exportList = [];
+      for (let i = 0; i < newList.length; i++) {
+        let studiedCourse = "";
+        for (let j = 0; j < newList[i].ClassSessionRecord.length; j++) {
+          studiedCourse =
+            studiedCourse +
+            " \n" +
+            newList[i].ClassSessionRecord[j].course.title +
+            " \n" +
+            newList[i].ClassSessionRecord[j].status +
+            " on " +
+            newList[i].ClassSessionRecord[j].endDate +
+            "\n";
+          for (
+            let k = 0;
+            k < newList[i].ClassSessionRecord[j].course.Module.length;
+            k++
+          ) {
+            studiedCourse =
+              studiedCourse +
+              " \n" +
+              newList[i].ClassSessionRecord[j].course.Module[k].title +
+              ": " +
+              newList[i].ClassSessionRecord[j].course.Module[k].UserProgress[0]
+                .status +
+              "\n";
+          }
+        }
+
+        let newItem = {
+          name: newList[i].username,
+          score: newList[i].star,
+          email: newList[i].email,
+          department: newList[i].Department.title,
+          progress_report: studiedCourse,
+        };
+        exportList.push(newItem);
+      }
+      const worksheet = XLSX.utils.json_to_sheet(exportList);
+
+      XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
+      worksheet["!cols"] = [
+        { wch: 10 },
+        { wch: 10 },
+        { wch: 10 },
+        { wch: 10 },
+        { wch: 50 },
+      ];
+      const date = new Date();
+      XLSX.writeFile(workbook, `${filter}_${date}.xlsx`);
+    }
   }
 
   function onDepartmentChange(departmentId: any) {
@@ -231,30 +494,32 @@ export function DataTable<TData, TValue>({
             ) : (
               <DropdownMenuContent>
                 {table.getSelectedRowModel().rows.length == 0 ? (
-                  <DropdownMenuItem onClick={() => getSheetData()}>
+                  <DropdownMenuItem onClick={() => getSheetData("All")}>
                     Report (All)
                   </DropdownMenuItem>
                 ) : (
-                  <DropdownMenuItem onClick={() => getSheetData()}>
+                  <DropdownMenuItem
+                    onClick={() => getSheetData("Selected Rows")}
+                  >
                     Report (Selected Rows)
                   </DropdownMenuItem>
                 )}
                 {table.getSelectedRowModel().rows.length == 0 ? (
-                  <DropdownMenuItem onClick={() => getSheetData()}>
+                  <DropdownMenuItem onClick={() => getSheetData("This Week")}>
                     Report (This Week)
                   </DropdownMenuItem>
                 ) : (
                   <></>
                 )}
                 {table.getSelectedRowModel().rows.length == 0 ? (
-                  <DropdownMenuItem onClick={() => getSheetData()}>
+                  <DropdownMenuItem onClick={() => getSheetData("This Month")}>
                     Report (This Month)
                   </DropdownMenuItem>
                 ) : (
                   <></>
                 )}
                 {table.getSelectedRowModel().rows.length == 0 ? (
-                  <DropdownMenuItem onClick={() => getSheetData()}>
+                  <DropdownMenuItem onClick={() => getSheetData("This Year")}>
                     Report (This Year)
                   </DropdownMenuItem>
                 ) : (
