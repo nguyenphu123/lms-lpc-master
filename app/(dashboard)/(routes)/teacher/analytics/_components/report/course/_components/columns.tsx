@@ -88,6 +88,16 @@ export const columns: ColumnDef<Course>[] = [
   //   },
   // },
   {
+    accessorKey: "courseInstructedBy",
+    header: ({ column }) => {
+      return (
+        <span className="flex items-center cursor-pointer">
+          <span className="mr-2">Instructor</span>
+        </span>
+      );
+    },
+  },
+  {
     accessorKey: "courseInstructor",
     header: ({ column }) => {
       return (

@@ -62,6 +62,7 @@ export function DataTable<TData, TValue>({
     DateRange | undefined
   >();
   const [rowSelection, setRowSelection] = React.useState({});
+  const [columnVisibility, setColumnVisibility] = React.useState({});
   const table = useReactTable({
     data: courseList,
     columns,
@@ -78,6 +79,9 @@ export function DataTable<TData, TValue>({
       sorting,
       columnFilters,
       rowSelection,
+      columnVisibility: {
+        courseInstructedBy: false,
+      },
     },
   });
 
@@ -165,14 +169,16 @@ export function DataTable<TData, TValue>({
     filteredList.forEach((item: any) => {
       const moduleList = item.Module.map(
         (module: any) => `${module.title} : ${module.type}`
-      ).join("\n");
+      ).join(" \n");
       const attendees = item.ClassSessionRecord.map(
         (session: any) => `${session.user.username} : ${session.status}`
-      ).join("\n");
-
+      ).join(" \n");
+      const departments = item?.CourseOnDepartment.map(
+        (item: any) => item?.Department?.title
+      ).join(" \n");
       exportList.push({
         title: item.title || "",
-        department: (item.Department && item.Department.title) || "",
+        department: departments,
         credit: item.credit || "",
         instructor:
           (item.courseInstructor && item.courseInstructor.username) || "",
@@ -211,6 +217,8 @@ export function DataTable<TData, TValue>({
       dateSuffix = `${firstDayOfMonth.toISOString().split("T")[0]}-${
         currentDate.toISOString().split("T")[0]
       }`;
+    } else {
+      dateSuffix = new Date().toISOString().split("T")[0];
     }
 
     XLSX.writeFile(workbook, `${filter}_Course_${dateSuffix}.xlsx`);
