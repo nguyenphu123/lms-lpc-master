@@ -116,70 +116,112 @@ export function DataTable<TData, TValue>({
     }
   }, [dateRangeEnd, table]);
 
-  async function getSheetData(filter: any) {
-    if (filter == "All") {
-      const worksheet = XLSX.utils.json_to_sheet(data);
-      const workbook = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
-      const date = new Date();
-      XLSX.writeFile(workbook, `${filter}_Ranking_${date}.xlsx`);
-    } else {
-      let newList: any = [...table.getSelectedRowModel().rows];
-      const worksheet = XLSX.utils.json_to_sheet(newList.original);
-      const workbook = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
-      const date = new Date();
-      XLSX.writeFile(workbook, `${filter}_Ranking_${date}.xlsx`);
-    }
+  function getMonday(d: any) {
+    d = new Date(d);
+    const day = d.getDay();
+    const diff = d.getDate() - day + (day == 0 ? -6 : 1);
+    return new Date(d.setDate(diff));
   }
 
-  async function getSheetDataByType(type: string) {
-    let filteredData = [...userList];
-    const currentDate = new Date();
-    if (type === "week") {
-      const startOfWeek = currentDate.getDate() - currentDate.getDay();
-      const endOfWeek = startOfWeek + 6;
-      filteredData = userList.filter((item: any) =>
-        item.ClassSessionRecord.some((session: any) => {
-          const sessionDate = new Date(session.endDate);
-          return (
-            sessionDate >= new Date(currentDate.setDate(startOfWeek)) &&
-            sessionDate <= new Date(currentDate.setDate(endOfWeek))
-          );
-        })
-      );
-    } else if (type === "month") {
-      const startOfMonth = new Date(
-        currentDate.getFullYear(),
-        currentDate.getMonth(),
-        1
-      );
-      const endOfMonth = new Date(
-        currentDate.getFullYear(),
-        currentDate.getMonth() + 1,
-        0
-      );
-      filteredData = userList.filter((item: any) =>
-        item.ClassSessionRecord.some((session: any) => {
-          const sessionDate = new Date(session.endDate);
-          return sessionDate >= startOfMonth && sessionDate <= endOfMonth;
-        })
-      );
-    } else if (type === "year") {
-      const startOfYear = new Date(currentDate.getFullYear(), 0, 1);
-      const endOfYear = new Date(currentDate.getFullYear(), 11, 31);
-      filteredData = userList.filter((item: any) =>
-        item.ClassSessionRecord.some((session: any) => {
-          const sessionDate = new Date(session.endDate);
-          return sessionDate >= startOfYear && sessionDate <= endOfYear;
-        })
-      );
-    }
-    const worksheet = XLSX.utils.json_to_sheet(filteredData);
+  async function getSheetData(filter: any) {
     const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
+    let exportList = [];
+
+    const UserList = (list: any[]) => {
+      return list.map((user) => {
+        return {
+          Name: user.username,
+          Email: user.email,
+          Department: user.Department.title,
+          Score: user.star,
+        };
+      });
+    };
+
+    switch (filter) {
+      case "All":
+        exportList = UserList(userList);
+        break;
+      case "Selected Rows":
+        exportList = UserList(
+          table.getSelectedRowModel().rows.map((row) => row.original)
+        );
+        break;
+      case "This Week":
+        exportList = UserList(
+          userList.filter((item: any) =>
+            item.ClassSessionRecord.some((session: any) => {
+              let dateFrom = getMonday(new Date()).toISOString();
+              let date = new Date(session.endDate).toISOString();
+              return dateFrom <= date;
+            })
+          )
+        );
+        break;
+      case "This Month":
+        exportList = UserList(
+          userList.filter((item: any) =>
+            item.ClassSessionRecord.some((session: any) => {
+              let currDate = new Date();
+              let firstDay = new Date(
+                currDate.getFullYear(),
+                currDate.getMonth(),
+                1
+              ).toISOString();
+              let date = new Date(session.startDate).toISOString();
+              return firstDay <= date;
+            })
+          )
+        );
+        break;
+      case "This Year":
+        exportList = UserList(
+          userList.filter((item: any) =>
+            item.ClassSessionRecord.some((session: any) => {
+              let currDate = new Date();
+              let firstDay = new Date(
+                currDate.getFullYear(),
+                0,
+                1
+              ).toISOString();
+              let date = new Date(session.startDate).toISOString();
+              return firstDay <= date;
+            })
+          )
+        );
+        break;
+      default:
+        return;
+    }
+
+    const worksheet = XLSX.utils.json_to_sheet(exportList);
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Report");
+
+    // Set column widths
+    worksheet["!cols"] = [
+      { wch: 20 }, // Name column width
+      { wch: 30 }, // Email column width
+      { wch: 20 }, // Department column width
+      { wch: 10 }, // Score column width
+    ];
+
+    // Bold the header row
+    const range = XLSX.utils.decode_range(worksheet["!ref"] || "");
+    for (let C = range.s.c; C <= range.e.c; ++C) {
+      const cell_address = { c: C, r: range.s.r };
+      const cell_ref = XLSX.utils.encode_cell(cell_address);
+      if (worksheet[cell_ref]) {
+        worksheet[cell_ref].s = {
+          font: { bold: true },
+        };
+      }
+    }
+
     const date = new Date();
-    XLSX.writeFile(workbook, `${type}_${date}.xlsx`);
+    XLSX.writeFile(
+      workbook,
+      `${filter}_Users_${date.toISOString().split("T")[0]}.xlsx`
+    );
   }
 
   function onDepartmentChange(departmentId: any) {
@@ -245,23 +287,44 @@ export function DataTable<TData, TValue>({
                 Select report <ChevronDown />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent>
-              <DropdownMenuItem onClick={() => getSheetData("All")}>
-                Report (All)
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => getSheetData("Selected Rows")}>
-                Report (Selected Rows)
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => getSheetDataByType("week")}>
-                Report (This Week)
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => getSheetDataByType("month")}>
-                Report (This Month)
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => getSheetDataByType("year")}>
-                Report (This Year)
-              </DropdownMenuItem>
-            </DropdownMenuContent>
+            {userList.length == 0 ? (
+              <></>
+            ) : (
+              <DropdownMenuContent>
+                {table.getSelectedRowModel().rows.length == 0 ? (
+                  <DropdownMenuItem onClick={() => getSheetData("All")}>
+                    Report (All)
+                  </DropdownMenuItem>
+                ) : (
+                  <DropdownMenuItem
+                    onClick={() => getSheetData("Selected Rows")}
+                  >
+                    Report (Selected Rows)
+                  </DropdownMenuItem>
+                )}
+                {table.getSelectedRowModel().rows.length == 0 ? (
+                  <DropdownMenuItem onClick={() => getSheetData("This Week")}>
+                    Report (This Week)
+                  </DropdownMenuItem>
+                ) : (
+                  <></>
+                )}
+                {table.getSelectedRowModel().rows.length == 0 ? (
+                  <DropdownMenuItem onClick={() => getSheetData("This Month")}>
+                    Report (This Month)
+                  </DropdownMenuItem>
+                ) : (
+                  <></>
+                )}
+                {table.getSelectedRowModel().rows.length == 0 ? (
+                  <DropdownMenuItem onClick={() => getSheetData("This Year")}>
+                    Report (This Year)
+                  </DropdownMenuItem>
+                ) : (
+                  <></>
+                )}
+              </DropdownMenuContent>
+            )}
           </DropdownMenu>
         </div>
       </div>

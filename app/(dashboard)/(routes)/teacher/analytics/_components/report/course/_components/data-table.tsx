@@ -114,311 +114,106 @@ export function DataTable<TData, TValue>({
     return new Date(d.setDate(diff));
   }
 
-  async function getSheetData(filter: any) {
+  async function getSheetData(filter: string) {
     const workbook = XLSX.utils.book_new();
+    const exportList: any = [];
 
-    if (filter == "All") {
-      let newList: any = [...courseList];
-      let exportList = [];
-      for (let i = 0; i < newList.length; i++) {
-        let moduleList = "";
-        for (let j = 0; j < newList[i].Module.length; j++) {
-          moduleList =
-            moduleList +
-            "-" +
-            newList[i].Module[j].title +
-            " : " +
-            newList[i].Module[j].type +
-            " \n";
-        }
-        let attendees = "";
-        for (let j = 0; j < newList[i].ClassSessionRecord.length; j++) {
-          attendees =
-            attendees +
-            "-" +
-            newList[i].ClassSessionRecord[j].user.username +
-            " : " +
-            newList[i].ClassSessionRecord[j].status +
-            " \n";
-        }
-        let newItem = {
-          title: newList[i].title,
-          credit: newList[i].credit,
-          instructor: newList[i].courseInstructor.username,
-          department: newList[i].Department.title,
-          module_list: moduleList,
-          attendees: attendees,
-        };
-        exportList.push(newItem);
-      }
+    let filteredList: any = [];
 
-      const worksheet = XLSX.utils.json_to_sheet(newList);
-
-      XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
-
-      worksheet["!cols"] = [
-        { wch: 10 },
-        { wch: 10 },
-        { wch: 10 },
-        { wch: 50 },
-        { wch: 50 },
-        { wch: 50 },
-      ];
-      const date = new Date();
-      XLSX.writeFile(workbook, `${filter}_Course_${date}.xlsx`);
+    switch (filter) {
+      case "All":
+        filteredList = [...courseList];
+        break;
+      case "Selected Rows":
+        filteredList = table
+          .getSelectedRowModel()
+          .rows.map((row) => row.original);
+        break;
+      case "This Week":
+        filteredList = courseList.filter((item: any) => {
+          const dateFrom = getMonday(new Date()).toISOString();
+          const date = new Date(item.endDate).toISOString();
+          return dateFrom <= date;
+        });
+        break;
+      case "This Month":
+        const currDate = new Date();
+        const firstDay = new Date(
+          currDate.getFullYear(),
+          currDate.getMonth(),
+          1
+        );
+        const dateFrom = new Date(firstDay).toISOString();
+        filteredList = courseList.filter((item: any) => {
+          const date = new Date(item.startDate).toISOString();
+          return dateFrom <= date;
+        });
+        break;
+      case "This Year":
+        const currYear = new Date().getFullYear();
+        const firstDayOfYear = new Date(currYear, 0, 1);
+        const dateFromYear = new Date(firstDayOfYear).toISOString();
+        filteredList = courseList.filter((item: any) => {
+          const date = new Date(item.startDate).toISOString();
+          return dateFromYear <= date;
+        });
+        break;
+      default:
+        break;
     }
-    if (filter == "Selected Rows") {
-      let newList: any = [...table.getSelectedRowModel().rows];
 
-      let exportList = [];
-      for (let i = 0; i < newList.length; i++) {
-        let moduleList = "";
-        for (let j = 0; j < newList[i].original.Module.length; j++) {
-          moduleList =
-            moduleList +
-            "-" +
-            newList[i].original.Module[j].title +
-            " : " +
-            newList[i].original.Module[j].type +
-            " \n";
-        }
-        let attendees = "";
-        for (
-          let j = 0;
-          j < newList[i].original.ClassSessionRecord.length;
-          j++
-        ) {
-          attendees =
-            attendees +
-            "-" +
-            newList[i].original.ClassSessionRecord[j].user.username +
-            " : " +
-            newList[i].original.ClassSessionRecord[j].status +
-            " \n";
-        }
-        let newItem = {
-          title: newList[i].original.title,
-          credit: newList[i].original.credit,
-          instructor: newList[i].original.courseInstructor.username,
-          department: newList[i].original.Department.title,
-          module_list: moduleList,
-          attendees: attendees,
-        };
-        exportList.push(newItem);
-      }
+    filteredList.forEach((item: any) => {
+      const moduleList = item.Module.map(
+        (module: any) => `${module.title} : ${module.type}`
+      ).join("\n");
+      const attendees = item.ClassSessionRecord.map(
+        (session: any) => `${session.user.username} : ${session.status}`
+      ).join("\n");
 
-      const worksheet = XLSX.utils.json_to_sheet(newList);
-
-      XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
-
-      worksheet["!cols"] = [
-        { wch: 10 },
-        { wch: 10 },
-        { wch: 10 },
-        { wch: 50 },
-        { wch: 50 },
-        { wch: 50 },
-      ];
-      const date = new Date();
-      XLSX.writeFile(workbook, `${filter}_Course_${date}.xlsx`);
-    }
-    if (filter == "This Week") {
-      let newList: any = [...courseList].filter((item: any) => {
-        let dateFrom: any = getMonday(new Date()).toISOString();
-        let date: any = new Date(new Date(item.endDate).toISOString());
-        // let dateTo: any = getSunday(new Date()).toISOString();
-        return dateFrom <= date;
+      exportList.push({
+        title: item.title || "",
+        department: (item.Department && item.Department.title) || "",
+        credit: item.credit || "",
+        instructor:
+          (item.courseInstructor && item.courseInstructor.username) || "",
+        module_list: moduleList,
+        attendees: attendees,
       });
-      let exportList = [];
-      for (let i = 0; i < newList.length; i++) {
-        let moduleList = "";
-        for (let j = 0; j < newList[i].Module.length; j++) {
-          moduleList =
-            moduleList +
-            "-" +
-            newList[i].Module[j].title +
-            " : " +
-            newList[i].Module[j].type +
-            " \n";
-        }
-        let attendees = "";
-        for (let j = 0; j < newList[i].ClassSessionRecord.length; j++) {
-          attendees =
-            attendees +
-            "-" +
-            newList[i].ClassSessionRecord[j].user.username +
-            " : " +
-            newList[i].ClassSessionRecord[j].status +
-            " \n";
-        }
-        let newItem = {
-          title: newList[i].title,
-          credit: newList[i].credit,
-          instructor: newList[i].courseInstructor.username,
-          department: newList[i].Department.title,
-          module_list: moduleList,
-          attendees: attendees,
-        };
-        exportList.push(newItem);
-      }
+    });
 
-      const worksheet = XLSX.utils.json_to_sheet(newList);
+    const worksheet = XLSX.utils.json_to_sheet(exportList);
 
-      XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
 
-      worksheet["!cols"] = [
-        { wch: 10 },
-        { wch: 10 },
-        { wch: 10 },
-        { wch: 50 },
-        { wch: 50 },
-        { wch: 50 },
-      ];
+    worksheet["!cols"] = [
+      { wch: 10 },
+      { wch: 10 },
+      { wch: 10 },
+      { wch: 50 },
+      { wch: 50 },
+      { wch: 50 },
+    ];
 
-      let date: any = new Date(new Date().toISOString());
-      XLSX.writeFile(
-        workbook,
-        `${filter}_${
-          getMonday(new Date()).toISOString() +
-          "-" +
-          new Date(new Date().toISOString())
-        }_Course_${date}.xlsx`
+    const currentDate = new Date();
+    let dateSuffix = "";
+
+    if (filter === "This Week") {
+      const mondayDate = getMonday(new Date());
+      dateSuffix = `${mondayDate.toISOString().split("T")[0]}-${
+        currentDate.toISOString().split("T")[0]
+      }`;
+    } else if (filter === "This Month" || filter === "This Year") {
+      const firstDayOfMonth = new Date(
+        currentDate.getFullYear(),
+        currentDate.getMonth(),
+        1
       );
+      dateSuffix = `${firstDayOfMonth.toISOString().split("T")[0]}-${
+        currentDate.toISOString().split("T")[0]
+      }`;
     }
-    if (filter == "This Month") {
-      let newList: any = [...courseList].filter((item: any) => {
-        let currDate = new Date();
-        let firstDay = new Date(currDate.getFullYear(), currDate.getMonth(), 1);
 
-        let dateFrom: any = new Date(firstDay.toISOString());
-        let date: any = new Date(new Date(item.startDate).toISOString());
-        // let dateTo: any = new Date(dateRangeEnd.to.toISOString());
-        return dateFrom <= date;
-      });
-      let exportList = [];
-      for (let i = 0; i < newList.length; i++) {
-        let moduleList = "";
-        for (let j = 0; j < newList[i].Module.length; j++) {
-          moduleList =
-            moduleList +
-            "-" +
-            newList[i].Module[j].title +
-            " : " +
-            newList[i].Module[j].type +
-            " \n";
-        }
-        let attendees = "";
-        for (let j = 0; j < newList[i].ClassSessionRecord.length; j++) {
-          attendees =
-            attendees +
-            "-" +
-            newList[i].ClassSessionRecord[j].user.username +
-            " : " +
-            newList[i].ClassSessionRecord[j].status +
-            " \n";
-        }
-        let newItem = {
-          title: newList[i].title,
-          credit: newList[i].credit,
-          instructor: newList[i].courseInstructor.username,
-          department: newList[i].Department.title,
-          module_list: moduleList,
-          attendees: attendees,
-        };
-        exportList.push(newItem);
-      }
-
-      const worksheet = XLSX.utils.json_to_sheet(newList);
-
-      XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
-
-      worksheet["!cols"] = [
-        { wch: 10 },
-        { wch: 10 },
-        { wch: 10 },
-        { wch: 50 },
-        { wch: 50 },
-        { wch: 50 },
-      ];
-      const date = new Date();
-      let currDate = new Date();
-      let firstDay = new Date(currDate.getFullYear(), currDate.getMonth(), 1);
-
-      let dateFrom: any = new Date(firstDay.toISOString());
-      XLSX.writeFile(
-        workbook,
-        `${filter}_${
-          dateFrom + "-" + new Date(new Date().toISOString())
-        }_Course_${date}.xlsx`
-      );
-    }
-    if (filter == "This Year") {
-      let newList: any = [...courseList].filter((item: any) => {
-        let currDate = new Date();
-        let firstDay = new Date(currDate.getFullYear(), 0, 1);
-
-        let dateFrom: any = new Date(firstDay.toISOString());
-        let date: any = new Date(new Date(item.startDate).toISOString());
-        // let dateTo: any = new Date(dateRangeEnd.to.toISOString());
-        return dateFrom <= date;
-      });
-      let exportList = [];
-      for (let i = 0; i < newList.length; i++) {
-        let moduleList = "";
-        for (let j = 0; j < newList[i].Module.length; j++) {
-          moduleList =
-            moduleList +
-            "-" +
-            newList[i].Module[j].title +
-            " : " +
-            newList[i].Module[j].type +
-            " \n";
-        }
-        let attendees = "";
-        for (let j = 0; j < newList[i].ClassSessionRecord.length; j++) {
-          attendees =
-            attendees +
-            "-" +
-            newList[i].ClassSessionRecord[j].user.username +
-            " : " +
-            newList[i].ClassSessionRecord[j].status +
-            " \n";
-        }
-        let newItem = {
-          title: newList[i].title,
-          credit: newList[i].credit,
-          instructor: newList[i].courseInstructor.username,
-          department: newList[i].Department.title,
-          module_list: moduleList,
-          attendees: attendees,
-        };
-        exportList.push(newItem);
-      }
-
-      const worksheet = XLSX.utils.json_to_sheet(newList);
-
-      XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
-
-      worksheet["!cols"] = [
-        { wch: 10 },
-        { wch: 10 },
-        { wch: 10 },
-        { wch: 50 },
-        { wch: 50 },
-        { wch: 50 },
-      ];
-      const date = new Date();
-      let currDate = new Date();
-      let firstDay = new Date(currDate.getFullYear(), 0, 1);
-
-      let dateFrom: any = new Date(firstDay.toISOString());
-      XLSX.writeFile(
-        workbook,
-        `${filter}_${
-          dateFrom + "-" + new Date(new Date().toISOString())
-        }_Course_${date}.xlsx`
-      );
-    }
+    XLSX.writeFile(workbook, `${filter}_Course_${dateSuffix}.xlsx`);
   }
 
   return (

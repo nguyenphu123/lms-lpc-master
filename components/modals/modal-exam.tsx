@@ -1,7 +1,7 @@
 "use client";
- 
+
 import React from "react";
- 
+
 interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -13,21 +13,21 @@ interface ModalProps {
     studyingUsers: { username: string; progress: number }[];
   }[];
 }
- 
+
 export const Modal: React.FC<ModalProps> = ({
   isOpen,
   onClose,
   examDetails,
 }) => {
   if (!isOpen) return null;
- 
+
   return (
     <div className="fixed inset-0 flex items-center justify-center z-50 ">
       <div
-        className="fixed inset-0 bg-gray-900 bg-opacity-50"
+        className="fixed inset-0 bg-gray-900 bg-opacity-30"
         onClick={onClose}
       ></div>
-      <div className="bg-white rounded-lg shadow-lg max-w-lg w-full mx-4 md:mx-0 z-50 dark:bg-slate-700">
+      <div className="bg-white rounded-lg shadow-lg max-w-lg w-full mx-4 md:mx-0 z-50 dark:bg-gray-900">
         <div className="p-4 border-b relative">
           <h2 className="text-xl font-semibold">Exam Details</h2>
           <button
@@ -51,8 +51,8 @@ export const Modal: React.FC<ModalProps> = ({
                   ) : (
                     exam.passedUsers.map((user, index) => (
                       <li key={index} className="flex items-center space-x-2">
-                        <span className="text-gray-700">{index + 1}.</span>
-                        <span className="text-gray-900">{user}</span>
+                        <span className="dark:text-white">{index + 1}.</span>
+                        <span className="dark:text-white">{user}</span>
                       </li>
                     ))
                   )}
@@ -66,8 +66,8 @@ export const Modal: React.FC<ModalProps> = ({
                   ) : (
                     exam.studyingUsers.map((user, index) => (
                       <li key={index} className="flex items-center space-x-2">
-                        <span className="text-gray-700">{index + 1}.</span>
-                        <span className="text-gray-900">
+                        <span className="dark:text-white">{index + 1}.</span>
+                        <span className="dark:text-white">
                           {user.username}{" "}
                           <span className="text-yellow-500 font-medium">
                             ({user.progress.toFixed(0)}%)

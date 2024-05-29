@@ -62,6 +62,10 @@ export function DataTable<TData, TValue>({
   const [dateRange, setDateRange]: any = React.useState<
     DateRange | undefined
   >();
+  const [datePickerDisabled, setDatePickerDisabled] = React.useState(false); // State to manage date picker disable
+
+  const [columnVisibility, setColumnVisibility] = React.useState({});
+
   const table = useReactTable({
     data: programList,
     columns,
@@ -78,184 +82,107 @@ export function DataTable<TData, TValue>({
       sorting,
       columnFilters,
       rowSelection,
+      columnVisibility: {
+        endDate: false,
+      },
     },
   });
+
+  async function getSheetData(filter: any) {
+    const workbook = XLSX.utils.book_new();
+    const generateSheet = (dataList: any[]) => {
+      let exportList = dataList.map((item) => {
+        let courses_report = item.courseWithProgram
+          .map((course: { course: { title: any } }) => course.course.title)
+          .join("\n");
+        return {
+          Title: item.title,
+          Description: item.description,
+          "Courses Report": courses_report,
+        };
+      });
+
+      const worksheet = XLSX.utils.json_to_sheet(exportList);
+      const worksheetCols = [{ wch: 20 }, { wch: 30 }, { wch: 50 }];
+
+      worksheet["!cols"] = worksheetCols;
+
+      // Apply bold formatting to header row
+      const range = XLSX.utils.decode_range(worksheet["!ref"] || "");
+      for (let C = range.s.c; C <= range.e.c; ++C) {
+        const cellAddress = XLSX.utils.encode_cell({ c: C, r: 0 });
+        if (!worksheet[cellAddress]) continue;
+        worksheet[cellAddress].s = {
+          font: {
+            bold: true,
+          },
+        };
+      }
+      for (let R = range.s.r + 1; R <= range.e.r; ++R) {
+        const rowAddress = XLSX.utils.encode_row(R);
+        const cell = worksheet[`A${R}`];
+        if (cell) {
+          cell.v = cell.v + "\n\n"; // Add new lines to simulate row height
+        }
+      }
+
+      XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
+    };
+
+    let newList: any = [];
+    switch (filter) {
+      case "All":
+        newList = [...programList];
+        break;
+      case "Selected Rows":
+        newList = [...table.getSelectedRowModel().rows].map(
+          (row) => row.original
+        );
+        break;
+      case "This Week":
+        newList = [...programList].filter((item: any) => {
+          let dateFrom: any = getMonday(new Date()).toISOString();
+          let date: any = new Date(new Date(item.endDate).toISOString());
+          return dateFrom <= date;
+        });
+        break;
+      case "This Month":
+        newList = [...programList].filter((item: any) => {
+          let currDate = new Date();
+          let firstDay = new Date(
+            currDate.getFullYear(),
+            currDate.getMonth(),
+            1
+          );
+          let dateFrom: any = new Date(firstDay.toISOString());
+          let date: any = new Date(new Date(item.startDate).toISOString());
+          return dateFrom <= date;
+        });
+        break;
+      case "This Year":
+        newList = [...programList].filter((item: any) => {
+          let currDate = new Date();
+          let firstDay = new Date(currDate.getFullYear(), 0, 1);
+          let dateFrom: any = new Date(firstDay.toISOString());
+          let date: any = new Date(new Date(item.startDate).toISOString());
+          return dateFrom <= date;
+        });
+        break;
+      default:
+        return;
+    }
+
+    generateSheet(newList);
+
+    const date = new Date();
+    XLSX.writeFile(workbook, `${filter}_Program_${date}.xlsx`);
+  }
+
   function getMonday(d: any) {
     d = new Date(d);
     const day = d.getDay();
     const diff = d.getDate() - day + (day == 0 ? -6 : 1);
     return new Date(d.setDate(diff));
-  }
-
-  async function getSheetData(filter: any) {
-    const workbook = XLSX.utils.book_new();
-
-    if (filter == "All") {
-      let newList: any = [...programList];
-      let exportList = [];
-      for (let i = 0; i < newList.length; i++) {
-        let courses_report = "";
-        for (let j = 0; j < newList[i].courseWithProgram.length; j++) {
-          courses_report =
-            courses_report +
-            "" +
-            newList[i].courseWithProgram[j].course.title +
-            " \n";
-        }
-        let newItem = {
-          title: newList[i].title,
-          description: newList[i].description,
-
-          courses_report: courses_report,
-        };
-        exportList.push(newItem);
-      }
-
-      const worksheet = XLSX.utils.json_to_sheet(exportList);
-
-      XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
-
-      worksheet["!cols"] = [{ wch: 10 }, { wch: 10 }, { wch: 50 }];
-      const date = new Date();
-      XLSX.writeFile(workbook, `${filter}_Program_${date}.xlsx`);
-    }
-    if (filter == "Selected Rows") {
-      let newList: any = [...table.getSelectedRowModel().rows];
-      let exportList = [];
-      for (let i = 0; i < newList.length; i++) {
-        let courses_report = "";
-        for (let j = 0; j < newList[i].original.courseWithProgram.length; j++) {
-          courses_report =
-            courses_report +
-            "" +
-            newList[i].original.courseWithProgram[j].course.title +
-            " \n";
-        }
-        let newItem = {
-          title: newList[i].original.title,
-          description: newList[i].original.description,
-
-          courses_report: courses_report,
-        };
-        exportList.push(newItem);
-      }
-
-      const worksheet = XLSX.utils.json_to_sheet(exportList);
-
-      XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
-
-      worksheet["!cols"] = [{ wch: 10 }, { wch: 10 }, { wch: 50 }];
-      const date = new Date();
-      XLSX.writeFile(workbook, `${filter}_Program_${date}.xlsx`);
-    }
-    if (filter == "This Week") {
-      let newList: any = [...programList].filter((item: any) => {
-        let dateFrom: any = getMonday(new Date()).toISOString();
-        let date: any = new Date(new Date(item.endDate).toISOString());
-        // let dateTo: any = getSunday(new Date()).toISOString();
-        return dateFrom <= date;
-      });
-      let exportList = [];
-      for (let i = 0; i < newList.length; i++) {
-        let courses_report = "";
-        for (let j = 0; j < newList[i].courseWithProgram.length; j++) {
-          courses_report =
-            courses_report +
-            "" +
-            newList[i].courseWithProgram[j].course.title +
-            " \n";
-        }
-        let newItem = {
-          title: newList[i].title,
-          description: newList[i].description,
-
-          courses_report: courses_report,
-        };
-        exportList.push(newItem);
-      }
-
-      const worksheet = XLSX.utils.json_to_sheet(exportList);
-
-      XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
-
-      worksheet["!cols"] = [{ wch: 10 }, { wch: 10 }, { wch: 50 }];
-      const date = new Date();
-      XLSX.writeFile(workbook, `${filter}_Program_${date}.xlsx`);
-    }
-    if (filter == "This Month") {
-      let newList: any = [...programList].filter((item: any) => {
-        let currDate = new Date();
-        let firstDay = new Date(currDate.getFullYear(), currDate.getMonth(), 1);
-
-        let dateFrom: any = new Date(firstDay.toISOString());
-        let date: any = new Date(new Date(item.startDate).toISOString());
-        // let dateTo: any = new Date(dateRangeEnd.to.toISOString());
-        return dateFrom <= date;
-      });
-      let exportList = [];
-      for (let i = 0; i < newList.length; i++) {
-        let courses_report = "";
-        for (let j = 0; j < newList[i].courseWithProgram.length; j++) {
-          courses_report =
-            courses_report +
-            "" +
-            newList[i].courseWithProgram[j].course.title +
-            " \n";
-        }
-        let newItem = {
-          title: newList[i].title,
-          description: newList[i].description,
-
-          courses_report: courses_report,
-        };
-        exportList.push(newItem);
-      }
-
-      const worksheet = XLSX.utils.json_to_sheet(exportList);
-
-      XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
-
-      worksheet["!cols"] = [{ wch: 10 }, { wch: 10 }, { wch: 50 }];
-      const date = new Date();
-      XLSX.writeFile(workbook, `${filter}_Program_${date}.xlsx`);
-    }
-    if (filter == "This Year") {
-      let newList: any = [...programList].filter((item: any) => {
-        let currDate = new Date();
-        let firstDay = new Date(currDate.getFullYear(), 0, 1);
-
-        let dateFrom: any = new Date(firstDay.toISOString());
-        let date: any = new Date(new Date(item.startDate).toISOString());
-        // let dateTo: any = new Date(dateRangeEnd.to.toISOString());
-        return dateFrom <= date;
-      });
-      let exportList = [];
-      for (let i = 0; i < newList.length; i++) {
-        let courses_report = "";
-        for (let j = 0; j < newList[i].courseWithProgram.length; j++) {
-          courses_report =
-            courses_report +
-            "" +
-            newList[i].courseWithProgram[j].course.title +
-            " \n";
-        }
-        let newItem = {
-          title: newList[i].title,
-          description: newList[i].description,
-
-          courses_report: courses_report,
-        };
-        exportList.push(newItem);
-      }
-
-      const worksheet = XLSX.utils.json_to_sheet(exportList);
-
-      XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
-
-      worksheet["!cols"] = [{ wch: 10 }, { wch: 10 }, { wch: 50 }];
-      const date = new Date();
-      XLSX.writeFile(workbook, `${filter}_Program_${date}.xlsx`);
-    }
   }
   React.useEffect(() => {
     if (dateRange?.from && dateRange?.to) {
@@ -269,6 +196,7 @@ export function DataTable<TData, TValue>({
       });
 
       setProgramList(tempUserList);
+      setDatePickerDisabled(true); // Disable date picker after selecting date range
     } else {
       setProgramList(data);
     }
@@ -284,59 +212,77 @@ export function DataTable<TData, TValue>({
           }
           className="max-w-sm"
         />
-        <label htmlFor="fromDate">From Date:</label>
-        <DatePickerWithRange
-          date={dateRange}
-          setDate={setDateRange}
-          className="max-w-sm"
-        />
-      </div>
-      <div>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button>
-              <FileDown className="h-4 w-4 mr-2" />
-              Select report <ChevronDown />
-            </Button>
-          </DropdownMenuTrigger>
-          {programList.length == 0 ? (
-            <></>
+        <div className="flex gap-2 items-center">
+          <DatePickerWithRange
+            placeHolder={"Filter by date"}
+            date={dateRange}
+            setDate={setDateRange}
+            className="max-w-sm"
+            disabled={datePickerDisabled}
+          />
+          {dateRange != undefined ? (
+            <button
+              onClick={() => {
+                setDateRange(undefined);
+                setDatePickerDisabled(false); // Enable date picker on cancel
+              }}
+            >
+              X
+            </button>
           ) : (
-            <DropdownMenuContent>
-              {table.getSelectedRowModel().rows.length == 0 ? (
-                <DropdownMenuItem onClick={() => getSheetData("All")}>
-                  Report (All)
-                </DropdownMenuItem>
-              ) : (
-                <DropdownMenuItem onClick={() => getSheetData("Selected Rows")}>
-                  Report (Selected Rows)
-                </DropdownMenuItem>
-              )}
-              {table.getSelectedRowModel().rows.length == 0 ? (
-                <DropdownMenuItem onClick={() => getSheetData("This Week")}>
-                  Report (This Week)
-                </DropdownMenuItem>
-              ) : (
-                <></>
-              )}
-              {table.getSelectedRowModel().rows.length == 0 ? (
-                <DropdownMenuItem onClick={() => getSheetData("This Month")}>
-                  Report (This Month)
-                </DropdownMenuItem>
-              ) : (
-                <></>
-              )}
-              {table.getSelectedRowModel().rows.length == 0 ? (
-                <DropdownMenuItem onClick={() => getSheetData("This Year")}>
-                  Report (This Year)
-                </DropdownMenuItem>
-              ) : (
-                <></>
-              )}
-            </DropdownMenuContent>
+            <></>
           )}
-        </DropdownMenu>
+        </div>
+        <div>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button>
+                <FileDown className="h-4 w-4 mr-2" />
+                Select report <ChevronDown />
+              </Button>
+            </DropdownMenuTrigger>
+            {programList.length == 0 ? (
+              <></>
+            ) : (
+              <DropdownMenuContent>
+                {table.getSelectedRowModel().rows.length == 0 ? (
+                  <DropdownMenuItem onClick={() => getSheetData("All")}>
+                    Report (All)
+                  </DropdownMenuItem>
+                ) : (
+                  <DropdownMenuItem
+                    onClick={() => getSheetData("Selected Rows")}
+                  >
+                    Report (Selected Rows)
+                  </DropdownMenuItem>
+                )}
+                {table.getSelectedRowModel().rows.length == 0 ? (
+                  <DropdownMenuItem onClick={() => getSheetData("This Week")}>
+                    Report (This Week)
+                  </DropdownMenuItem>
+                ) : (
+                  <></>
+                )}
+                {table.getSelectedRowModel().rows.length == 0 ? (
+                  <DropdownMenuItem onClick={() => getSheetData("This Month")}>
+                    Report (This Month)
+                  </DropdownMenuItem>
+                ) : (
+                  <></>
+                )}
+                {table.getSelectedRowModel().rows.length == 0 ? (
+                  <DropdownMenuItem onClick={() => getSheetData("This Year")}>
+                    Report (This Year)
+                  </DropdownMenuItem>
+                ) : (
+                  <></>
+                )}
+              </DropdownMenuContent>
+            )}
+          </DropdownMenu>
+        </div>
       </div>
+
       <div className="rounded-md border">
         <Table>
           <TableHeader>
@@ -409,10 +355,14 @@ export function DataTable<TData, TValue>({
   );
 }
 function DatePickerWithRange({
+  placeHolder,
   className,
   date,
   setDate,
+  disabled,
 }: {
+  placeHolder?: string;
+  disabled?: boolean; // Accept disabled prop
   className?: string;
   date: DateRange | undefined;
   setDate: React.Dispatch<React.SetStateAction<DateRange | undefined>>;
@@ -426,8 +376,10 @@ function DatePickerWithRange({
             variant={"outline"}
             className={cn(
               "w-[300px] justify-start text-left font-normal",
-              !date && "text-muted-foreground"
+              !date && "text-muted-foreground",
+              disabled && "opacity-50 cursor-not-allowed" // Apply styles when disabled
             )}
+            disabled={disabled} // Disable button when disabled prop is true
           >
             <CalendarIcon className="mr-2 h-4 w-4" />
             {date?.from ? (
@@ -440,7 +392,7 @@ function DatePickerWithRange({
                 format(date.from, "LLL dd, y")
               )
             ) : (
-              <span>Pick a date</span>
+              <span>{placeHolder}</span>
             )}
           </Button>
         </PopoverTrigger>
