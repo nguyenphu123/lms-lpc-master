@@ -58,9 +58,21 @@ const UserPage = async ({ params }: { params: { userId: string } }) => {
       startDate: "desc",
     },
     include: {
+      ClassSessionRecord: {
+        where: {
+          userId: userId,
+        },
+      },
       Module: {
+        where: {
+          type: "Exam",
+        },
         include: {
-          UserProgress: true,
+          UserProgress: {
+            where: {
+              userId: userId,
+            },
+          },
         },
       },
     },
@@ -74,6 +86,7 @@ const UserPage = async ({ params }: { params: { userId: string } }) => {
         <UserInformation user={user} />
         <CourseHistory userId={params.userId} coursesJoined={courses} />
         <DataTable
+          user={user}
           columns={columns}
           data={courses}
           canPrintReport={
