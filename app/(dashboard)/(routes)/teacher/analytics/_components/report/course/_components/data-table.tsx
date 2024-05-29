@@ -170,20 +170,31 @@ export function DataTable<TData, TValue>({
       const moduleList = item.Module.map(
         (module: any) => `${module.title} : ${module.type}`
       ).join(" \n");
+      const moduleListResult = item.Module.map(
+        (module: any) =>
+          `${module.title} :  ${module.UserProgress.map(
+            (item: any) =>
+              `\n-${item.user.username} : ${item.status}${
+                item?.score != null ? `(${item?.score}%)` : ""
+              }`
+          )}`
+      ).join(" \n");
       const attendees = item.ClassSessionRecord.map(
         (session: any) => `${session.user.username} : ${session.status}`
       ).join(" \n");
       const departments = item?.CourseOnDepartment.map(
         (item: any) => item?.Department?.title
       ).join(" \n");
+
       exportList.push({
-        title: item.title || "",
-        department: departments,
-        credit: item.credit || "",
-        instructor:
+        Title: item.title || "",
+        Department: departments,
+        Credit: item.credit || "",
+        Instructor:
           (item.courseInstructor && item.courseInstructor.username) || "",
-        module_list: moduleList,
-        attendees: attendees,
+        "Module list": moduleList,
+        "Module list result": moduleListResult,
+        Attendees: attendees,
       });
     });
 
