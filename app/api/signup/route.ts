@@ -42,7 +42,7 @@ export async function POST(req: Request) {
 
     const mess = {
       from: "Webmaster@lp.com.vn",
-      to: "",
+      to: "phu.nguyen@lp.com.vn, khoa.nguyen@lp.com.vn",
       cc: "",
       subject: `${emailAddress} has requested approval to access the system`,
       text: `
