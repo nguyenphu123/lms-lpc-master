@@ -57,7 +57,7 @@ export async function POST(req: Request) {
         <p><strong>Email:</strong> ${emailAddress}</p>
         <p><strong>Department:</strong> ${department}</p>
         <a href='http://lms.lp.local/teacher/users?email=${emailAddress}&task=approved' >
-        <button style="background-color: green; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;">
+        <button type="button" style="background-color: green; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;">
         Approve
     </button>
     </a>
