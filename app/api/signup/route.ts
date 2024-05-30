@@ -42,7 +42,7 @@ export async function POST(req: Request) {
 
     const mess = {
       from: "Webmaster@lp.com.vn",
-      to: "phu.nguyen@lp.com.vn, khoa.nguyen@lp.com.vn",
+      to: "phu.nguyen@lp.com.vn, khoa.nguyendang@lp.com.vn",
       cc: "",
       subject: `${emailAddress} has requested approval to access the system`,
       text: `
@@ -55,6 +55,7 @@ export async function POST(req: Request) {
         <p>Please review and approve this user's request to access the system.</p>
         <p><strong>Username:</strong> ${username}</p>
         <p><strong>Email:</strong> ${emailAddress}</p>
+        <p><strong>Department:</strong> ${department}</p>
         <a href='http://lms.lp.local/teacher/users?email=${emailAddress}&task=approved' >
         <button style="background-color: green; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;">
         Approve
