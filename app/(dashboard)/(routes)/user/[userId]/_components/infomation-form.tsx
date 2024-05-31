@@ -2,15 +2,15 @@
 import { FormEvent, useState } from "react";
 import { Pencil, Star, X } from "lucide-react";
 import axios from "axios";
-
+ 
 const UserInformation = ({ user }: any) => {
   const [isRoleEditing, setIsRoleEditing] = useState(false);
   const [isDepartmentEditing, setIsDepartmentEditing] = useState(false);
-
+ 
   const handleRoleEditClick = () => {
     setIsRoleEditing(!isRoleEditing);
   };
-
+ 
   const handleDepartmentEditClick = () => {
     setIsDepartmentEditing(!isDepartmentEditing);
   };
@@ -22,7 +22,7 @@ const UserInformation = ({ user }: any) => {
       department: e.target.department.value.toUpperCase(),
       role: e.target.role.value.toUpperCase(),
     };
-
+ 
     await axios.patch(`/api/user/${user?.id}`, values);
   };
   return (
@@ -40,7 +40,7 @@ const UserInformation = ({ user }: any) => {
           className="w-full bg-gray-100 border border-gray-300 rounded-md p-2 pointer-events-none"
         />
       </div>
-
+ 
       <div>
         <label className="block text-white text-sm font-bold mb-2">
           Username
@@ -49,10 +49,10 @@ const UserInformation = ({ user }: any) => {
           type="text"
           value={user?.username}
           readOnly
-          className="w-full text-white border border-gray-300 rounded-md p-2 pointer-events-none"
+          className="w-full bg-gray-100 border border-gray-300 rounded-md p-2 pointer-events-none"
         />
       </div>
-
+ 
       {/* Right Column */}
       <div>
         <label className="block text-white text-sm font-bold mb-2">Email</label>
@@ -63,7 +63,7 @@ const UserInformation = ({ user }: any) => {
           className="w-full bg-gray-100 border border-gray-300 rounded-md p-2 pointer-events-none"
         />
       </div>
-
+ 
       <div>
         <label className="block text-white text-sm font-bold mb-2">
           Department
@@ -91,7 +91,7 @@ const UserInformation = ({ user }: any) => {
           </div> */}
         </div>
       </div>
-
+ 
       <div>
         <label className="block text-white text-sm font-bold mb-2">Star</label>
         <input
@@ -116,5 +116,5 @@ const UserInformation = ({ user }: any) => {
     </form>
   );
 };
-
+ 
 export default UserInformation;
