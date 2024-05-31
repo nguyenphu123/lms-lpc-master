@@ -55,6 +55,7 @@ export function DataTable<TData, TValue>({
   const [dateRange, setDateRange]: any = React.useState<
     DateRange | undefined
   >();
+  const [datePickerDisabled, setDatePickerDisabled] = React.useState(false); // State to manage date picker disable
   const [courseList, setCourseList] = React.useState(data);
 
   const table = useReactTable({
@@ -127,15 +128,16 @@ export function DataTable<TData, TValue>({
     }
 
     filteredList.forEach((item: any) => {
-      let testResult = item.Module.map((item: any) =>
-        item.title + " : " + item?.UserProgress[0] != undefined
-          ? item?.UserProgress[0]?.score +
-            "%/" +
-            item?.UserProgress[0]?.status +
-            "/" +
-            item?.UserProgress[0]?.attempt +
-            " attempt"
-          : "No Result"
+      let testResult = item.Module.map(
+        (item: any) =>
+          item.title +
+          " : " +
+          item.UserProgress[0].score +
+          "%/" +
+          item.UserProgress[0].status +
+          "/" +
+          item.UserProgress[0].attempt +
+          " attempt"
       );
 
       exportList.push({
@@ -203,6 +205,18 @@ export function DataTable<TData, TValue>({
       setCourseList(data);
     }
   }, [dateRange, table]);
+  const onChangeStatus = (filter: any) => {
+    if (filter == "All") {
+      setCourseList(data);
+    } else {
+      let tempUserList = [...data].filter((item: any) => {
+        return item.ClassSessionRecord.some((item: any) => {
+          return item.status == filter;
+        });
+      });
+      setCourseList(tempUserList);
+    }
+  };
   return (
     <div>
       <div className="flex items-center py-4 justify-between">
@@ -217,19 +231,33 @@ export function DataTable<TData, TValue>({
         <select
           name="status"
           id="filterByStatus"
-          onChange={(event) =>
-            table.getColumn("status")?.setFilterValue(event.target.value)
-          }
+          onChange={(event) => onChangeStatus(event.target.value)}
+          className="max-w-sm p-2 border rounded text-muted-foreground dark:bg-slate-950"
         >
-          <option value="">All</option>
+          <option value="All">All</option>
           <option value="finished">Finished</option>
           <option value="studying">Studying</option>
         </select>
-        <DatePickerWithRange
-          date={dateRange}
-          setDate={setDateRange}
-          className="max-w-sm"
-        />
+        <div className="flex gap-2 items-center">
+          <DatePickerWithRange
+            date={dateRange}
+            setDate={setDateRange}
+            className="max-w-sm"
+            disabled={datePickerDisabled} // Pass the disabled state to the date picker
+          />
+          {dateRange != undefined ? (
+            <button
+              onClick={() => {
+                setDateRange(undefined);
+                setDatePickerDisabled(false); // Enable date picker on cancel
+              }}
+            >
+              X
+            </button>
+          ) : (
+            <></>
+          )}
+        </div>
         {canPrintReport ? (
           table.getSelectedRowModel().rows.length > 1 ? (
             <Button onClick={() => getSheetData("Selected Rows")}>
@@ -321,10 +349,12 @@ function DatePickerWithRange({
   className,
   date,
   setDate,
+  disabled,
 }: {
   className?: string;
   date: DateRange | undefined;
   setDate: React.Dispatch<React.SetStateAction<DateRange | undefined>>;
+  disabled?: boolean; // Accept disabled prop
 }) {
   return (
     <div className={cn("grid gap-2", className)}>
@@ -335,8 +365,10 @@ function DatePickerWithRange({
             variant={"outline"}
             className={cn(
               "w-[300px] justify-start text-left font-normal",
-              !date && "text-muted-foreground"
+              !date && "text-muted-foreground",
+              disabled && "opacity-50 cursor-not-allowed" // Apply styles when disabled
             )}
+            disabled={disabled} // Disable button when disabled prop is true
           >
             <CalendarIcon className="mr-2 h-4 w-4" />
             {date?.from ? (

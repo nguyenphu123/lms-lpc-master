@@ -38,13 +38,9 @@ export const columns: ColumnDef<Course>[] = [
     accessorKey: "title",
     header: ({ column }) => {
       return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Title
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
+        <span className="flex items-center">
+          <span className="mr-2">Title</span>
+        </span>
       );
     },
     cell: CourseTitleCellPersonal,
@@ -53,13 +49,9 @@ export const columns: ColumnDef<Course>[] = [
     accessorKey: "progress",
     header: ({ column }) => {
       return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Progress
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
+        <span className="flex items-center">
+          <span className="mr-2">Progress</span>
+        </span>
       );
     },
     cell: ({ row }) => {
@@ -77,13 +69,9 @@ export const columns: ColumnDef<Course>[] = [
     accessorKey: "status",
     header: ({ column }) => {
       return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Status
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
+        <span className="flex items-center">
+          <span className="mr-2">Status</span>
+        </span>
       );
     },
     cell: ({ row }) => {
@@ -115,13 +103,9 @@ export const columns: ColumnDef<Course>[] = [
     accessorKey: "averageScoreOnTest",
     header: ({ column }) => {
       return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Test Result(Score/Status/Attempt)
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
+        <span className="flex items-center">
+          <span className="mr-2">Exam Result</span>
+        </span>
       );
     },
     cell: ({ row }) => {
@@ -133,14 +117,17 @@ export const columns: ColumnDef<Course>[] = [
             {Module.map((item: any) => {
               return (
                 <li key={item.id}>
-                  {item.title} :{" "}
-                  {item?.UserProgress[0] != undefined
-                    ? item?.UserProgress[0]?.score +
-                      "/" +
-                      item?.UserProgress[0]?.status +
-                      "/" +
-                      item?.UserProgress[0]?.attempt
-                    : "No Result"}
+                  {item.title}:{" "}
+                  {item?.UserProgress[0] != undefined ? (
+                    <>
+                      {item?.UserProgress[0]?.status} (
+                      {item?.UserProgress[0]?.score}%)
+                      {" in "}
+                      {item?.UserProgress[0]?.attempt} times
+                    </>
+                  ) : (
+                    "No Result"
+                  )}
                 </li>
               );
             })}
