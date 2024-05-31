@@ -37,7 +37,7 @@ export default function Page() {
   const router = useRouter();
   const { isSignedIn }: any = useAuth();
   if (isSignedIn) {
-    router.push("/");
+    window.location.href = "/";
   }
   // useEffect(() => {
   //   animatePageIn();
@@ -109,7 +109,7 @@ export default function Page() {
           // function code goes here
         }, 2000);
 
-        router.push("/pending");
+        window.location.href = "/pending";
       }
     } catch (err: any) {
       setError(err.errors[0].longMessage);

@@ -13,6 +13,7 @@ import {
   BadgeCheck,
   Ban,
   BadgeX,
+  Loader,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -26,7 +27,6 @@ import {
   AlertDialogContent,
   AlertDialogDescription,
   AlertDialogTitle,
-  AlertDialogTrigger,
 } from "./alert-dialog";
 import { useEffect, useState } from "react";
 
@@ -40,6 +40,7 @@ export const Cell = ({ row }: any) => {
   const [triggerAlert, setTriggerAlert] = useState(false);
   const [userStatus, setUserStatus] = useState("");
   const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(false);
   useEffect(() => {
     if (emailAddress != undefined && task != undefined) {
       if (email == emailAddress) {
@@ -62,8 +63,9 @@ export const Cell = ({ row }: any) => {
     let values = {
       status: userStatus,
     };
-
+    setLoading(true);
     await axios.patch(`/api/user/${id}/status`, values);
+    setLoading(false);
     setTriggerAlert(false);
     setUserStatus("");
     setMessage("");
@@ -198,7 +200,7 @@ export const Cell = ({ row }: any) => {
                 className="Button red"
                 onClick={() => onChangeStatus(id, status)}
               >
-                Confirm
+                Confirm {loading ? <Loader /> : <></>}
               </button>
             </AlertDialogAction>
           </AlertDialogContent>

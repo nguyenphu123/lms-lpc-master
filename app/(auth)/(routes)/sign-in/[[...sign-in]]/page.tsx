@@ -26,7 +26,11 @@ export default function Page() {
   const [verificationChecking, setVerificationChecking] = useState(false);
   const { isSignedIn }: any = useAuth();
   if (isSignedIn) {
-    router.push("/");
+    if (searchParams.get("redirect_url") != undefined) {
+      window.location.href = searchParams.get("redirect_url") + "";
+    } else {
+      window.location.href = "/";
+    }
   }
   // useEffect(() => {
   //   animatePageIn();
@@ -109,12 +113,11 @@ export default function Page() {
           // function code goes here
         }, 2000);
         // setVerificationChecking(false);
-        if (emailAddressAprrove != undefined && task != undefined) {
-          router.push(
-            `/teacher/users?email=${emailAddressAprrove}&task=${task}`
-          );
+
+        if (searchParams.get("redirect_url") != undefined) {
+          window.location.href = searchParams.get("redirect_url") + "";
         } else {
-          router.push("/");
+          window.location.href = "/";
         }
       } else {
         /*Investigate why the sign-in hasn't completed */

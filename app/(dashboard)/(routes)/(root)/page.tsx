@@ -20,7 +20,8 @@ export default async function Dashboard({
 
   if (!sessionClaims?.userId) {
     if (params.email != undefined && params.task != undefined) {
-      return redirect(`/?email=${params.email}&task=${params.task}`);
+      console.log(params);
+      return redirect(`/sign-in/?email=${params.email}&task=${params.task}`);
     }
     return redirect("/sign-in");
   }
