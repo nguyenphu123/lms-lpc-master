@@ -134,11 +134,11 @@ export const columns: ColumnDef<Course>[] = [
               return (
                 <li key={item.id}>
                   {item.title} :{" "}
-                  {item.UserProgress[0].score +
+                  {item?.UserProgress[0]?.score +
                     "/" +
-                    item.UserProgress[0].status +
+                    item?.UserProgress[0]?.status +
                     "/" +
-                    item.UserProgress[0].attempt}
+                    item?.UserProgress[0]?.attempt}
                 </li>
               );
             })}
