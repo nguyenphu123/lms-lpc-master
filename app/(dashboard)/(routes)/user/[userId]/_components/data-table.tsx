@@ -127,16 +127,15 @@ export function DataTable<TData, TValue>({
     }
 
     filteredList.forEach((item: any) => {
-      let testResult = item.Module.map(
-        (item: any) =>
-          item.title +
-          " : " +
-          item.UserProgress[0].score +
-          "%/" +
-          item.UserProgress[0].status +
-          "/" +
-          item.UserProgress[0].attempt +
-          " attempt"
+      let testResult = item.Module.map((item: any) =>
+        item.title + " : " + item?.UserProgress[0] != undefined
+          ? item?.UserProgress[0]?.score +
+            "%/" +
+            item?.UserProgress[0]?.status +
+            "/" +
+            item?.UserProgress[0]?.attempt +
+            " attempt"
+          : "No Result"
       );
 
       exportList.push({

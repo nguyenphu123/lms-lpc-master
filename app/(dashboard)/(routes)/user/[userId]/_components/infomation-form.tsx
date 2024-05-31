@@ -28,13 +28,11 @@ const UserInformation = ({ user }: any) => {
   return (
     <form
       onSubmit={(e) => submitEdit(e)}
-      className=" text-black  grid grid-cols-2 gap-4 p-4 rounded-md border bg-gradient-to-r from-blue-400 to-red-500 shadow-md"
+      className=" text-black  grid grid-cols-2 gap-4 p-4 rounded-md border bg-gradient-to-r from-gray-800 to-blue-600 shadow-md"
     >
       {/* Left Column */}
       <div className="">
-        <label className="block text-gray-700 text-sm font-bold mb-2">
-          ID:
-        </label>
+        <label className="block text-white text-sm font-bold mb-2">ID</label>
         <input
           type="text"
           value={user?.id}
@@ -44,22 +42,20 @@ const UserInformation = ({ user }: any) => {
       </div>
 
       <div>
-        <label className="block text-gray-700 text-sm font-bold mb-2">
-          Username:
+        <label className="block text-white text-sm font-bold mb-2">
+          Username
         </label>
         <input
           type="text"
           value={user?.username}
           readOnly
-          className="w-full bg-gray-100 border border-gray-300 rounded-md p-2 pointer-events-none"
+          className="w-full text-white border border-gray-300 rounded-md p-2 pointer-events-none"
         />
       </div>
 
       {/* Right Column */}
       <div>
-        <label className="block text-gray-700 text-sm font-bold mb-2">
-          Email:
-        </label>
+        <label className="block text-white text-sm font-bold mb-2">Email</label>
         <input
           type="text"
           value={user?.email}
@@ -69,8 +65,8 @@ const UserInformation = ({ user }: any) => {
       </div>
 
       <div>
-        <label className="block text-gray-700 text-sm font-bold mb-2">
-          Department:
+        <label className="block text-white text-sm font-bold mb-2">
+          Department
         </label>
         <div className="relative">
           <input
@@ -97,9 +93,7 @@ const UserInformation = ({ user }: any) => {
       </div>
 
       <div>
-        <label className="block text-gray-700 text-sm font-bold mb-2">
-          Star
-        </label>
+        <label className="block text-white text-sm font-bold mb-2">Star</label>
         <input
           type="text"
           value={user?.star}

@@ -81,8 +81,12 @@ const UserPage = async ({ params }: { params: { userId: string } }) => {
   return (
     user && (
       <div className="p-6">
-        <Avatar imageUrl={user?.imageUrl} />
-        <Star star={user?.star} />
+        <div className="flex flex-col items-center">
+          <Avatar imageUrl={user?.imageUrl} className="w-32 h-32" />
+          <p className="mt-2 text-lg font-semibold">
+            Information about {user?.username}
+          </p>
+        </div>
         <UserInformation user={user} />
         <CourseHistory userId={params.userId} coursesJoined={courses} />
         <DataTable
