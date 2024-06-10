@@ -31,7 +31,9 @@ const PermissionsPage = async () => {
     return redirect("/");
   }
   const permissions = await db.permission.findMany({
-    
+    where: {
+      status: "active",
+    },
   });
 
   return (

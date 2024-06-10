@@ -41,7 +41,11 @@ const RoleIdPage = async ({ params }: { params: { roleId: string } }) => {
     include: {
       rolePermission: {
         include: {
-          permission: true,
+          permission: {
+            where: {
+              status: "active",
+            },
+          },
         },
       },
     },
