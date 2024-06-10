@@ -15,13 +15,13 @@ const ProgramIdPage = async ({ params }: { params: { programId: string } }) => {
       permission: true,
     },
   });
-  if (
-    checkUser
-      .map((item: { permission: { title: any } }) => item.permission.title)
-      .indexOf("Study permission") == -1
-  ) {
-    return redirect("/");
-  }
+  // if (
+  //   checkUser
+  //     .map((item: { permission: { title: any } }) => item.permission.title)
+  //     .indexOf("Study permission") == -1
+  // ) {
+  //   return redirect("/");
+  // }
   const program: any = await db.program.findUnique({
     where: {
       id: params.programId,

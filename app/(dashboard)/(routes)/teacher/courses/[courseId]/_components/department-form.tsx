@@ -63,7 +63,7 @@ export const DepartmentForm = ({ initialData, courseId, department }: any) => {
 
     let newList = [...departmentList];
     let newAssignList: any = [...assignList];
-
+    
     if (newList[index].isEnrolled) {
       newList[index].isEnrolled = false;
       for (let i = 0; i < newList[index].User.length; i++) {
@@ -75,6 +75,10 @@ export const DepartmentForm = ({ initialData, courseId, department }: any) => {
         ].isEnrolled = false;
       }
     } else {
+      if (newList[index].User.length == 0) {
+        alert("No user to assign!!!");
+        return;
+      }
       newList[index].isEnrolled = true;
       for (let i = 0; i < newList[index].User.length; i++) {
         newList[index].User[i].isEnrolled = true;
@@ -110,11 +114,15 @@ export const DepartmentForm = ({ initialData, courseId, department }: any) => {
       newAssignList[
         newAssignList
           .map((item: { id: any }) => item.id)
-          .indexOf(newList[i].User[i].id)
+          .indexOf(newList[i].User[j].id)
       ].isEnrolled = true;
     }
     setAssignList(newAssignList);
-
+    if (
+      newList[i].User.map((item: any) => item.isEnrolled).indexOf(false) == -1
+    ) {
+      newList[i].isEnrolled = true;
+    }
     setDepartmentList(newList);
   };
   // const { isSubmitting, isValid } = form.formState;
@@ -180,8 +188,8 @@ export const DepartmentForm = ({ initialData, courseId, department }: any) => {
                       <div
                         key={"department-user " + item.id}
                         className="grid grid-cols-2 gap-2 w-full"
-                      >
-                        {item.User.map((item: any, j: any) => {
+                      > 
+                        {item.User.length==0?"NO USER":item.User.map((item: any, j: any) => {
                           return (
                             <div
                               key={item.id}

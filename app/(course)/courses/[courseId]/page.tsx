@@ -11,13 +11,13 @@ const CourseIdPage = async ({ params }: { params: { courseId: string } }) => {
       permission: true,
     },
   });
-  if (
-    checkUser
-      .map((item: { permission: { title: any } }) => item.permission.title)
-      .indexOf("Study permission") == -1
-  ) {
-    return redirect("/");
-  }
+  // if (
+  //   checkUser
+  //     .map((item: { permission: { title: any } }) => item.permission.title)
+  //     .indexOf("Study permission") == -1
+  // ) {
+  //   return redirect("/");
+  // }
   const course: any = await db.course.findUnique({
     where: {
       id: params.courseId,

@@ -77,7 +77,7 @@ export async function PATCH(
 
           try {
             //send email
-            const res = await transporter.sendMail(mess);
+            // const res = await transporter.sendMail(mess);
 
             // return res.status(200).json({ success: true });
           } catch (err) {

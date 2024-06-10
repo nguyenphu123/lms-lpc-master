@@ -80,16 +80,16 @@ const CourseIdPage = async ({ params }: { params: { courseId: string } }) => {
     },
   });
   for (let i = 0; i < department.length; i++) {
-    if (
-      course.CourseOnDepartment.map((item: any) => item.departmentId).indexOf(
-        department[i].id
-      ) !== -1
-    ) {
-      department[i]["isEnrolled"] = true;
-    } else {
-      department[i]["isEnrolled"] = false;
-    }
+    // if (
+    //   course.CourseOnDepartment.map((item: any) => item.departmentId).indexOf(
+    //     department[i].id
+    //   ) !== -1
+    // ) {
 
+    // } else {
+
+    // }
+    department[i]["isEnrolled"] = true;
     for (let j = 0; j < department[i]?.User.length; j++) {
       if (
         course.ClassSessionRecord.map((item: any) => item.userId).indexOf(
@@ -99,6 +99,7 @@ const CourseIdPage = async ({ params }: { params: { courseId: string } }) => {
         department[i].User[j]["isEnrolled"] = true;
       } else {
         department[i].User[j]["isEnrolled"] = false;
+        department[i]["isEnrolled"] = false;
       }
     }
   }
