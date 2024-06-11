@@ -185,12 +185,19 @@ export const DepartmentForm = ({ initialData, courseId, department }: any) => {
           <AlertDialogDescription className="AlertDialogDescription">
             Are you sure you want to submit this course attendees?(Note that
             after submit, you cannot undo the assign of staffs due to our
-            policy)
+            policy)(Staff that has been assigned already will not be effected)
             <br />
             <div className="grid grid-cols-2 gap-0">
-              {assignList.map((item: { id: any; username: any }) => {
-                return <div key={item.id}>{item.username}</div>;
-              })}
+              {assignList.map(
+                (item: { id: any; username: any }, index: any) => {
+                  return (
+                    <div key={item.id}>
+                      {index}
+                      {item.username}
+                    </div>
+                  );
+                }
+              )}
             </div>
           </AlertDialogDescription>
 
