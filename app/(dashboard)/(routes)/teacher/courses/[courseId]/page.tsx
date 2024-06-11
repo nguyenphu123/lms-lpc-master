@@ -97,10 +97,14 @@ const CourseIdPage = async ({ params }: { params: { courseId: string } }) => {
         ) !== -1
       ) {
         department[i].User[j]["isEnrolled"] = true;
+        department[i].User[j]["canUndo"] = false;
         department[i]["isEnrolled"] = true;
+        department[i]["canUndo"] = false;
       } else {
         department[i].User[j]["isEnrolled"] = false;
+        department[i].User[j]["canUndo"] = true;
         department[i]["isEnrolled"] = false;
+        department[i]["canUndo"] = true;
       }
     }
   }

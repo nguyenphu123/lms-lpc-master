@@ -56,9 +56,7 @@ export const DepartmentForm = ({ initialData, courseId, department }: any) => {
   const [departmentList, setDepartmentList] = useState(department);
   const [assignList, setAssignList]: any = useState([]);
   const [triggerAlert, setTriggerAlert] = useState(false);
-  const [type, setType] = useState("");
-  const [name, setName] = useState("");
-  const [message, setMessage] = useState("");
+
   const [loading, setLoading] = useState(false);
   const toggleEdit = () => setIsEditing((current) => !current);
   const router = useRouter();
@@ -84,30 +82,40 @@ export const DepartmentForm = ({ initialData, courseId, department }: any) => {
     let newAssignList: any = [...assignList];
 
     if (newList[index].isEnrolled) {
-      alert("Cannot undo assign!!!");
-      return;
-      // newList[index].isEnrolled = false;
-      // for (let i = 0; i < newList[index].User.length; i++) {
-      //   newList[index].User[i].isEnrolled = false;
-      //   newAssignList[
-      //     newAssignList
-      //       .map((item: { id: any }) => item.id)
-      //       .indexOf(newList[index].User[i].id)
-      //   ].isEnrolled = false;
-      // }
+      if (newList[index].canUndo) {
+        newList[index].isEnrolled = false;
+        for (let i = 0; i < newList[index].User.length; i++) {
+          newList[index].User[i].isEnrolled = false;
+          newAssignList[
+            newAssignList
+              .map((item: { id: any }) => item.id)
+              .indexOf(newList[index].User[i].id)
+          ].isEnrolled = false;
+        }
+      } else {
+        alert("Cannot commit this action!!!");
+        return;
+      }
     } else {
       if (newList[index].User.length == 0) {
         alert("No user to assign!!!");
         return;
       }
       newList[index].isEnrolled = true;
+      newList[index].canUndo = true;
       for (let i = 0; i < newList[index].User.length; i++) {
         newList[index].User[i].isEnrolled = true;
+        newList[index].User[i].canUndo = true;
         newAssignList[
           newAssignList
             .map((item: { id: any }) => item.id)
             .indexOf(newList[index].User[i].id)
         ].isEnrolled = true;
+        newAssignList[
+          newAssignList
+            .map((item: { id: any }) => item.id)
+            .indexOf(newList[index].User[i].id)
+        ].canUndo = true;
       }
     }
     setAssignList([...newAssignList]);
@@ -118,28 +126,38 @@ export const DepartmentForm = ({ initialData, courseId, department }: any) => {
     let newList = [...departmentList];
     let newAssignList: any = [...assignList];
     if (newList[i].User[j].isEnrolled) {
-      alert("Cannot undo assign!!!");
-      return;
-      // newList[i].User[j].isEnrolled = false;
-      // newList[i].isEnrolled = false;
-      // newAssignList[
-      //   newAssignList
-      //     .map((item: { id: any }) => item.id)
-      //     .indexOf(newList[i].User[j].id)
-      // ].isEnrolled = false;
+      if (newList[i].User[j].canUndo) {
+        newList[i].User[j].isEnrolled = false;
+        newList[i].isEnrolled = false;
+        newAssignList[
+          newAssignList
+            .map((item: { id: any }) => item.id)
+            .indexOf(newList[i].User[j].id)
+        ].isEnrolled = false;
+      } else {
+        alert("Cannot commit this action!!!");
+        return;
+      }
     } else {
       newList[i].User[j].isEnrolled = true;
+      newList[i].User[j].canUndo = true;
       newAssignList[
         newAssignList
           .map((item: { id: any }) => item.id)
           .indexOf(newList[i].User[j].id)
       ].isEnrolled = true;
+      newAssignList[
+        newAssignList
+          .map((item: { id: any }) => item.id)
+          .indexOf(newList[i].User[j].id)
+      ].canUndo = true;
     }
     setAssignList(newAssignList);
     if (
       newList[i].User.map((item: any) => item.isEnrolled).indexOf(false) == -1
     ) {
       newList[i].isEnrolled = true;
+      newList[i].canUndo = true;
     }
     setDepartmentList(newList);
   };
@@ -147,8 +165,6 @@ export const DepartmentForm = ({ initialData, courseId, department }: any) => {
   function cancel() {
     setTriggerAlert(false);
 
-    setMessage("");
-    setName("");
     router.refresh();
   }
   const onSubmit = async () => {
@@ -239,7 +255,7 @@ export const DepartmentForm = ({ initialData, courseId, department }: any) => {
                       startContent={
                         <>
                           <input
-                            className="h-9 w-9"
+                            className="h-6 w-6"
                             id={"department " + item.id}
                             onChange={(e) => onChangeDepartmentList(i)}
                             disabled={isEditing ? false : true}
@@ -247,7 +263,7 @@ export const DepartmentForm = ({ initialData, courseId, department }: any) => {
                             type="checkbox"
                             checked={item.isEnrolled}
                             defaultChecked={item.isEnrolled}
-                          />
+                          />{" "}
                           {item.title}
                         </>
                       }
@@ -270,7 +286,7 @@ export const DepartmentForm = ({ initialData, courseId, department }: any) => {
                                     disabled={isEditing ? false : true}
                                     value={item.title}
                                     type="checkbox"
-                                    className="form-checkbox h-9 w-9 text-blue-600 dark:text-blue-400 "
+                                    className="form-checkbox h-6 w-6 text-blue-600 dark:text-blue-400 "
                                     checked={item.isEnrolled}
                                     defaultChecked={item.isEnrolled}
                                   />
