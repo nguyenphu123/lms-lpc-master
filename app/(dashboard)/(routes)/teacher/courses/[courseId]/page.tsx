@@ -89,7 +89,7 @@ const CourseIdPage = async ({ params }: { params: { courseId: string } }) => {
     // } else {
 
     // }
-    department[i]["isEnrolled"] = true;
+    department[i]["isEnrolled"] = false;
     for (let j = 0; j < department[i]?.User.length; j++) {
       if (
         course.ClassSessionRecord.map((item: any) => item.userId).indexOf(
@@ -97,6 +97,7 @@ const CourseIdPage = async ({ params }: { params: { courseId: string } }) => {
         ) !== -1
       ) {
         department[i].User[j]["isEnrolled"] = true;
+        department[i]["isEnrolled"] = true;
       } else {
         department[i].User[j]["isEnrolled"] = false;
         department[i]["isEnrolled"] = false;
