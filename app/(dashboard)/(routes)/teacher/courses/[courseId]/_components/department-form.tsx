@@ -239,6 +239,7 @@ export const DepartmentForm = ({ initialData, courseId, department }: any) => {
                       startContent={
                         <>
                           <input
+                            className="h-9 w-9"
                             id={"department " + item.id}
                             onChange={(e) => onChangeDepartmentList(i)}
                             disabled={isEditing ? false : true}
@@ -269,7 +270,7 @@ export const DepartmentForm = ({ initialData, courseId, department }: any) => {
                                     disabled={isEditing ? false : true}
                                     value={item.title}
                                     type="checkbox"
-                                    className="form-checkbox h-5 w-5 text-blue-600 dark:text-blue-400"
+                                    className="form-checkbox h-9 w-9 text-blue-600 dark:text-blue-400 "
                                     checked={item.isEnrolled}
                                     defaultChecked={item.isEnrolled}
                                   />
