@@ -82,7 +82,7 @@ const ChapterIdPage = async ({
           <ul className="list-decimal">
             {chapter.Resource.map((item: any) => (
               <li key={item.attachment}>
-                <Link key={item.attachment} href={item.attachment}>
+                <Link key={item.attachment} href={item.attachment} className="text-blue-600 hover:underline">
                   {item.attachment.split("/").pop() as string}
                 </Link>
               </li>
