@@ -258,9 +258,10 @@ export default async function Dashboard({
         {/* <SlideProgram items={courses} /> */}
         {/* <Categories items={categories} /> */}
         <MyActivity items={coursesWithProgress2} />
-        <Recommend items={coursesWithProgress3} />
+       
         <Bookmark items={coursesWithProgress} />
         <CompletedCourse items={coursesWithProgress4} />
+        <Recommend items={coursesWithProgress3} />
       </div>
     </>
   );

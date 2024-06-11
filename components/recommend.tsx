@@ -29,15 +29,15 @@ export const Recommend = ({ items }: RecommendProps) => {
     <>
       <h2 className="font-semibold text-2xl text-blue-700 mb-4 flex items-center">
         <Focus className="mr-2" />
-        Recommend Course
+        Other Courses
       </h2>
-      <p className="mb-4 italic">No recommend course</p>
+      <p className="mb-4 italic">No course</p>
     </>
   ) : (
     <div>
       <h2 className="font-semibold text-2xl text-blue-700 mb-4 flex items-center">
         <Focus className="mr-2" />
-        Recommend Course
+        Other Course
       </h2>
       <Carousel
         opts={{

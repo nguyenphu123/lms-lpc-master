@@ -77,7 +77,7 @@ export const CourseSidebarItem = ({
           />
         )}
 
-        {label}
+        <span className="break-words max-w-[200px] text-left">{label}</span>
       </div>
       <div
         className={cn(
