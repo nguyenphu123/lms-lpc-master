@@ -15,10 +15,9 @@ export const MyCourse = ({ data }: MyCourseProps) => {
     <div>
       <Popover>
         <PopoverTrigger>
-          <div>My course</div>
+          <h3 className="text-lg font-semibold mb-4">My Course</h3>
         </PopoverTrigger>
         <PopoverContent>
-          <h3 className="text-lg font-semibold mb-4">My Course</h3>
           {data.ClassSessionRecord.length > 0 ? (
             data.ClassSessionRecord.map((course: any) => (
               <div key={course.course.id}>

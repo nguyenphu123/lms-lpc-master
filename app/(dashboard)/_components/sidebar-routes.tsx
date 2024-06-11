@@ -38,11 +38,11 @@ const guestRoutes = [
     label: "Bright Star",
     href: "/ranking",
   },
-  {
-    icon: BookCheck,
-    label: "Collection",
-    href: "/collection",
-  },
+  // {
+  //   icon: BookCheck,
+  //   label: "Collection",
+  //   href: "/collection",
+  // },
 ];
 
 export const SidebarRoutes = ({ userId }: any) => {
