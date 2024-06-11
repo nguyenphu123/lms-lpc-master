@@ -4,8 +4,18 @@ import * as z from "zod";
 import axios from "axios";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { Pencil } from "lucide-react";
-import { useCallback, useEffect, useState } from "react";
+import { Loader, Pencil } from "lucide-react";
+import {
+  JSXElementConstructor,
+  Key,
+  PromiseLikeOfReactNode,
+  ReactElement,
+  ReactNode,
+  ReactPortal,
+  useCallback,
+  useEffect,
+  useState,
+} from "react";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import { Accordion, AccordionItem } from "@nextui-org/react";
@@ -18,6 +28,14 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 interface DepartmentProps {
   id: string;
   title: string;
@@ -37,6 +55,11 @@ export const DepartmentForm = ({ initialData, courseId, department }: any) => {
   const [isEditing, setIsEditing] = useState(false);
   const [departmentList, setDepartmentList] = useState(department);
   const [assignList, setAssignList]: any = useState([]);
+  const [triggerAlert, setTriggerAlert] = useState(false);
+  const [type, setType] = useState("");
+  const [name, setName] = useState("");
+  const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(false);
   const toggleEdit = () => setIsEditing((current) => !current);
   const router = useRouter();
 
@@ -54,26 +77,24 @@ export const DepartmentForm = ({ initialData, courseId, department }: any) => {
     }
     setAssignList(newAssignList);
   }, []);
-  const onChangeDepartmentList = (
-    e: any,
-    department: DepartmentProps,
-    index: any
-  ) => {
+  const onChangeDepartmentList = (index: any) => {
     // e.preventDefault();
 
     let newList = [...departmentList];
     let newAssignList: any = [...assignList];
-    
+
     if (newList[index].isEnrolled) {
-      newList[index].isEnrolled = false;
-      for (let i = 0; i < newList[index].User.length; i++) {
-        newList[index].User[i].isEnrolled = false;
-        newAssignList[
-          newAssignList
-            .map((item: { id: any }) => item.id)
-            .indexOf(newList[index].User[i].id)
-        ].isEnrolled = false;
-      }
+      alert("Cannot undo assign!!!");
+      return;
+      // newList[index].isEnrolled = false;
+      // for (let i = 0; i < newList[index].User.length; i++) {
+      //   newList[index].User[i].isEnrolled = false;
+      //   newAssignList[
+      //     newAssignList
+      //       .map((item: { id: any }) => item.id)
+      //       .indexOf(newList[index].User[i].id)
+      //   ].isEnrolled = false;
+      // }
     } else {
       if (newList[index].User.length == 0) {
         alert("No user to assign!!!");
@@ -93,22 +114,19 @@ export const DepartmentForm = ({ initialData, courseId, department }: any) => {
 
     setDepartmentList([...newList]);
   };
-  const onChangeStudentList = async (
-    e: any,
-    department: DepartmentProps,
-    i: any,
-    j: any
-  ) => {
+  const onChangeStudentList = async (i: any, j: any) => {
     let newList = [...departmentList];
     let newAssignList: any = [...assignList];
     if (newList[i].User[j].isEnrolled) {
-      newList[i].User[j].isEnrolled = false;
-      newList[i].isEnrolled = false;
-      newAssignList[
-        newAssignList
-          .map((item: { id: any }) => item.id)
-          .indexOf(newList[i].User[j].id)
-      ].isEnrolled = false;
+      alert("Cannot undo assign!!!");
+      return;
+      // newList[i].User[j].isEnrolled = false;
+      // newList[i].isEnrolled = false;
+      // newAssignList[
+      //   newAssignList
+      //     .map((item: { id: any }) => item.id)
+      //     .indexOf(newList[i].User[j].id)
+      // ].isEnrolled = false;
     } else {
       newList[i].User[j].isEnrolled = true;
       newAssignList[
@@ -126,23 +144,64 @@ export const DepartmentForm = ({ initialData, courseId, department }: any) => {
     setDepartmentList(newList);
   };
   // const { isSubmitting, isValid } = form.formState;
+  function cancel() {
+    setTriggerAlert(false);
 
+    setMessage("");
+    setName("");
+    router.refresh();
+  }
   const onSubmit = async () => {
     try {
+      setLoading(true);
       await axios.patch(`/api/courses/${courseId}/department`, {
         departmentList,
         assignList,
       });
       toast.success("Course updated");
+      setLoading(false);
+      setTriggerAlert(false);
       toggleEdit();
       router.refresh();
     } catch {
       toast.error("Something went wrong");
     }
   };
-
+  const onConfirm = () => {
+    setTriggerAlert(true);
+  };
   return (
     <div className="mt-6 border bg-slate-100 rounded-md p-4 text-black dark:bg-slate-950">
+      <AlertDialog
+        open={triggerAlert}
+        onOpenChange={() => {
+          setTimeout(() => (document.body.style.pointerEvents = ""), 100);
+        }}
+      >
+        <AlertDialogContent className="AlertDialogContent">
+          <AlertDialogTitle className="AlertDialogTitle">
+            Submit list of staff assigned to course
+          </AlertDialogTitle>
+          <AlertDialogDescription className="AlertDialogDescription">
+            Are you sure you want to submit this course attendees?(Note that
+            after submit, you cannot undo the assign of staffs due to our
+            policy)
+            <br />
+            <div className="grid grid-cols-2 gap-0">
+              {assignList.map((item: { id: any; username: any }) => {
+                return <div key={item.id}>{item.username}</div>;
+              })}
+            </div>
+          </AlertDialogDescription>
+
+          <AlertDialogCancel onClick={() => cancel()}>Cancel</AlertDialogCancel>
+          <AlertDialogAction asChild>
+            <button className="Button red" onClick={() => onSubmit()}>
+              Confirm {loading ? <Loader /> : <></>}
+            </button>
+          </AlertDialogAction>
+        </AlertDialogContent>
+      </AlertDialog>
       <div className="font-medium flex items-center justify-between dark:text-slate-50">
         Department
         <Button onClick={toggleEdit} variant="ghost">
@@ -174,7 +233,7 @@ export const DepartmentForm = ({ initialData, courseId, department }: any) => {
                         <>
                           <input
                             id={"department " + item.id}
-                            onChange={(e) => onChangeDepartmentList(e, item, i)}
+                            onChange={(e) => onChangeDepartmentList(i)}
                             disabled={isEditing ? false : true}
                             value={item.title}
                             type="checkbox"
@@ -188,29 +247,29 @@ export const DepartmentForm = ({ initialData, courseId, department }: any) => {
                       <div
                         key={"department-user " + item.id}
                         className="grid grid-cols-2 gap-2 w-full"
-                      > 
-                        {item.User.length==0?"NO USER":item.User.map((item: any, j: any) => {
-                          return (
-                            <div
-                              key={item.id}
-                              className="flex items-center space-x-2 p-2 dark:text-slate-50 bg-white dark:bg-gray-800 rounded-lg shadow"
-                            >
-                              <input
-                                id={"user " + item.id}
-                                onChange={(e) =>
-                                  onChangeStudentList(e, item, i, j)
-                                }
-                                disabled={isEditing ? false : true}
-                                value={item.title}
-                                type="checkbox"
-                                className="form-checkbox h-5 w-5 text-blue-600 dark:text-blue-400"
-                                checked={item.isEnrolled}
-                                defaultChecked={item.isEnrolled}
-                              />
-                              <span>{item.username}</span>
-                            </div>
-                          );
-                        })}
+                      >
+                        {item.User.length == 0
+                          ? "NO USER"
+                          : item.User.map((item: any, j: any) => {
+                              return (
+                                <div
+                                  key={item.id}
+                                  className="flex items-center space-x-2 p-2 dark:text-slate-50 bg-white dark:bg-gray-800 rounded-lg shadow"
+                                >
+                                  <input
+                                    id={"user " + item.id}
+                                    onChange={(e) => onChangeStudentList(i, j)}
+                                    disabled={isEditing ? false : true}
+                                    value={item.title}
+                                    type="checkbox"
+                                    className="form-checkbox h-5 w-5 text-blue-600 dark:text-blue-400"
+                                    checked={item.isEnrolled}
+                                    defaultChecked={item.isEnrolled}
+                                  />
+                                  <span>{item.username}</span>
+                                </div>
+                              );
+                            })}
                       </div>
                     </AccordionItem>
                   </Accordion>
@@ -219,7 +278,7 @@ export const DepartmentForm = ({ initialData, courseId, department }: any) => {
             })}
 
             <div className="flex items-center gap-x-2">
-              <Button onClick={() => onSubmit()}>Save</Button>
+              <Button onClick={() => onConfirm()}>Save</Button>
             </div>
           </form>
         </Form>
