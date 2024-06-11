@@ -37,11 +37,10 @@ export const AttacthmentForm = ({
   >(initialData.Resource);
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
-  const onChangeFileUrl = async (e: any, id: any) => {
+  const onChangeFileUrl = async (e: any, index: any) => {
     e.preventDefault();
     setIsLoading(true);
     const file = e.target.files?.[0];
-    let objIndex = contents.findIndex((obj: any, index: any) => obj.id == id);
 
     let getToken = await axios.get("/api/getToken");
     // if (
@@ -73,14 +72,15 @@ export const AttacthmentForm = ({
         },
       }
     );
-    contents[objIndex].attachmentType = "extra";
-    contents[objIndex].moduleId = moduleId;
+    contents[index].attachmentType = "extra";
+    contents[index].moduleId = moduleId;
     contents[
-      objIndex
+      index
     ].attachment = `${process.env.NEXT_PUBLIC_ACCOUNT_URL}/Course/${getCourse.data.title}/${getChapter.data.title}/${initialData.title}/attachment/${file.name}`;
     setContents([...contents]);
     setIsLoading(false);
   };
+
   const addResource = () => {
     let newItem = {
       attachment: "",
@@ -115,35 +115,38 @@ export const AttacthmentForm = ({
 
       <div className="space-y-4">
         {contents.map((item: any, index: any) => (
-          <div key={index} className="flex items-center justify-between">
-            {item.attachment !== "" && !edit ? (
-              <Link
-                suppressHydrationWarning={true}
-                download="Attachment"
-                href={item.attachment}
-                target="_blank"
-                className="text-blue-600 hover:underline"
-              >
-                {item.attachment.split("/").pop() as string}
-              </Link>
+          <div
+            key={item.attachment}
+            className="flex items-center justify-between"
+          >
+            {item.attachment !== "" ? (
+              <>
+                <Link
+                  suppressHydrationWarning={true}
+                  download="Attachment"
+                  href={item.attachment}
+                  target="_blank"
+                  className="text-blue-600 hover:underline"
+                >
+                  {item.attachment.split("/").pop() as string}
+                </Link>
+                <button
+                  type="button"
+                  onClick={() =>
+                    setContents(contents.filter((_, i) => i != index))
+                  }
+                  className="bg-red-500 text-white px-3 py-1 rounded-md ml-2"
+                >
+                  Remove
+                </button>
+              </>
             ) : (
               <input
                 type="file"
-                onChange={(e: any) => onChangeFileUrl(e, item.id)}
+                onChange={(e: any) => onChangeFileUrl(e, index)}
                 accept="application/*"
                 className="file-input"
               />
-            )}
-            {edit && (
-              <button
-                type="button"
-                onClick={() =>
-                  setContents(contents.filter((_, i) => i !== index))
-                }
-                className="bg-red-500 text-white px-3 py-1 rounded-md ml-2"
-              >
-                Remove
-              </button>
             )}
           </div>
         ))}

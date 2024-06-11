@@ -68,13 +68,17 @@ export async function GET(
         moduleId: params.chapterId,
       },
     });
+    
     const currentChapterPos = checkChapter
       .map((item: { id: any }) => item.id)
-      .indexOf(userProgress.id);
+      .indexOf(userProgress?.id);
     const nextChapter = checkChapter.map((item: { id: any }) => item.id)[
       currentChapterPos + 1
     ];
-    userProgress["nextChapterId"] = nextChapter;
+    if(userProgress != undefined){
+      userProgress["nextChapterId"] = nextChapter;
+    }
+    
     return NextResponse.json(userProgress);
   } catch (error) {
     console.log("[CHAPTER_ID_PROGRESS]", error);

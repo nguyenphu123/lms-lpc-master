@@ -77,7 +77,7 @@ const Slide = ({
   const onClickNextSlide = async () => {
     if (hasCompleted == "finished") {
       setCurrentSlide(currentSlide + 1);
-      setDoc(slide[currentSlide].fileUrl.replace(" ", "%20"));
+      setDoc(slide[currentSlide].fileUrl);
     } else {
       const date = new Date();
 
@@ -90,8 +90,9 @@ const Slide = ({
         }
       );
       setCurrentSlide(currentSlide + 1);
-      setDoc(slide[currentSlide].fileUrl.replace(" ", "%20"));
+      setDoc(slide[currentSlide].fileUrl);
     }
+    router.refresh();
   };
   const onClickPre = async () => {
     router.push(`/courses/${courseId}/chapters/${preChapter}`);
@@ -121,7 +122,8 @@ const Slide = ({
         let checkIfNextChapterIsFinished = await axios.get(
           `/api/courses/${courseId}/chapters/${nextChapterId}/progress`
         );
-        if (checkIfNextChapterIsFinished.data.status == "finished") {
+        console.log(checkIfNextChapterIsFinished);
+        if (checkIfNextChapterIsFinished?.data?.status == "finished") {
           if (checkIfNextChapterIsFinished.data.nextChapterId != undefined) {
           } else {
             await axios.put(`/api/courses/${courseId}/progress`, {
@@ -184,6 +186,7 @@ const Slide = ({
     router.push(`/`);
     router.refresh();
   };
+
   return slide.length < 1 ? (
     <>This module is updating.</>
   ) : (
@@ -259,26 +262,34 @@ const Slide = ({
               theme={{ disableThemeScrollbar: false }}
             />
           ) : (
-            <DocViewer
-              prefetchMethod="GET"
-              config={{
-                header: {
-                  disableHeader: true,
-                  disableFileName: true,
-                },
-
-                pdfVerticalScrollByDefault: true,
-              }}
-              documents={[
-                {
-                  uri: slide[currentSlide].fileUrl,
-                  fileType: getFileType(slide[currentSlide].fileUrl),
-                },
-              ]}
-              pluginRenderers={[PDFRenderer]}
+            <iframe
+              key={slide[currentSlide].fileUrl}
+              src={slide[currentSlide].fileUrl}
               style={{ width: 1080, height: 650 }}
-              theme={{ disableThemeScrollbar: false }}
             />
+            // <DocViewer
+            //   key={slide[currentSlide].fileUrl}
+            //   prefetchMethod="GET"
+            //   config={{
+            //     header: {
+            //       disableHeader: true,
+            //       disableFileName: true,
+            //     },
+            //     loadingRenderer: {
+            //       showLoadingTimeout: 5000,
+            //     },
+            //     pdfVerticalScrollByDefault: true,
+            //   }}
+            //   documents={[
+            //     {
+            //       uri: slide[currentSlide].fileUrl,
+            //       fileType: getFileType(slide[currentSlide].fileUrl),
+            //     },
+            //   ]}
+            //   pluginRenderers={[PDFRenderer]}
+            //   style={{ width: 1080, height: 650 }}
+            //   theme={{ disableThemeScrollbar: false }}
+            // />
           )}
 
           <div className="items-end">

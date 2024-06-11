@@ -15,51 +15,54 @@ export const MyCourse = ({ data }: MyCourseProps) => {
     <div>
       <Popover>
         <PopoverTrigger>
-          <h3 className="text-lg font-semibold mb-4">My Course</h3>
+          <div>My course</div>
         </PopoverTrigger>
         <PopoverContent>
           {data.ClassSessionRecord.length > 0 ? (
-            data.ClassSessionRecord.map((course: any) => (
-              <div key={course.course.id}>
-                <Link
-                  className="flex flex-col md:flex-row md:items-center"
-                  href={`/courses/${course.course.id}`}
-                >
-                  <div className="relative w-full md:w-1/3 aspect-video rounded-md overflow-hidden">
-                    <Image
-                      fill
-                      className="object-cover"
-                      alt={course.course.title}
-                      src={
-                        course.course.imageUrl != null
-                          ? course.course.imageUrl.replace("public", "")
-                          : ""
-                      }
-                    />
-                  </div>
-                  <div className="md:w-2/3 md:pl-4">
-                    <div className="text-lg md:text-base font-medium group-hover:text-sky-700 transition line-clamp-2">
-                      {course.course.title}
-                    </div>
-                    {course.progress !== null ? (
-                      <CourseProgress
-                        variant={
-                          parseInt(course.progress) === 100
-                            ? "success"
-                            : "default"
+            <>
+              <h3 className="text-lg font-semibold mb-4">My Course</h3>
+              {data.ClassSessionRecord.map((course: any) => (
+                <div key={course.course.id}>
+                  <Link
+                    className="flex flex-col md:flex-row md:items-center"
+                    href={`/courses/${course.course.id}`}
+                  >
+                    <div className="relative w-full md:w-1/3 aspect-video rounded-md overflow-hidden">
+                      <Image
+                        fill
+                        className="object-cover"
+                        alt={course.course.title}
+                        src={
+                          course.course.imageUrl != null
+                            ? course.course.imageUrl.replace("public", "")
+                            : ""
                         }
-                        size="sm"
-                        value={parseInt(course.progress)}
                       />
-                    ) : (
-                      <p className="text-md md:text-sm font-medium text-slate-700">
-                        {/* {formatPrice(price)} */}
-                      </p>
-                    )}
-                  </div>
-                </Link>
-              </div>
-            ))
+                    </div>
+                    <div className="md:w-2/3 md:pl-4">
+                      <div className="text-lg md:text-base font-medium group-hover:text-sky-700 transition line-clamp-2">
+                        {course.course.title}
+                      </div>
+                      {course.progress !== null ? (
+                        <CourseProgress
+                          variant={
+                            parseInt(course.progress) === 100
+                              ? "success"
+                              : "default"
+                          }
+                          size="sm"
+                          value={parseInt(course.progress)}
+                        />
+                      ) : (
+                        <p className="text-md md:text-sm font-medium text-slate-700">
+                          {/* {formatPrice(price)} */}
+                        </p>
+                      )}
+                    </div>
+                  </Link>
+                </div>
+              ))}
+            </>
           ) : (
             <div>
               <h3 className="text-lg font-semibold mb-4">My Course</h3>
