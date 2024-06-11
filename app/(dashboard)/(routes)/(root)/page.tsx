@@ -261,7 +261,7 @@ export default async function Dashboard({
        
         <Bookmark items={coursesWithProgress} />
         <CompletedCourse items={coursesWithProgress4} />
-        <Recommend items={coursesWithProgress3} />
+        {/* <Recommend items={coursesWithProgress3} /> */}
       </div>
     </>
   );
