@@ -15,7 +15,11 @@ export async function PATCH(
     if (!userId) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
-
+    const deleteOldAttachment = await db.resource.deleteMany({
+      where: {
+        moduleId: params.chapterId,
+      },
+    });
     const createAttachment = await db.resource.createMany({
       data: contents,
       skipDuplicates: true,

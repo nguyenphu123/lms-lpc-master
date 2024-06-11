@@ -79,11 +79,15 @@ const ChapterIdPage = async ({
             isCompleted={userProgress?.status}
           ></Slide>
           Extra resources:{" "}
-          {chapter.Resource.map((item: any) => (
-            <Link key={item.attachment} href={item.attachment}>
-              {item.attachment.split("/").pop() as string}
-            </Link>
-          ))}
+          <ul className="list-decimal">
+            {chapter.Resource.map((item: any) => (
+              <li key={item.attachment}>
+                <Link key={item.attachment} href={item.attachment}>
+                  {item.attachment.split("/").pop() as string}
+                </Link>
+              </li>
+            ))}
+          </ul>
         </div>
         <div>
           <div>
