@@ -169,9 +169,9 @@ const SearchPage = async ({ searchParams }: SearchPageProps) => {
       </div>
       <div className="p-6 space-y-4">
         <SlideProgram items={programs} />
-       
+
         <Categories items={courses1} userId={sessionClaims.userId} />
-        <Recommend items={coursesWithProgress3} />
+        {/* <Recommend items={coursesWithProgress3} /> */}
       </div>
     </>
   );
