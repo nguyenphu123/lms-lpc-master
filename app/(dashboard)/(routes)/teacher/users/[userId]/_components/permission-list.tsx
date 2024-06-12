@@ -98,10 +98,16 @@ export const PermissionForm = ({
       setCurrentRole("");
       let newPermissionList = [...permissionList];
       for (let i = 0; i < newPermissionList.length; i++) {
-        if (newPermissionList[i].roleId == role.roleId) {
+        if (
+          role.rolePermission
+            .map((item: any) => item.permissionId)
+            .indexOf(newPermissionList[i].permissionId) != -1
+        ) {
           newPermissionList.splice(i, 1);
+          i--;
         }
       }
+
       setPermissionList([...newPermissionList]);
     } else {
       setCurrentRole(role.title);
@@ -114,7 +120,7 @@ export const PermissionForm = ({
           userId: userId,
         };
 
-        setPermissionList([...permissionList, newItem]);
+        setPermissionList((list: any) => [...list, newItem]);
       }
     }
 
