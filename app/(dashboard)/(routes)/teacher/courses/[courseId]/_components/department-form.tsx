@@ -53,7 +53,7 @@ const formSchema = z.array(Department);
 
 export const DepartmentForm = ({ initialData, courseId, department }: any) => {
   const [isEditing, setIsEditing] = useState(false);
-  const [departmentList, setDepartmentList] = useState(department);
+  const [departmentList, setDepartmentList] = useState([...department]);
   const [assignList, setAssignList]: any = useState([]);
   const [triggerAlert, setTriggerAlert] = useState(false);
 
@@ -184,8 +184,20 @@ export const DepartmentForm = ({ initialData, courseId, department }: any) => {
     }
   };
   const onConfirm = () => {
-    setTriggerAlert(true);
+    let canSubmit = false;
+    for (let i = 0; i < assignList.length; i++) {
+      if (assignList[i].isEnrolled == true && assignList[i].canUndo == true) {
+        canSubmit = true;
+      }
+    }
+    if (canSubmit) {
+      setTriggerAlert(true);
+    } else {
+      alert("No new staffs assigned to this course!!!");
+      return;
+    }
   };
+
   return (
     <div className="mt-6 border bg-slate-100 rounded-md p-4 text-black dark:bg-slate-950">
       <AlertDialog
@@ -199,21 +211,22 @@ export const DepartmentForm = ({ initialData, courseId, department }: any) => {
             Submit list of staff assigned to course
           </AlertDialogTitle>
           <AlertDialogDescription className="AlertDialogDescription">
-            Are you sure you want to submit this course attendees?(Note that
-            after submit, you cannot undo the assign of staffs due to our
+            Are you sure you want to add these attendees to this course?(Note
+            that after submit, you cannot undo the assign of staffs due to our
             policy)(Staff that has been assigned already will not be effected)
             <br />
             <div className="grid grid-cols-2 gap-0">
-              {assignList.map(
-                (item: { id: any; username: any }, index: any) => {
+              {assignList
+                .filter(
+                  (item: any) => item.isEnrolled == true && item.canUndo == true
+                )
+                .map((item: { id: any; username: any }, index: any) => {
                   return (
                     <div key={item.id}>
-                      {index}
-                      {item.username}
+                      _{index + 1} {item.username}
                     </div>
                   );
-                }
-              )}
+                })}
             </div>
           </AlertDialogDescription>
 

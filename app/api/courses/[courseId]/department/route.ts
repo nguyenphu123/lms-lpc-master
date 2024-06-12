@@ -27,7 +27,7 @@ export async function PATCH(
     });
     const date = new Date();
     for (let i = 0; i < departmentList.length; i++) {
-      if (departmentList[i].isEnrolled) {
+      if (departmentList[i].isEnrolled && departmentList[i].canUndo) {
         const updateCourse = await db.courseOnDepartment.create({
           data: {
             courseId: params.courseId,
@@ -38,7 +38,7 @@ export async function PATCH(
       }
     }
     for (let i = 0; i < assignList.length; i++) {
-      if (assignList[i].isEnrolled) {
+      if (assignList[i].isEnrolled && assignList[i].canUndo) {
         let checkIfExist = await db.classSessionRecord.findFirst({
           where: {
             userId: assignList[i].id,
@@ -50,50 +50,49 @@ export async function PATCH(
           checkIfExist?.status == "finished"
         ) {
         } else {
-          const mess = {
-            from: "Webmaster@lp.com.vn",
-            to: assignList[i].email,
-            cc: "",
-            subject: `${assignList[i].email} has been assigned to course ${course.title}.`,
-            text: `
-              You have been assigned to course ${course.title}.`,
-            html: `
-              <p>You have been assigned to course ${course.title}</p>`,
-          };
-          let transporter = nodemailer.createTransport(
-            smtpTransport({
-              host: "smtp-mail.outlook.com",
-              secureConnection: false, // TLS requires secureConnection to be false
-              port: 587, // port for secure SMTP
-              auth: {
-                user: "Webmaster@lp.com.vn",
-                pass: "Lpc@236238$",
-              },
-              tls: {
-                ciphers: "SSLv3",
-              },
-            })
-          );
+          // const mess = {
+          //   from: "Webmaster@lp.com.vn",
+          //   to: assignList[i].email,
+          //   cc: "",
+          //   subject: `${assignList[i].email} has been assigned to course ${course.title}.`,
+          //   text: `
+          //     You have been assigned to course ${course.title}.`,
+          //   html: `
+          //     <p>You have been assigned to course ${course.title}</p>`,
+          // };
+          // let transporter = nodemailer.createTransport(
+          //   smtpTransport({
+          //     host: "smtp-mail.outlook.com",
+          //     secureConnection: false, // TLS requires secureConnection to be false
+          //     port: 587, // port for secure SMTP
+          //     auth: {
+          //       user: "Webmaster@lp.com.vn",
+          //       pass: "Lpc@236238$",
+          //     },
+          //     tls: {
+          //       ciphers: "SSLv3",
+          //     },
+          //   })
+          // );
 
-          try {
-            //send email
-            // const res = await transporter.sendMail(mess);
-
-            // return res.status(200).json({ success: true });
-          } catch (err) {
-            console.log("Mail send: ", err);
-          }
+          // try {
+          //   send email
+          //   const res = await transporter.sendMail(mess);
+          //   return res.status(200).json({ success: true });
+          // } catch (err) {
+          //   console.log("Mail send: ", err);
+          // }
+          await db.classSessionRecord.createMany({
+            data: {
+              userId: assignList[i].id,
+              courseId: params.courseId,
+              progress: "0%",
+              status: "studying",
+              startDate: date,
+            },
+            skipDuplicates: true,
+          });
         }
-        await db.classSessionRecord.createMany({
-          data: {
-            userId: assignList[i].id,
-            courseId: params.courseId,
-            progress: "0%",
-            status: "studying",
-            startDate: date,
-          },
-          skipDuplicates: true,
-        });
       }
     }
 
