@@ -829,9 +829,17 @@ const Exam = ({
                     Stay
                   </AlertDialogCancel>
                 ) : isCompleted == "failed" || currentAttempt == maxAttempt ? (
-                  <span className="text-red-500">
-                    Sorry, please wait for the exam reset to retake this test.
-                  </span>
+                  <>
+                    <span className="text-red-500">
+                      Sorry, please wait for the exam reset to retake this test.
+                    </span>
+                    <AlertDialogCancel
+                      onClick={() => setOnFinish(false)}
+                      className="px-4 py-2 bg-yellow-500 text-white rounded-lg"
+                    >
+                      Close
+                    </AlertDialogCancel>
+                  </>
                 ) : (
                   <AlertDialogCancel
                     onClick={() => accept()}
