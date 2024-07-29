@@ -27,7 +27,7 @@ const Exam = ({
   isCompleted,
 }: any) => {
   const router = useRouter();
-
+  const [isPassed, setIsPassed] = useState(true);
   const [categoryList, setCategoryList]: any = useState([...chapter.Category]);
   const [finishedExam, setFinishedExam] = useState(false);
   const [finalScore, setFinalScore] = useState(0);
@@ -185,7 +185,7 @@ const Exam = ({
           await axios.put(
             `/api/courses/${courseId}/chapters/${chapter.id}/progress`,
             {
-              status: totalScore >= chapter.scoreLimit ? "finished" : "failed",
+              status: totalScore >= chapter.scoreLimit && isPassed ? "finished" : "failed",
               score: parseInt(finalScore),
               progress: "100%",
               endDate: date,
@@ -197,7 +197,7 @@ const Exam = ({
             `/api/courses/${courseId}/chapters/${chapter.id}/progress`,
             {
               status:
-                totalScore >= chapter.scoreLimit ? "finished" : "studying",
+                totalScore >= chapter.scoreLimit && isPassed ? "finished" : "studying",
               score: parseInt(finalScore),
               progress: "100%",
               endDate: date,
@@ -206,7 +206,7 @@ const Exam = ({
           );
         }
 
-        if (totalScore >= chapter.scoreLimit) {
+        if (totalScore >= chapter.scoreLimit && isPassed) {
           if (nextChapterId != null) {
             let checkIfNextChapterIsFinished = await axios.get(
               `/api/courses/${courseId}/chapters/${nextChapterId}/progress`
@@ -306,7 +306,7 @@ const Exam = ({
       //   `/api/user/${currentUser.data.id}/examRecord/${chapter.id}`,
       //   examRecord
       // );
-      if (totalScore >= chapter.scoreLimit) {
+      if (totalScore >= chapter.scoreLimit && isPassed) {
         if (nextChapterId != null) {
           setTimeout(function () {
             // function code goes here
@@ -489,9 +489,9 @@ const Exam = ({
           await axios.put(
             `/api/courses/${courseId}/chapters/${chapter.id}/progress`,
             {
-              status: totalScore >= chapter.scoreLimit ? "finished" : "failed",
+              status: totalScore >= chapter.scoreLimit && isPassed ? "finished" : "failed",
               score: parseInt(finalScore),
-              progress: totalScore >= chapter.scoreLimit ? "100%" : "0%",
+              progress: totalScore >= chapter.scoreLimit && isPassed ? "100%" : "0%",
               endDate: date,
               retakeTime: currentAttempt,
             }
@@ -501,9 +501,9 @@ const Exam = ({
             `/api/courses/${courseId}/chapters/${chapter.id}/progress`,
             {
               status:
-                totalScore >= chapter.scoreLimit ? "finished" : "studying",
+                totalScore >= chapter.scoreLimit && isPassed ? "finished" : "studying",
               score: parseInt(finalScore),
-              progress: totalScore >= chapter.scoreLimit ? "100%" : "0%",
+              progress: totalScore >= chapter.scoreLimit && isPassed ? "100%" : "0%",
               endDate: date,
               retakeTime: currentAttempt,
             }
@@ -661,6 +661,9 @@ const Exam = ({
               parseInt(selectedAnswers[i].score);
         } else {
           selectedAnswers[i]["isRight"] = false;
+          if (selectedAnswers[i].compulsory) {
+            setIsPassed(false);
+          }
         }
       } else {
         let correctSelectedAnswer = 0;
@@ -691,6 +694,9 @@ const Exam = ({
               parseInt(selectedAnswers[i].score);
         } else {
           selectedAnswers[i]["isRight"] = false;
+          if (selectedAnswers[i].compulsory) {
+            setIsPassed(false);
+          }
         }
       }
     }
