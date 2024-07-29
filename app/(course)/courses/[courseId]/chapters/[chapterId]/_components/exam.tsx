@@ -185,7 +185,10 @@ const Exam = ({
           await axios.put(
             `/api/courses/${courseId}/chapters/${chapter.id}/progress`,
             {
-              status: totalScore >= chapter.scoreLimit && isPassed ? "finished" : "failed",
+              status:
+                totalScore >= chapter.scoreLimit && isPassed
+                  ? "finished"
+                  : "failed",
               score: parseInt(finalScore),
               progress: "100%",
               endDate: date,
@@ -197,7 +200,9 @@ const Exam = ({
             `/api/courses/${courseId}/chapters/${chapter.id}/progress`,
             {
               status:
-                totalScore >= chapter.scoreLimit && isPassed ? "finished" : "studying",
+                totalScore >= chapter.scoreLimit && isPassed
+                  ? "finished"
+                  : "studying",
               score: parseInt(finalScore),
               progress: "100%",
               endDate: date,
@@ -341,7 +346,7 @@ const Exam = ({
     setTimeLimit(chapter.timeLimit);
     setCurrentQuestion(0);
     setSelectedAnswers([]);
-
+    setIsPassed(true);
     setIsGeneratingExam(true);
     let questionLists: any = [];
     if (!finishedExam) {
@@ -489,9 +494,13 @@ const Exam = ({
           await axios.put(
             `/api/courses/${courseId}/chapters/${chapter.id}/progress`,
             {
-              status: totalScore >= chapter.scoreLimit && isPassed ? "finished" : "failed",
+              status:
+                totalScore >= chapter.scoreLimit && isPassed
+                  ? "finished"
+                  : "failed",
               score: parseInt(finalScore),
-              progress: totalScore >= chapter.scoreLimit && isPassed ? "100%" : "0%",
+              progress:
+                totalScore >= chapter.scoreLimit && isPassed ? "100%" : "0%",
               endDate: date,
               retakeTime: currentAttempt,
             }
@@ -501,9 +510,12 @@ const Exam = ({
             `/api/courses/${courseId}/chapters/${chapter.id}/progress`,
             {
               status:
-                totalScore >= chapter.scoreLimit && isPassed ? "finished" : "studying",
+                totalScore >= chapter.scoreLimit && isPassed
+                  ? "finished"
+                  : "studying",
               score: parseInt(finalScore),
-              progress: totalScore >= chapter.scoreLimit && isPassed ? "100%" : "0%",
+              progress:
+                totalScore >= chapter.scoreLimit && isPassed ? "100%" : "0%",
               endDate: date,
               retakeTime: currentAttempt,
             }
