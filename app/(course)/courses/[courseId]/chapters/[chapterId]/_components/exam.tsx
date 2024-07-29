@@ -798,13 +798,14 @@ const Exam = ({
 
                 <div className="p-4">
                   <p className="text-lg mb-4">
-                    {finalScore >= chapter.scoreLimit || finishedExam
+                    {(finalScore >= chapter.scoreLimit && isPassed) ||
+                    finishedExam
                       ? nextChapterId != null
                         ? "Congratulation on finishing this exam."
                         : "Would you like to find another course?"
                       : "Sorry you have failed"}
                   </p>
-                  {finalScore >= chapter.scoreLimit || finishedExam ? (
+                  {finalScore >= chapter.scoreLimit && isPassed || finishedExam ? (
                     <div className="flex justify-center mt-4">
                       <Image
                         src="/congratulationLPC.svg"
@@ -821,7 +822,7 @@ const Exam = ({
               </AlertDialogTitle>
               <AlertDialogDescription className="AlertDialogDescription"></AlertDialogDescription>
               <div className="flex justify-between">
-                {finalScore >= chapter.scoreLimit || finishedExam ? (
+                {finalScore >= chapter.scoreLimit && isPassed || finishedExam ? (
                   <AlertDialogCancel onClick={() => setOnFinish(false)}>
                     Stay
                   </AlertDialogCancel>
@@ -847,7 +848,7 @@ const Exam = ({
                 ) : (
                   <></>
                 )}
-                {finalScore >= chapter.scoreLimit || finishedExam ? (
+                {finalScore >= chapter.scoreLimit && isPassed || finishedExam ? (
                   <AlertDialogAction asChild>
                     <button
                       className="px-4 py-2 bg-green-500 text-white rounded-lg"
