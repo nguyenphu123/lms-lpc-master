@@ -226,7 +226,7 @@ const Exam = ({
                   progress: "100%",
                   endDate: date,
                 });
-                confetti.onOpen();
+                // confetti.onOpen();
                 let currentUser = await axios.get(`/api/user`);
                 await axios.patch(`/api/user/${currentUser.data.id}/score`, {
                   star:
@@ -262,7 +262,7 @@ const Exam = ({
               progress: "100%",
               startDate: date,
             });
-            confetti.onOpen();
+            // confetti.onOpen();
             let currentUser = await axios.get(`/api/user`);
             await axios.patch(`/api/user/${currentUser.data.id}/score`, {
               star: parseInt(currentUser.data.star) + parseInt(course.creadit),
@@ -566,7 +566,7 @@ const Exam = ({
               progress: "100%",
               startDate: date,
             });
-            confetti.onOpen();
+            // confetti.onOpen();
             let currentUser = await axios.get(`/api/user`);
             await axios.patch(`/api/user/${currentUser.data.id}/score`, {
               star: parseInt(currentUser.data.star) + parseInt(course.credit),
@@ -805,7 +805,8 @@ const Exam = ({
                         : "Would you like to find another course?"
                       : "Sorry you have failed"}
                   </p>
-                  {finalScore >= chapter.scoreLimit && isPassed || finishedExam ? (
+                  {(finalScore >= chapter.scoreLimit && isPassed) ||
+                  finishedExam ? (
                     <div className="flex justify-center mt-4">
                       <Image
                         src="/congratulationLPC.svg"
@@ -822,11 +823,12 @@ const Exam = ({
               </AlertDialogTitle>
               <AlertDialogDescription className="AlertDialogDescription"></AlertDialogDescription>
               <div className="flex justify-between">
-                {finalScore >= chapter.scoreLimit && isPassed || finishedExam ? (
+                {(finalScore >= chapter.scoreLimit && isPassed) ||
+                finishedExam ? (
                   <AlertDialogCancel onClick={() => setOnFinish(false)}>
                     Stay
                   </AlertDialogCancel>
-                ) : isCompleted == "failed" ? (
+                ) : isCompleted == "failed" || currentAttempt == maxAttempt ? (
                   <span className="text-red-500">
                     Sorry, please wait for the exam reset to retake this test.
                   </span>
@@ -848,7 +850,8 @@ const Exam = ({
                 ) : (
                   <></>
                 )}
-                {finalScore >= chapter.scoreLimit && isPassed || finishedExam ? (
+                {(finalScore >= chapter.scoreLimit && isPassed) ||
+                finishedExam ? (
                   <AlertDialogAction asChild>
                     <button
                       className="px-4 py-2 bg-green-500 text-white rounded-lg"
