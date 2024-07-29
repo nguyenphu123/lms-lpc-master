@@ -176,7 +176,7 @@ const Exam = ({
         })
       );
     } else {
-      const { finalScore }: any = calculateScore();
+      const { finalScore, passed }: any = calculateScore();
       const totalScore = finalScore;
 
       if (!finishedExam) {
@@ -186,11 +186,12 @@ const Exam = ({
             `/api/courses/${courseId}/chapters/${chapter.id}/progress`,
             {
               status:
-                totalScore >= chapter.scoreLimit && isPassed
+                totalScore >= chapter.scoreLimit && passed
                   ? "finished"
                   : "failed",
               score: parseInt(finalScore),
-              progress: "100%",
+              progress:
+                totalScore >= chapter.scoreLimit && passed ? "100%" : "0%",
               endDate: date,
               retakeTime: currentAttempt,
             }
@@ -200,7 +201,7 @@ const Exam = ({
             `/api/courses/${courseId}/chapters/${chapter.id}/progress`,
             {
               status:
-                totalScore >= chapter.scoreLimit && isPassed
+                totalScore >= chapter.scoreLimit && passed
                   ? "finished"
                   : "studying",
               score: parseInt(finalScore),
@@ -211,7 +212,7 @@ const Exam = ({
           );
         }
 
-        if (totalScore >= chapter.scoreLimit && isPassed) {
+        if (totalScore >= chapter.scoreLimit && passed) {
           if (nextChapterId != null) {
             let checkIfNextChapterIsFinished = await axios.get(
               `/api/courses/${courseId}/chapters/${nextChapterId}/progress`
@@ -311,7 +312,7 @@ const Exam = ({
       //   `/api/user/${currentUser.data.id}/examRecord/${chapter.id}`,
       //   examRecord
       // );
-      if (totalScore >= chapter.scoreLimit && isPassed) {
+      if (totalScore >= chapter.scoreLimit && passed) {
         if (nextChapterId != null) {
           setTimeout(function () {
             // function code goes here
@@ -442,7 +443,7 @@ const Exam = ({
       })
     );
   };
-
+  useEffect(() => {}, [isPassed]);
   // Hàm xử lý khi người dùng chọn nút "Next"
   const handleNextClick = async () => {
     // Chuyển sang câu hỏi tiếp theo
@@ -469,7 +470,9 @@ const Exam = ({
       );
     } else {
       // Nếu đã là câu hỏi cuối cùng, kiểm tra điểm số và hiển thị kết quả
-      const { finalScore }: any = calculateScore();
+
+      const { finalScore, passed }: any = calculateScore();
+
       const totalScore = finalScore;
       if (isCompleted != "finished") {
         await axios.post(
@@ -495,12 +498,12 @@ const Exam = ({
             `/api/courses/${courseId}/chapters/${chapter.id}/progress`,
             {
               status:
-                totalScore >= chapter.scoreLimit && isPassed
+                totalScore >= chapter.scoreLimit && passed
                   ? "finished"
                   : "failed",
               score: parseInt(finalScore),
               progress:
-                totalScore >= chapter.scoreLimit && isPassed ? "100%" : "0%",
+                totalScore >= chapter.scoreLimit && passed ? "100%" : "0%",
               endDate: date,
               retakeTime: currentAttempt,
             }
@@ -510,18 +513,18 @@ const Exam = ({
             `/api/courses/${courseId}/chapters/${chapter.id}/progress`,
             {
               status:
-                totalScore >= chapter.scoreLimit && isPassed
+                totalScore >= chapter.scoreLimit && passed
                   ? "finished"
-                  : "studying",
+                  : "failed",
               score: parseInt(finalScore),
               progress:
-                totalScore >= chapter.scoreLimit && isPassed ? "100%" : "0%",
+                totalScore >= chapter.scoreLimit && passed ? "100%" : "0%",
               endDate: date,
               retakeTime: currentAttempt,
             }
           );
         }
-        if (totalScore >= chapter.scoreLimit) {
+        if (totalScore >= chapter.scoreLimit && passed) {
           if (nextChapterId != null) {
             let checkIfNextChapterIsFinished = await axios.get(
               `/api/courses/${courseId}/chapters/${nextChapterId}/progress`
@@ -646,9 +649,10 @@ const Exam = ({
   // Hàm tính điểm số dựa trên câu trả lời đã chọn
   const calculateScore = () => {
     let finalScore = 0;
+    let passed = true;
     let newCategoryList = [...categoryList];
     if (selectedAnswers.length < 1) {
-      return finalScore;
+      return { finalScore, passed };
     }
 
     let myScore: number = 0;
@@ -675,6 +679,7 @@ const Exam = ({
           selectedAnswers[i]["isRight"] = false;
           if (selectedAnswers[i].compulsory) {
             setIsPassed(false);
+            passed = false;
           }
         }
       } else {
@@ -708,6 +713,7 @@ const Exam = ({
           selectedAnswers[i]["isRight"] = false;
           if (selectedAnswers[i].compulsory) {
             setIsPassed(false);
+            passed = false;
           }
         }
       }
@@ -719,7 +725,7 @@ const Exam = ({
     finalScore = Math.floor((myScore / maxScore) * 100);
     setFinalScore(finalScore);
     setExamMaxSocre(maxScore);
-    return { finalScore };
+    return { finalScore, passed };
   };
   const onLeaving = () => {
     setOnFinish(false);
@@ -833,12 +839,6 @@ const Exam = ({
                     <span className="text-red-500">
                       Sorry, please wait for the exam reset to retake this test.
                     </span>
-                    <AlertDialogCancel
-                      onClick={() => setOnFinish(false)}
-                      className="px-4 py-2 bg-yellow-500 text-white rounded-lg"
-                    >
-                      Close
-                    </AlertDialogCancel>
                   </>
                 ) : (
                   <AlertDialogCancel
