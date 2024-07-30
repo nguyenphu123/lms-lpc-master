@@ -813,7 +813,10 @@ const Exam = ({
               <li className="mb-2">
                 You will have{" "}
                 <span className="text-red-600">
-                  {chapter.maxAttempt - currentAttempt} times
+                  {chapter.maxAttempt - currentAttempt < 0
+                    ? 0
+                    : chapter.maxAttempt - currentAttempt}{" "}
+                  times
                 </span>{" "}
                 to do the exam.
               </li>
