@@ -968,7 +968,7 @@ const Exam = ({
               <AlertDialogDescription className="AlertDialogDescription">
                 {!finishedExam && isCompleted == "studying" ? (
                   <>Do you want to do the exam?</>
-                ) : isCompleted == "failed" ? (
+                ) : isCompleted == "failed" && currentAttempt == maxAttempt ? (
                   <>Please wait until admin reset</>
                 ) : (
                   <>Do you want to retake this exam?</>
@@ -983,7 +983,7 @@ const Exam = ({
               >
                 <AlertDialogCancel>Cancel</AlertDialogCancel>
                 <AlertDialogAction asChild>
-                  {isCompleted == "failed" ? (
+                  {isCompleted == "failed" && currentAttempt == maxAttempt ? (
                     <></>
                   ) : (
                     <button className="Button red" onClick={() => accept()}>
