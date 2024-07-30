@@ -80,7 +80,7 @@ export async function PATCH(
           //   const res = await transporter.sendMail(mess);
           //   return res.status(200).json({ success: true });
           // } catch (err) {
-          //   console.log("Mail send: ", err);
+
           // }
           await db.classSessionRecord.createMany({
             data: {

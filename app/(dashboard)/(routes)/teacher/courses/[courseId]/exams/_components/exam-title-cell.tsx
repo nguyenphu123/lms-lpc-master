@@ -19,7 +19,7 @@ export const ExamTitleCell = ({ row }: any) => {
     "userPermission",
     fetchUserPermission
   );
-  // console.log(data);
+
   if (isLoading) {
     return <></>;
   } else {
@@ -29,9 +29,7 @@ export const ExamTitleCell = ({ row }: any) => {
           key={item.id}
           // className="grid grid-cols-5 gap-4 p-4 bg-gray-100 rounded-md"
         >
-          <div>
-            {item.user.username}
-          </div>
+          <div>{item.user.username}</div>
           <br />
           <hr />
           <br />

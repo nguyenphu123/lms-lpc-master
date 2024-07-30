@@ -19,7 +19,7 @@ export const CourseTitleCellPersonal = ({ row }: any) => {
     "userPermission",
     fetchUserPermission
   );
-  // console.log(data);
+
   if (isLoading) {
     return <></>;
   } else {

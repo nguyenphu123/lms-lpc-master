@@ -20,7 +20,6 @@ export default async function Dashboard({
 
   if (!sessionClaims?.userId) {
     if (params.email != undefined && params.task != undefined) {
-      console.log(params);
       return redirect(`/sign-in/?email=${params.email}&task=${params.task}`);
     }
     return redirect("/sign-in");
@@ -258,7 +257,7 @@ export default async function Dashboard({
         {/* <SlideProgram items={courses} /> */}
         {/* <Categories items={categories} /> */}
         <MyActivity items={coursesWithProgress2} />
-       
+
         <Bookmark items={coursesWithProgress} />
         <CompletedCourse items={coursesWithProgress4} />
         {/* <Recommend items={coursesWithProgress3} /> */}

@@ -24,7 +24,7 @@ export async function POST(req: Request) {
 
     //   result = entries[0].mail == emailAddress ? true : false;
     // } catch (e) {
-    //   console.log(e);
+
     // }
     return NextResponse.json(result);
   } catch (error) {

@@ -14,6 +14,7 @@ const nextConfig = {
   },
 
   env: {},
+  reactStrictMode: false,
 };
 
 module.exports = nextConfig;

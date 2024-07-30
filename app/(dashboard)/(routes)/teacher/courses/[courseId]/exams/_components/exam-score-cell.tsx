@@ -19,23 +19,17 @@ export const ExamScoreCell = ({ row }: any) => {
     "userPermission",
     fetchUserPermission
   );
-  // console.log(data);
+
   if (isLoading) {
     return <></>;
   } else {
     return UserProgress.map((item: any) => {
       return (
-        <div
-          key={item.id}
-        >
-          
-          <div>
-            {item.score}%
-          </div>
+        <div key={item.id}>
+          <div>{item.score}%</div>
           <br />
           <hr />
           <br />
-          
         </div>
       );
     });

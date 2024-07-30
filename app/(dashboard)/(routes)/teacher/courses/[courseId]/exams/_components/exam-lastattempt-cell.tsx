@@ -19,7 +19,7 @@ export const ExamLastAttemptCell = ({ row }: any) => {
     "userPermission",
     fetchUserPermission
   );
-  // console.log(data);
+
   if (isLoading) {
     return <></>;
   } else {

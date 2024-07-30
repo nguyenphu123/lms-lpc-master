@@ -48,6 +48,7 @@ const Exam = ({
   const [currentUserId, setCurrentUserId] = useState(null);
   const confetti = useConfettiStore();
   const [currentAttempt, setCurrentAttempt] = useState(0);
+  const [startDate, setStartDate]: any = useState(null);
   useEffect(() => {
     const getHistory = async () => {
       let getLatestTestResult: any = await axios.get(
@@ -62,6 +63,7 @@ const Exam = ({
           ? true
           : false
       );
+
       setCurrentAttempt(
         getLatestTestResult.data?.UserProgress[0]?.retakeTime != undefined
           ? getLatestTestResult.data?.UserProgress[0]?.retakeTime
@@ -82,25 +84,27 @@ const Exam = ({
       );
 
       if (
-        chekIfUserIsInExam?.data?.isInExam == true &&
-        chapter.id == chekIfUserIsInExam?.data?.moduleId
+        (chekIfUserIsInExam?.data?.isInExam == true &&
+          chapter.id == chekIfUserIsInExam?.data?.moduleId) ||
+        (chekIfUserIsInExam?.isInExam == true &&
+          chapter.id == chekIfUserIsInExam?.moduleId)
       ) {
-        setReportId(chekIfUserIsInExam?.data?.id);
-        const examObj: any = chekIfUserIsInExam?.data
-          ?.examRecord as Prisma.JsonObject;
+        setReportId(chekIfUserIsInExam?.data?.id || chekIfUserIsInExam?.id);
+        const examObj: any =
+          chekIfUserIsInExam?.data?.examRecord ||
+          (chekIfUserIsInExam?.examRecord as Prisma.JsonObject);
 
         setQuestions(examObj.questionList);
         setCurrentQuestion(examObj.currentQuestion);
+
         if (!examObj.isEmergency) {
-          let timeLeft =
-            Math.round(
-              new Date().getTime() - chekIfUserIsInExam?.data?.date?.getTime()
-            ) / 60000;
-          setTimeLimit(timeLeft);
-          setTimeLimitRecord(timeLeft);
+          setStartDate(examObj?.startDate);
+          setTimeLimit(examObj.timePassed * 60);
+          setTimeLimitRecord(examObj.timePassed);
         } else {
-          setTimeLimit(examObj.timeLimit);
-          setTimeLimitRecord(examObj.timeLimit * 60);
+          setStartDate(examObj?.startDate);
+          setTimeLimit(chapter.timeLimit);
+          setTimeLimitRecord(chapter.timeLimit * 60);
         }
 
         setSelectedAnswers(examObj.selectedAnswers);
@@ -110,20 +114,32 @@ const Exam = ({
     };
     getHistory();
   }, []);
+
   useEffect(() => {
     if (questions.length > 0) {
-      const interval = setInterval(() => {
-        setTimeLimitRecord((prev: number) => {
+      window.addEventListener("beforeunload", alertUser);
+    }
+
+    const interval = setInterval(() => {
+      setTimeLimitRecord((prev: number) => {
+        if (questions.length > 0) {
           if (prev === 0) {
             clearInterval(interval);
+            setOnFinish(true);
+            setQuestions([]);
             onTimeOut();
+
             return prev;
           }
+
           return prev - 1;
-        });
-      }, 60000);
-    }
-  }, [timeLimitRecord, questions]);
+        }
+      });
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [timeLimitRecord]);
+
   useEffect(() => {
     if (questions.length > 0) {
       window.addEventListener("beforeunload", alertUser);
@@ -143,6 +159,9 @@ const Exam = ({
         courseId,
         date: new Date(),
         examRecord: {
+          startDate: startDate,
+          date: new Date(),
+          timePassed: timeLimitRecord,
           questionList: questions,
           timeLimit: parseInt(timeLimitRecord / 60 + "").toFixed(2),
           currentQuestion: currentQuestion,
@@ -162,19 +181,18 @@ const Exam = ({
 
   const onTimeOut: any = async () => {
     if (questions.length == 0) {
-      await axios.post(
-        `/api/user/${currentUserId}/examRecord/${chapter.id}`,
-        JSON.stringify({
-          moduleId: chapter.id,
-          courseId,
-          date: new Date(),
-          examRecord: {
-            questionList: questions,
-
-            selectedAnswers: selectedAnswers,
-          },
-        })
-      );
+      // await axios.post(
+      //   `/api/user/${currentUserId}/examRecord/${chapter.id}`,
+      //   JSON.stringify({
+      //     moduleId: chapter.id,
+      //     courseId,
+      //     date: new Date(),
+      //     examRecord: {
+      //       questionList: questions,
+      //       selectedAnswers: selectedAnswers,
+      //     },
+      //   })
+      // );
     } else {
       const { finalScore, passed }: any = calculateScore();
       const totalScore = finalScore;
@@ -296,6 +314,9 @@ const Exam = ({
           courseId,
           date: new Date(),
           examRecord: {
+            startDate: startDate,
+            date: new Date(),
+            timePassed: timeLimitRecord,
             questionList: questions,
             timeLimit: parseInt(timeLimitRecord / 60 + "").toFixed(2),
             currentQuestion: currentQuestion,
@@ -344,10 +365,11 @@ const Exam = ({
     setFinalScore(0);
     // setFinishedExam(false);
     setOnFinish(false);
-    setTimeLimit(chapter.timeLimit);
+
     setCurrentQuestion(0);
     setSelectedAnswers([]);
     setIsPassed(true);
+    setStartDate(new Date());
     setIsGeneratingExam(true);
     let questionLists: any = [];
     if (!finishedExam) {
@@ -383,6 +405,8 @@ const Exam = ({
     });
     setReportId(report.data.id);
     setIsGeneratingExam(false);
+    setTimeLimit(chapter.timeLimit);
+    setTimeLimitRecord(chapter.timeLimit * 60);
   };
   // const cancel = () => {
   //   return redirect(`/courses`);
@@ -434,6 +458,9 @@ const Exam = ({
         courseId,
         date: new Date(),
         examRecord: {
+          startDate: startDate,
+          date: new Date(),
+          timePassed: timeLimitRecord,
           questionList: questions,
           timeLimit: parseInt(timeLimitRecord / 60 + "").toFixed(2),
           currentQuestion: currentQuestion,
@@ -443,7 +470,7 @@ const Exam = ({
       })
     );
   };
-  useEffect(() => {}, [isPassed]);
+  useEffect(() => {}, [onFinish]);
   // Hàm xử lý khi người dùng chọn nút "Next"
   const handleNextClick = async () => {
     // Chuyển sang câu hỏi tiếp theo
@@ -460,6 +487,9 @@ const Exam = ({
           courseId,
           date: new Date(),
           examRecord: {
+            startDate: startDate,
+            date: new Date(),
+            timePassed: timeLimitRecord,
             questionList: questions,
             timeLimit: parseInt(timeLimitRecord / 60 + "").toFixed(2),
             currentQuestion: nextQuestion,
@@ -588,6 +618,9 @@ const Exam = ({
             courseId,
             date: new Date(),
             examRecord: {
+              startDate: startDate,
+              date: new Date(),
+              timePassed: timeLimitRecord,
               questionList: questions,
               timeLimit: parseInt(timeLimitRecord / 60 + "").toFixed(2),
               currentQuestion: currentQuestion,
@@ -737,22 +770,31 @@ const Exam = ({
     router.refresh();
   };
   const checkEqual = (array1: any, array2: any) => {
+    if (array1 == undefined) {
+      return false;
+    }
     for (let i = 0; i < array2.length; i++) {
       if (
-        !array2[i].isCorrect &&
-        array1.map((item: { id: any }) => item.id).indexOf(array2[i].id) != -1
+        !array2[i]?.isCorrect &&
+        array1?.map((item: { id: any }) => item.id).indexOf(array2[i].id) != -1
       ) {
         return false;
       }
       if (
-        array2[i].isCorrect &&
-        array1.map((item: { id: any }) => item.id).indexOf(array2[i].id) == -1
+        array2[i]?.isCorrect &&
+        array1?.map((item: { id: any }) => item.id).indexOf(array2[i].id) == -1
       ) {
         return false;
       }
     }
     return true;
   };
+  const minutes = Math.floor(timeLimitRecord / 60);
+  const seconds = timeLimitRecord % 60;
+
+  const formattedTime = `${String(minutes).padStart(2, "0")}:${String(
+    seconds
+  ).padStart(2, "0")}`;
 
   return questions.length == 0 ? (
     <>
@@ -834,7 +876,7 @@ const Exam = ({
                   <AlertDialogCancel onClick={() => setOnFinish(false)}>
                     Stay
                   </AlertDialogCancel>
-                ) : isCompleted == "failed" || currentAttempt == maxAttempt ? (
+                ) : isCompleted == "failed" && currentAttempt == maxAttempt ? (
                   <>
                     <span className="text-red-500">
                       Sorry, please wait for the exam reset to retake this test.
@@ -977,7 +1019,7 @@ const Exam = ({
         {exemRecord.length > 0 ? (
           <div className="max-w-6xl mx-auto p-6">
             <div className="bg-white shadow-lg rounded-lg p-6 dark:bg-slate-600">
-              <h2 className="text-2xl font-bold mb-6">History Exam</h2>
+              <h2 className="text-2xl font-bold mb-6">Exam History</h2>
               <p className="text-lg mb-6">
                 You have taken this test for: {exemRecord.length} times
               </p>
@@ -1005,7 +1047,14 @@ const Exam = ({
             </div>
           </div>
         ) : (
-          <>No record found</>
+          <div className="max-w-6xl mx-auto p-6">
+            <div className="bg-white shadow-lg rounded-lg p-6 dark:bg-slate-600">
+              <h2 className="text-2xl font-bold mb-6">Exam History</h2>
+              <div className="mb-6">
+                <p>No record found.</p>
+              </div>
+            </div>
+          </div>
         )}
       </AlertDialog>
     </>
@@ -1025,7 +1074,11 @@ const Exam = ({
                 <span>
                   {currentQuestion + 1} of {questions.length} questions
                 </span>
-                <Countdown time={timeLimit}></Countdown>
+                <div className="flex ml-auto rounded-full bg-blue-500 p-2 text-white">
+                  <Timer />
+                  <span className="mr-2"></span>
+                  {formattedTime}
+                </div>
               </div>
 
               <hr className="my-3" />

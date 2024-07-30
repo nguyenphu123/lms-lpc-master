@@ -118,7 +118,7 @@ export async function GET(
     for (let i = 0; i < questionsList.Category.length; i++) {
       questionsList.Category[i]["question"] = questionsList.Category[i].Exam;
     }
-    // console.log(questions);
+
     return NextResponse.json(questionsList);
   } catch (error) {
     console.log("[CHAPTER_PUBLISH]", error);

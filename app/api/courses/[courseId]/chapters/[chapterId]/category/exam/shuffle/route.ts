@@ -94,7 +94,7 @@ export async function GET(
       examMaxScore,
       ExamList: shuffleArray(questionUnShuffleList),
     };
-    // console.log(questions);
+
     return NextResponse.json(questions);
   } catch (error) {
     console.log("[CHAPTER_PUBLISH]", error);

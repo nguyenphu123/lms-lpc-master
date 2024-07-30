@@ -122,7 +122,7 @@ const Slide = ({
         let checkIfNextChapterIsFinished = await axios.get(
           `/api/courses/${courseId}/chapters/${nextChapterId}/progress`
         );
-        console.log(checkIfNextChapterIsFinished);
+
         if (checkIfNextChapterIsFinished?.data?.status == "finished") {
           if (checkIfNextChapterIsFinished.data.nextChapterId != undefined) {
           } else {

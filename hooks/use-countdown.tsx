@@ -1,7 +1,7 @@
 import { Timer } from "lucide-react";
 import { useEffect, useState } from "react";
 
-export const Countdown = ({ time }: any) => {
+export const Countdown = ({ time, callback }: any) => {
   const [number, setNumber] = useState(time * 60); // Convert to seconds
   useEffect(() => {
     const interval = setInterval(() => {
@@ -11,6 +11,7 @@ export const Countdown = ({ time }: any) => {
 
           return prev;
         }
+
         return prev - 1;
       });
     }, 1000);
