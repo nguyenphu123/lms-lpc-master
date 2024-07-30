@@ -1125,7 +1125,7 @@ const Exam = ({
                           .indexOf(option.id) != -1
                           ? "border-blue-600 text-white dark:text-white bg-blue-600"
                           : "border-gray-300 text-black dark:text-white"
-                      } rounded-md hover:border-blue-600 hover:bg-blue-600 hover:text-white`}
+                      } rounded-md hover:border-blue-600 hover:bg-blue-600 hover:text-white select-none`}
                     >
                       {(index + 10).toString(36).toUpperCase() +
                         ". " +
