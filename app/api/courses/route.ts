@@ -43,6 +43,9 @@ export async function GET(req: Request) {
     const { userId, sessionClaims }: any = auth();
 
     const course = await db.course.findMany({
+      where: {
+        isPublished: true,
+      },
       include: {
         courseInstructor: true,
         courseWithProgram: {

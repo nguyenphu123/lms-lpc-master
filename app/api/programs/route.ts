@@ -11,7 +11,11 @@ export async function GET(req: Request) {
       include: {
         courseWithProgram: {
           include: {
-            course: true,
+            course: {
+              select: {
+                isPublished: true,
+              },
+            },
           },
         },
         user: true,

@@ -22,6 +22,9 @@ export async function GET(req: Request) {
         ClassSessionRecord: {
           include: {
             course: {
+              select: {
+                isPublished: true,
+              },
               include: {
                 Module: {
                   orderBy: { position: "asc" },
