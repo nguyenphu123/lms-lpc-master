@@ -840,8 +840,8 @@ const Exam = ({
                   className={`${
                     (finalScore >= chapter.scoreLimit && isPassed) ||
                     finishedExam
-                      ? "bg-red-400"
-                      : "bg-green-400"
+                      ? "bg-green-400"
+                      : "bg-red-400"
                   } text-white p-4 rounded-t-lg`}
                 >
                   <h2 className="text-xl font-semibold">
