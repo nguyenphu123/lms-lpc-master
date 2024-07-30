@@ -8,9 +8,7 @@ export async function POST(req: Request) {
     var client = new LdapClient({ url: "ldap://10.20.1.11:389" });
     try {
       await client.bind("trainconnect@lp.local", "Js46~p9@X3$Gu!");
-    } catch (e) {
-      console.log(e);
-    }
+    } catch (e) {}
     try {
       const options = {
         filter: `(mail=${emailAddress})`,
@@ -21,9 +19,7 @@ export async function POST(req: Request) {
       const entries = await client.search("DC=lp,DC=local", options);
 
       result = entries[0];
-    } catch (e) {
-      console.log(e);
-    }
+    } catch (e) {}
     return NextResponse.json(result);
   } catch (error) {
     console.log("AD Error:", error);

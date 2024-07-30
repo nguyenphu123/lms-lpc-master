@@ -54,23 +54,21 @@ const Exam = ({
       let getLatestTestResult: any = await axios.get(
         `/api/courses/${courseId}/chapters/${chapter.id}/category/exam`
       );
-      if (getLatestTestResult.data?.UserProgress[0]?.status == "finished") {
-      } else {
-      }
 
       setFinishedExam(
-        getLatestTestResult.data?.UserProgress[0]?.status == "finished"
+        getLatestTestResult?.data?.UserProgress[0]?.status == "finished" &&
+          getLatestTestResult != undefined
           ? true
           : false
       );
 
       setCurrentAttempt(
-        getLatestTestResult.data?.UserProgress[0]?.retakeTime != undefined
-          ? getLatestTestResult.data?.UserProgress[0]?.retakeTime
+        getLatestTestResult?.data?.UserProgress[0]?.retakeTime != undefined
+          ? getLatestTestResult?.data?.UserProgress[0]?.retakeTime
           : 0
       );
-      setFinalScore(getLatestTestResult.data?.UserProgress[0]?.score);
-      setCategoryList(getLatestTestResult.data?.Category);
+      setFinalScore(getLatestTestResult?.data?.UserProgress[0]?.score);
+      setCategoryList(getLatestTestResult?.data?.Category);
       let currentUser = await axios.get(`/api/user`);
       setCurrentUserId(currentUser.data.id);
 
@@ -199,7 +197,7 @@ const Exam = ({
 
       if (!finishedExam) {
         const date = new Date();
-        if (currentAttempt == maxAttempt) {
+        if (currentAttempt >= maxAttempt) {
           await axios.put(
             `/api/courses/${courseId}/chapters/${chapter.id}/progress`,
             {
@@ -523,7 +521,7 @@ const Exam = ({
       if (!finishedExam) {
         const date = new Date();
 
-        if (currentAttempt == maxAttempt) {
+        if (currentAttempt >= maxAttempt) {
           await axios.put(
             `/api/courses/${courseId}/chapters/${chapter.id}/progress`,
             {
@@ -838,7 +836,14 @@ const Exam = ({
           <AlertDialog open={onFinish}>
             <AlertDialogContent className="AlertDialogContent">
               <AlertDialogTitle className="AlertDialogTitle">
-                <div className="bg-red-400 text-white p-4 rounded-t-lg">
+                <div
+                  className={`${
+                    (finalScore >= chapter.scoreLimit && isPassed) ||
+                    finishedExam
+                      ? "bg-red-400"
+                      : "bg-green-400"
+                  } text-white p-4 rounded-t-lg`}
+                >
                   <h2 className="text-xl font-semibold">
                     Your score is {finalScore}
                   </h2>
@@ -876,7 +881,7 @@ const Exam = ({
                   <AlertDialogCancel onClick={() => setOnFinish(false)}>
                     Stay
                   </AlertDialogCancel>
-                ) : isCompleted == "failed" && currentAttempt == maxAttempt ? (
+                ) : isCompleted == "failed" && currentAttempt >= maxAttempt ? (
                   <>
                     <span className="text-red-500">
                       Sorry, please wait for the exam reset to retake this test.
@@ -904,7 +909,7 @@ const Exam = ({
                 finishedExam ? (
                   <AlertDialogAction asChild>
                     <button
-                      className="px-4 py-2 bg-green-500 text-white rounded-lg"
+                      className="px-4 py-2 bg-green-500 text-white rounded-lg dark:text-blue-600"
                       onClick={() => onLeaving()}
                     >
                       {nextChapterId != null ? "Next" : "Leave"}
@@ -946,14 +951,14 @@ const Exam = ({
                 <div className="">
                   Please wait while we generate your exam...
                 </div>
-              ) : isCompleted == "failed" && currentAttempt == maxAttempt ? (
+              ) : isCompleted == "failed" && currentAttempt >= maxAttempt ? (
                 <></>
               ) : (
                 <AlertDialogTrigger className="flex justify-center items-center">
                   <>👉Take an exam </>
                 </AlertDialogTrigger>
               )}
-              {isCompleted == "failed" && currentAttempt == maxAttempt ? (
+              {isCompleted == "failed" && currentAttempt >= maxAttempt ? (
                 <span className="text-red-500">
                   Sorry, please wait for the exam reset to retake this test
                 </span>
@@ -968,7 +973,7 @@ const Exam = ({
               <AlertDialogDescription className="AlertDialogDescription">
                 {!finishedExam && isCompleted == "studying" ? (
                   <>Do you want to do the exam?</>
-                ) : isCompleted == "failed" && currentAttempt == maxAttempt ? (
+                ) : isCompleted == "failed" && currentAttempt >= maxAttempt ? (
                   <>Please wait until admin reset</>
                 ) : (
                   <>Do you want to retake this exam?</>
@@ -983,7 +988,7 @@ const Exam = ({
               >
                 <AlertDialogCancel>Cancel</AlertDialogCancel>
                 <AlertDialogAction asChild>
-                  {isCompleted == "failed" && currentAttempt == maxAttempt ? (
+                  {isCompleted == "failed" && currentAttempt >= maxAttempt ? (
                     <></>
                   ) : (
                     <button className="Button red" onClick={() => accept()}>
