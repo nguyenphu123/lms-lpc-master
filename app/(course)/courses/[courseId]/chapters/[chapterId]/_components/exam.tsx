@@ -946,14 +946,14 @@ const Exam = ({
                 <div className="">
                   Please wait while we generate your exam...
                 </div>
-              ) : isCompleted == "failed" ? (
+              ) : isCompleted == "failed" && currentAttempt == maxAttempt ? (
                 <></>
               ) : (
                 <AlertDialogTrigger className="flex justify-center items-center">
                   <>👉Take an exam </>
                 </AlertDialogTrigger>
               )}
-              {isCompleted == "failed" ? (
+              {isCompleted == "failed" && currentAttempt == maxAttempt ? (
                 <span className="text-red-500">
                   Sorry, please wait for the exam reset to retake this test
                 </span>
