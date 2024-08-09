@@ -873,7 +873,15 @@ const Exam = ({
                       />
                     </div>
                   ) : (
-                    <></>
+                    <div className="flex justify-center mt-4">
+                      <Image
+                        src="/failurewh.png"
+                        alt="failure"
+                        height={300}
+                        width={500}
+                        className="select-none object-cover rounded-md border-2 border-white"
+                      />
+                    </div>
                   )}
                 </div>
               </AlertDialogTitle>
@@ -1162,7 +1170,7 @@ const Exam = ({
                 <button
                   key={index}
                   onClick={() => setCurrentQuestion(index)}
-                  className={`w-9 h-9 flex items-center justify-center text-white rounded-full transition-colors duration-150 focus:outline-none mb-4 mx-1
+                  className={`w-8 h-8 flex items-center justify-center text-white rounded-full transition-colors duration-150 focus:outline-none mb-4 mx-1
                   ${
                     item?.bookmark
                       ? "bg-yellow-400"
