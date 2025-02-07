@@ -22,7 +22,11 @@ export async function GET(
             course: {
               include: {
                 ClassSessionRecord: true,
-                Module: true,
+                ModuleInCourse: {
+                  include: {
+                    module: true,
+                  },
+                },
               },
             },
           },

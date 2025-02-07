@@ -194,6 +194,7 @@ model ModuleInCourse {
   moduleId String
   position Int
 
+  @@unique([courseId, moduleId])
   @@index([courseId])
   @@index([moduleId])
 }
@@ -233,6 +234,7 @@ model ExamInCourse {
   userExamReport userExamReport[]
   examRecord     examRecord[]
 
+  @@unique([courseId, examId])
   @@index([courseId])
   @@index([examId])
 }
@@ -306,6 +308,8 @@ model examRecord {
   score          Int?
   attempt        Int?
   retakeTime     Int?         @default(0)
+  examRecord     Json?
+  date           DateTime
 
   @@unique([examInCourseId, userId])
   @@index([examInCourseId])

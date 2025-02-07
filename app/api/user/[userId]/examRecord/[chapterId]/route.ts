@@ -5,7 +5,7 @@ import { db } from "@/lib/db";
 
 export async function GET(
   req: Request,
-  { params }: { params: { userId: string; chapterId: string } }
+  { params }: { params: { userId: string; courseId: string; examId: string } }
 ) {
   try {
     const { userId }: any = auth();
@@ -13,16 +13,25 @@ export async function GET(
     if (!userId) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
-    console.log(params.userId);
-    console.log(params.chapterId);
-    const userCourse = await db.examRecord.findMany({
-      where: { userId: params.userId, moduleId: params.chapterId },
+    const userCoursesExamsRecord: any = await db.examInCourse.findUnique({
+      where: {
+        courseId_examId: {
+          courseId: params.courseId,
+          examId: params.examId,
+        },
+      },
+    });
+    const userExamRecords = await db.examRecord.findMany({
+      where: {
+        userId: params.userId,
+        examInCourseId: userCoursesExamsRecord.id,
+      },
       orderBy: {
-        date: "desc",
+        endDate: "desc",
       },
     });
 
-    return NextResponse.json(userCourse);
+    return NextResponse.json(userExamRecords);
   } catch (error) {
     console.log("[PROGRAMS]", error);
     return new NextResponse("Internal Error", { status: 500 });
@@ -30,7 +39,7 @@ export async function GET(
 }
 export async function POST(
   req: Request,
-  { params }: { params: { userId: string; chapterId: string } }
+  { params }: { params: { userId: string; courseId: string; examId: string } }
 ) {
   try {
     const { userId }: any = auth();
@@ -39,12 +48,22 @@ export async function POST(
     if (!userId) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
+    const userCoursesExamsRecord: any = await db.examInCourse.findUnique({
+      where: {
+        courseId_examId: {
+          courseId: params.courseId,
+          examId: params.examId,
+        },
+      },
+    });
     const userCourse = await db.examRecord.create({
       data: {
+        progress: "0%",
+        startDate: date,
+        status: "unattempted",
         examRecord,
         date,
-        courseId,
-        moduleId: params.chapterId,
+        examInCourseId: userCoursesExamsRecord.id,
         userId: params.userId,
       },
     });

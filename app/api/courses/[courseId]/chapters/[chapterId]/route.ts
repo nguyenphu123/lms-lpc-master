@@ -14,10 +14,12 @@ export async function DELETE(
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
-    const chapter = await db.module.findUnique({
+    const chapter = await db.moduleInCourse.findUnique({
       where: {
-        id: params.chapterId,
-        courseId: params.courseId,
+        courseId_moduleId: {
+          moduleId: params.chapterId,
+          courseId: params.courseId,
+        },
       },
     });
 
@@ -31,10 +33,12 @@ export async function DELETE(
       },
     });
 
-    const publishedChaptersInCourse = await db.module.findMany({
+    const publishedChaptersInCourse = await db.moduleInCourse.findMany({
       where: {
         courseId: params.courseId,
-        isPublished: true,
+        module: {
+          isPublished: true,
+        },
       },
     });
 
@@ -76,10 +80,12 @@ export async function PATCH(
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
-    const chapter = await db.module.update({
+    const chapter = await db.moduleInCourse.update({
       where: {
-        id: params.chapterId,
-        courseId: params.courseId,
+        courseId_moduleId: {
+          moduleId: params.chapterId,
+          courseId: params.courseId,
+        },
       },
       data: {
         ...values,
@@ -112,9 +118,15 @@ export async function GET(
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
-    const chapter = await db.module.findUnique({
+    const chapter = await db.moduleInCourse.findUnique({
       where: {
-        id: chapterId,
+        courseId_moduleId: {
+          moduleId: params.chapterId,
+          courseId: params.courseId,
+        },
+      },
+      include: {
+        module: {},
       },
     });
 

@@ -19,28 +19,38 @@ export async function PATCH(
         id: params.courseId,
       },
       include: {
-        Module: {
+        ModuleInCourse: {
           where: {
+            module: {
+              isPublished: true,
+            },
+          },
+        },
+      },
+    });
+
+    const unpublishedChapter = await db.moduleInCourse.update({
+      where: {
+        courseId_moduleId: {
+          moduleId: params.chapterId,
+          courseId: params.courseId,
+        },
+      },
+      data: {
+        module: {
+          update: {
             isPublished: true,
           },
         },
       },
     });
 
-    const unpublishedChapter = await db.module.update({
-      where: {
-        id: params.chapterId,
-        courseId: params.courseId,
-      },
-      data: {
-        isPublished: false,
-      },
-    });
-
-    const publishedChaptersInCourse = await db.module.findMany({
+    const publishedChaptersInCourse = await db.moduleInCourse.findMany({
       where: {
         courseId: params.courseId,
-        isPublished: true,
+        module: {
+          isPublished: true,
+        },
       },
     });
 
@@ -68,9 +78,11 @@ export async function PATCH(
         id: params.courseId,
       },
       include: {
-        Module: {
+        ModuleInCourse: {
           where: {
-            isPublished: true,
+            module: {
+              isPublished: true,
+            },
           },
         },
       },

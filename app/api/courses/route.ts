@@ -18,17 +18,6 @@ export async function POST(req: Request) {
         title,
         startDate: date,
         isPublished: false,
-        Module: {
-          create: [
-            {
-              position: 1,
-              isPublished: false,
-              title: "Intro",
-              type: "slide",
-              userId,
-            },
-          ],
-        },
       },
     });
 
@@ -53,25 +42,20 @@ export async function GET(req: Request) {
             program: true,
           },
         },
-        Module: {
+        ModuleInCourse: {
           orderBy: {
             position: "asc",
           },
+
           include: {
-            Slide: true,
-            examRecord: {
-              include: {
-                user: true,
-              },
-            },
-            UserProgress: {
-              include: {
-                user: true,
-              },
-            },
+            module: {},
           },
         },
-
+        ExamInCourse: {
+          include: {
+            exam: {},
+          },
+        },
         ClassSessionRecord: {
           include: {
             user: true,

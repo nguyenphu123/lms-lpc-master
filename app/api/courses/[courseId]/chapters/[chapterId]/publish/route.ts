@@ -14,48 +14,28 @@ export async function PATCH(
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
-    // const ownCourse = await db.course.findUnique({
-    //   where: {
-    //     id: params.courseId,
-    //     userId,
-    //   },
-    // });
-
-    // if (!ownCourse) {
-    //   return new NextResponse("Unauthorized", { status: 401 });
-    // }
-
-    const chapter = await db.module.findUnique({
+    const chapter = await db.moduleInCourse.findUnique({
       where: {
         id: params.chapterId,
         courseId: params.courseId,
       },
     });
 
-    if (!chapter || !chapter.title) {
-      return new NextResponse("Missing required fields", { status: 400 });
-    }
     let courseChapterBefore: any = await db.course.findUnique({
       where: {
         id: params.courseId,
       },
       include: {
-        Module: {
+        ModuleInCourse: {
           where: {
-            isPublished: true,
+            module: {
+              isPublished: true,
+            },
           },
         },
       },
     });
-    const publishedChapter = await db.module.update({
-      where: {
-        id: params.chapterId,
-        courseId: params.courseId,
-      },
-      data: {
-        isPublished: true,
-      },
-    });
+
     await db.course.update({
       where: {
         id: params.courseId,
@@ -65,14 +45,33 @@ export async function PATCH(
         updatedBy: userId,
       },
     });
+    const publishedChapter = await db.moduleInCourse.update({
+      where: {
+        courseId_moduleId: {
+          moduleId: params.chapterId,
+          courseId: params.courseId,
+        },
+      },
+      data: {
+        module: {
+          update: {
+            isPublished: true,
+          },
+        },
+      },
+    });
     let courseChapterAfter: any = await db.course.findUnique({
       where: {
         id: params.courseId,
       },
       include: {
-        Module: {
-          where: {
-            isPublished: true,
+        ModuleInCourse: {
+          include: {
+            module: {
+              select: {
+                isPublished: true,
+              },
+            },
           },
         },
       },

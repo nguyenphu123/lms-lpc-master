@@ -10,21 +10,6 @@ export async function PATCH(req: Request) {
     const { userId }: any = auth();
     const { UserProgress } = await req.json();
 
-    for (let i = 0; i < UserProgress.length; i++) {
-      await db.userProgress.update({
-        where: {
-          id: UserProgress[i].id,
-          // moduleId: UserProgress[i].moduleId,
-          // userId: UserProgress[i].user.userId,
-          status: "failed",
-        },
-        data: {
-          status: "studying",
-          retakeTime: 0,
-        },
-      });
-    }
-
     return NextResponse.json("");
   } catch (error) {
     console.log("[PROGRAMS]", error);

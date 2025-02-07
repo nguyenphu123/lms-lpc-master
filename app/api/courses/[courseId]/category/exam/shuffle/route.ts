@@ -6,31 +6,29 @@ import shuffleArray from "@/lib/shuffle";
 
 export async function GET(
   req: Request,
-  { params }: { params: { courseId: string; chapterId: string } }
+  { params }: { params: { courseId: string } }
 ) {
   try {
     const { userId } = auth();
     if (!userId) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
-    const questionsList: any = await db.module.findUnique({
+    const questionsList: any = await db.examInCourse.findUnique({
       where: {
-        id: params.chapterId,
+        id: params.courseId,
       },
       include: {
-        Category: {
+        exam: {
           include: {
-            Exam: {
+            category: {
               include: {
-                answer: true,
+                question: {
+                  include: {
+                    answer: {},
+                  },
+                },
               },
             },
-          },
-        },
-
-        UserProgress: {
-          where: {
-            userId: userId,
           },
         },
       },
@@ -38,17 +36,21 @@ export async function GET(
     let questionUnShuffleList: any = [];
     let examMaxScore = 0;
     while (examMaxScore != 100) {
-      for (let i = 0; i < questionsList.Category.length; i++) {
+      for (let i = 0; i < questionsList.exam.category.length; i++) {
         let listQuestionByCategory: any = [];
         let finalListQuestionByCategory: any = [];
 
-        for (let j = 0; j < questionsList.Category[i].Exam.length; j++) {
-          questionsList.Category[i].Exam[j].answer = shuffleArray(
-            questionsList.Category[i].Exam[j].answer
+        for (
+          let j = 0;
+          j < questionsList.exam.category[i].question.length;
+          j++
+        ) {
+          questionsList.exam.category[i].question[j].answer = shuffleArray(
+            questionsList.exam.category[i].question[j].answer
           );
           listQuestionByCategory = [
             ...listQuestionByCategory,
-            questionsList.Category[i].Exam[j],
+            questionsList.exam.category[i].question[j],
           ];
         }
         for (let x = 0; x < listQuestionByCategory.length; x++) {
@@ -61,7 +63,7 @@ export async function GET(
         }
         while (
           finalListQuestionByCategory.length <
-          questionsList.Category[i].numOfAppearance
+          questionsList.exam.category[i].numOfAppearance
         ) {
           const random = Math.floor(
             Math.random() * listQuestionByCategory.length

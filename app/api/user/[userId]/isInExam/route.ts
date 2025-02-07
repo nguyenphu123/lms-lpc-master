@@ -35,7 +35,7 @@ export async function POST(
   try {
     const { userId }: any = auth();
 
-    const { isInExam, moduleId, date, courseId, id, note, examRecord } =
+    const { isInExam, examInCourseId, date, id, note, examRecord } =
       await req.json();
 
     if (!userId) {
@@ -47,18 +47,16 @@ export async function POST(
       create: {
         isInExam: true,
         userId,
-        moduleId: moduleId,
+        examInCourseId: examInCourseId,
         date: date,
-        courseId: courseId,
         examRecord,
         note,
       },
       update: {
         isInExam,
         userId,
-        moduleId: moduleId,
+        examInCourseId: examInCourseId,
         date: date,
-        courseId: courseId,
         examRecord,
         note,
       },

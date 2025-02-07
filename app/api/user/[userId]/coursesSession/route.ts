@@ -24,9 +24,9 @@ export async function GET(
           include: {
             course: {
               include: {
-                Module: {
-                  where: {
-                    type: "Exam",
+                ExamInCourse: {
+                  include: {
+                    userExamReport: true,
                   },
                 },
               },
@@ -62,9 +62,7 @@ export async function DELETE(
     await db.classSessionRecord.deleteMany({
       where: { userId: params.userId },
     });
-    await db.userProgress.deleteMany({
-      where: { userId: params.userId },
-    });
+
     const deleteUser = await clerkClient.users.deleteUser(params.userId);
     return NextResponse.json("success");
   } catch (error) {

@@ -21,20 +21,7 @@ export async function GET(req: Request) {
       include: {
         ClassSessionRecord: {
           include: {
-            course: {
-              include: {
-                Module: {
-                  orderBy: { position: "asc" },
-                  include: {
-                    UserProgress: {
-                      include: {
-                        module: true,
-                      },
-                    },
-                  },
-                },
-              },
-            },
+            course: {},
           },
           where: {
             course: {
@@ -43,7 +30,6 @@ export async function GET(req: Request) {
           },
         },
         Department: true,
-        UserProgress: true,
       },
     });
     return NextResponse.json(users);
