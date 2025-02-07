@@ -9,70 +9,52 @@ export async function POST(
 ) {
   try {
     const { userId } = auth();
-    const { title, type } = await req.json();
-
+    const { modules }: any = await req.json();
+    let chapter: any = [];
     if (!userId) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
-
-    const getModuleCount = await db.module.count({
-      where: {
-        courseId: params.courseId,
-        UserProgress: {
-          every: {
-            status: "finished",
-            progress: "100%",
-          },
+    for (let i = 0; i < modules.length; i++) {
+      const getModuleCount = await db.moduleInCourse.count({
+        where: {
+          courseId: params.courseId,
         },
-      },
-    });
-    const getModuleCountAll = await db.module.count({
-      where: {
-        courseId: params.courseId,
-      },
-    });
-    const updateCourse = await db.classSessionRecord.updateMany({
-      where: {
-        courseId: params.courseId,
-        status: "finished",
-        progress: "100%",
-      },
-      data: {
-        status: "studying",
-        progress: (getModuleCount / getModuleCountAll + 1) * 100 + "%",
-      },
-    });
-    const lastChapter = await db.module.findFirst({
-      where: {
-        courseId: params.courseId,
-      },
-      orderBy: {
-        position: "desc",
-      },
-    });
+      });
+      const getModuleCountAll = await db.moduleInCourse.count({
+        where: {
+          courseId: params.courseId,
+        },
+      });
+      const updateCourse = await db.classSessionRecord.updateMany({
+        where: {
+          courseId: params.courseId,
+          status: "finished",
+          progress: "100%",
+        },
+        data: {
+          status: "studying",
+          progress: (getModuleCount / getModuleCountAll + 1) * 100 + "%",
+        },
+      });
+      const lastChapter = await db.moduleInCourse.findFirst({
+        where: {
+          courseId: params.courseId,
+        },
+        orderBy: {
+          position: "desc",
+        },
+      });
 
-    const newPosition = lastChapter ? lastChapter.position + 1 : 1;
-    const chapter = await db.module.create({
-      data: {
-        title,
-        courseId: params.courseId,
-        position: newPosition,
+      const newPosition = lastChapter ? lastChapter.position + 1 : 1;
+      chapter = await db.moduleInCourse.create({
+        data: {
+          courseId: params.courseId,
+          position: newPosition,
+          moduleId: modules[i].moduleId,
+        },
+      });
+    }
 
-        type,
-
-        userId,
-
-        isPublished: false,
-      },
-    });
-    // if (chapter.type.toLowerCase() == "slide") {
-    // } else {
-    //   const exam = await db.exam.create({
-    //     data: {
-    //       moduleId: chapter.id,
-    //     },
-    //   });
-    // }
     await db.course.update({
       where: {
         id: params.courseId,
