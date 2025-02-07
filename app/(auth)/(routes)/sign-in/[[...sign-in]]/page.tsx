@@ -51,16 +51,16 @@ export default function Page() {
       return;
     }
     var ciphertext = CryptoJS.AES.encrypt(password, "1").toString();
-    let user = await axios.post("/api/authLDAP", {
-      emailAddress,
-      password: ciphertext,
-      // department,
-    });
+    // let user = await axios.post("/api/authLDAP", {
+    //   emailAddress,
+    //   password: ciphertext,
+    //   // department,
+    // });
 
-    if (!user.data) {
-      setError("User not found.");
-      return;
-    }
+    // if (!user.data) {
+    //   setError("User not found.");
+    //   return;
+    // }
     try {
       const { supportedFirstFactors } = await signIn.create({
         identifier: emailAddress,

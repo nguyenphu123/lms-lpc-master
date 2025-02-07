@@ -54,21 +54,21 @@ export default function Page() {
       return;
     }
 
-    let user = await axios.post("/api/checkLDAP", {
-      emailAddress,
-      // password,
-      // department,
-    });
-    if (!user.data) {
-      setError("User not found.");
-      return;
-    }
+    // let user = await axios.post("/api/checkLDAP", {
+    //   emailAddress,
+    //   // password,
+    //   // department,
+    // });
+    // if (!user.data) {
+    //   setError("User not found.");
+    //   return;
+    // }
 
     if (!department) {
       setError("Please select a department.");
       return;
     }
-    setUsername(user.data.cn);
+    setUsername(emailAddress.replace("@lp.com.vn",""));
     try {
       await signUp.create({
         emailAddress,
