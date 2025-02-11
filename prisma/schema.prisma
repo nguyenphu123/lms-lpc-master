@@ -54,8 +54,7 @@ model Department {
   status              String                @default("active")
   ProgramOnDepartment ProgramOnDepartment[]
   CourseOnDepartment  CourseOnDepartment[]
-  Module Module[]
-
+  Module              Module[]
 }
 
 model CourseOnDepartment {
@@ -139,7 +138,7 @@ model Course {
   updatedBy          String               @default("")
   courseInstructor   User?                @relation("courseInstructedBy", fields: [courseInstructedBy], references: [id])
   courseInstructedBy String               @default("")
-  createdDate          DateTime             @default(now())
+  createdDate        DateTime             @default(now())
   updateDate         DateTime?
   isPublished        Boolean              @default(false)
   credit             Int?
@@ -148,7 +147,7 @@ model Course {
   courseWithProgram  courseWithProgram[]
   BookMark           BookMark[]
   CourseOnDepartment CourseOnDepartment[]
-  ExamInCourse ExamInCourse[]
+  ExamInCourse       ExamInCourse[]
 
   @@index([userId])
   @@index([updatedBy])
@@ -207,8 +206,8 @@ model Module {
   contentType    String?
   videoUrl       String?
   fileUrl        String?
-  department     Department       @relation(fields: [departmentId], references: [id])
-  departmentId   String
+  department     Department?      @relation(fields: [departmentId], references: [id])
+  departmentId   String?
   Resource       Resource[]
   ModuleInCourse ModuleInCourse[]
 
