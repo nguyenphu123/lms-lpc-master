@@ -86,10 +86,10 @@ model User {
   departmentId   String?
   username       String
   // role                     String
-  starUpdateDate DateTime?   @default(now())
   star           Int?
   imageUrl       String?
   status         String      @default("active")
+  starUpdateDate DateTime?   @default(now())
 
   Course             Course[]             @relation("userId")
   updatedCourse      Course[]             @relation("updatedBy")

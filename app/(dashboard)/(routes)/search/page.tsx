@@ -51,9 +51,12 @@ const SearchPage = async ({ searchParams }: SearchPageProps) => {
               isPublished: true,
             },
             include: {
-              Module: {
+              ModuleInCourse: {
                 where: {
-                  isPublished: true,
+                  module:{
+                    isPublished: true,
+                  }
+                  
                 },
               },
               BookMark: true,
@@ -75,9 +78,12 @@ const SearchPage = async ({ searchParams }: SearchPageProps) => {
       isPublished: true,
     },
     include: {
-      Module: {
+      ModuleInCourse: {
         where: {
-          isPublished: true,
+          module:{
+            isPublished: true,
+          }
+          
         },
       },
       BookMark: true,
