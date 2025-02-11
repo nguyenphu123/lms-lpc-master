@@ -14,6 +14,8 @@ import {
   Cctv,
   Waypoints,
   Building,
+  Package,
+  FlaskConical,
 } from "lucide-react";
 import { usePathname } from "next/navigation";
 
@@ -164,6 +166,14 @@ export const SidebarRoutes = ({ userId }: any) => {
           icon: Building,
           label: "Departments",
           href: "/teacher/departments",
+        },
+      ]);
+      setTeacherRoutes((prevState: any) => [
+        ...prevState,
+        {
+          icon: Package,
+          label: "Resources",
+          href: "/teacher/resources",
         },
       ]);
     }
