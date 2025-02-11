@@ -54,18 +54,15 @@ export default async function Dashboard({
     },
     include: {
       course: {
-        include: {
-          Module: {
-            where: {
-              isPublished: true,
-            },
-          },
-          ClassSessionRecord: true,
-          BookMark: true,
+          include:  {
+            ClassSessionRecord:{},
+            BookMark:{}
+          }
+         
         },
       },
-    },
-  });
+    }
+  );
 
   let recommendCourses: any = await db.department.findUnique({
     where: {
@@ -92,9 +89,12 @@ export default async function Dashboard({
               isPublished: true,
             },
             include: {
-              Module: {
+              ModuleInCourse: {
                 where: {
-                  isPublished: true,
+                  module:{
+                    isPublished: true,
+                  }
+                  
                 },
               },
               BookMark: true,
@@ -125,9 +125,12 @@ export default async function Dashboard({
       isPublished: true,
     },
     include: {
-      Module: {
+      ModuleInCourse: {
         where: {
-          isPublished: true,
+          module:{
+            isPublished: true,
+          }
+          
         },
       },
       BookMark: true,
@@ -158,9 +161,12 @@ export default async function Dashboard({
       },
     },
     include: {
-      Module: {
+      ModuleInCourse: {
         where: {
-          isPublished: true,
+          module:{
+            isPublished: true,
+          }
+          
         },
       },
       BookMark: true,
@@ -176,9 +182,12 @@ export default async function Dashboard({
     include: {
       course: {
         include: {
-          Module: {
+          ModuleInCourse: {
             where: {
-              isPublished: true,
+              module:{
+                isPublished: true,
+              }
+              
             },
           },
           ClassSessionRecord: true,
