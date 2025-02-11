@@ -7,7 +7,7 @@ import {
   MoreHorizontal,
   Pencil,
   ClipboardList,
-} from "lucide-react";
+} from "lucide-react"
 import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
@@ -84,7 +84,7 @@ export const columns: ColumnDef<Course>[] = [
           className="flex items-center cursor-pointer"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          <span className="mr-2">Published</span>
+          <span className="mr-2">Publish</span>
           <ArrowUpDown className="h-4 w-4" />
         </span>
       );
