@@ -54,8 +54,8 @@ model Department {
   status              String                @default("active")
   ProgramOnDepartment ProgramOnDepartment[]
   CourseOnDepartment  CourseOnDepartment[]
-
   Module Module[]
+
 }
 
 model CourseOnDepartment {
@@ -218,6 +218,7 @@ model Module {
   ModuleInCourse ModuleInCourse[]
 
   @@index([departmentid])
+
 }
 
 model Resource {
