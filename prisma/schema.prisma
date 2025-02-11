@@ -54,7 +54,8 @@ model Department {
   status              String                @default("active")
   ProgramOnDepartment ProgramOnDepartment[]
   CourseOnDepartment  CourseOnDepartment[]
-  Module              Module[]
+  Module Module[]
+
 }
 
 model CourseOnDepartment {
@@ -211,12 +212,13 @@ model Module {
   contentType    String?
   videoUrl       String?
   fileUrl        String?
-  deparment      Department       @relation(fields: [departmentId], references: [id])
-  departmentId   String
+  department     Department       @relation(fields: [departmentid], references: [id])
+  departmentid   String
   Resource       Resource[]
   ModuleInCourse ModuleInCourse[]
 
-  @@index([departmentId])
+  @@index([departmentid])
+
 }
 
 model Resource {
