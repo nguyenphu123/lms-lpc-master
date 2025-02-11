@@ -204,7 +204,6 @@ model Module {
   isPublished    Boolean
   description    String?
   content        String?
-  position       Int
   contentType    String?
   videoUrl       String?
   fileUrl        String?
