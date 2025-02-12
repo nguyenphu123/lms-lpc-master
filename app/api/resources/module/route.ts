@@ -36,8 +36,8 @@ export async function GET(
     if (!userId) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
-    const questionsList: any = await db.examInCourse.findMany({});
-    return NextResponse.json(questionsList);
+    const moduleList: any = await db.module.findMany({});
+    return NextResponse.json(moduleList);
   } catch (error) {
     console.log("[CHAPTER_PUBLISH]", error);
     return new NextResponse("Internal Error", { status: 500 });
