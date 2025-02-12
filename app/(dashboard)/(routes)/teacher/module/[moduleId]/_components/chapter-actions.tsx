@@ -8,17 +8,21 @@ import { useRouter } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
 import { ConfirmModal } from "@/components/modals/confirm-modal";
-import { useConfettiStore } from "@/hooks/use-confetti-store";
 
-interface ActionsProps {
+interface ChapterActionsProps {
   disabled: boolean;
-  programId: string;
+  courseId: string;
+  chapterId: string;
   isPublished: boolean;
 }
 
-export const Actions = ({ disabled, programId, isPublished }: ActionsProps) => {
+export const ChapterActions = ({
+  disabled,
+  courseId,
+  chapterId,
+  isPublished,
+}: ChapterActionsProps) => {
   const router = useRouter();
-  const confetti = useConfettiStore();
   const [isLoading, setIsLoading] = useState(false);
 
   const onClick = async () => {
@@ -26,12 +30,15 @@ export const Actions = ({ disabled, programId, isPublished }: ActionsProps) => {
       setIsLoading(true);
 
       if (isPublished) {
-        await axios.patch(`/api/programs/${programId}/unpublish`);
-        toast.success("Program unpublished");
+        await axios.patch(
+          `/api/courses/${courseId}/chapters/${chapterId}/unpublish`
+        );
+        toast.success("Chapter unpublished");
       } else {
-        await axios.patch(`/api/programs/${programId}/publish`);
-        toast.success("Program published");
-        confetti.onOpen();
+        await axios.patch(
+          `/api/courses/${courseId}/chapters/${chapterId}/publish`
+        );
+        toast.success("Chapter published");
       }
 
       router.refresh();
@@ -46,11 +53,10 @@ export const Actions = ({ disabled, programId, isPublished }: ActionsProps) => {
     try {
       setIsLoading(true);
 
-      await axios.delete(`/api/programs/${programId}`);
-
-      toast.success("Program deleted");
+      await axios.delete(`/api/courses/${courseId}/chapters/${chapterId}`);
+      toast.success("Chapter deleted");
       router.refresh();
-      router.push(`/teacher/programs`);
+      router.push(`/teacher/courses/${courseId}`);
     } catch {
       toast.error("Something went wrong");
     } finally {
@@ -59,7 +65,7 @@ export const Actions = ({ disabled, programId, isPublished }: ActionsProps) => {
   };
 
   return (
-    <div className="flex items-center gap-x-2 ">
+    <div className="flex items-center gap-x-2">
       <Button
         onClick={onClick}
         disabled={disabled || isLoading}
