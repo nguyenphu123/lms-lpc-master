@@ -172,8 +172,16 @@ export const SidebarRoutes = ({ userId }: any) => {
         ...prevState,
         {
           icon: Package,
-          label: "Resources",
-          href: "/teacher/resources",
+          label: "Module",
+          href: "/teacher/module",
+        },
+      ]);
+      setTeacherRoutes((prevState: any) => [
+        ...prevState,
+        {
+          icon: FlaskConical,
+          label: "Exam",
+          href: "/teacher/exam",
         },
       ]);
     }
