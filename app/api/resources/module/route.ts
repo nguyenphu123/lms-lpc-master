@@ -8,14 +8,15 @@ export async function POST(
   { params }: { params: { courseId: string; examId: string } }
 ) {
   try {
-    const { userId, value }: any = auth();
+    const { userId }: any = auth();
+    const { title } = await req.json();
     if (!userId) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
-
     const newModule = await db.module.create({
       data: {
-        ...value,
+        type: "file",
+        title: title,
         isPublished: false,
       },
     });
