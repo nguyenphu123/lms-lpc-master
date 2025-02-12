@@ -39,29 +39,16 @@ const ModulePage = async () => {
     return redirect("/");
   }
   let module: any = [];
-  if (
-    userDepartment.title != "BOD" &&
-    checkUser
-      .map((item: { permission: { title: any } }) => item.permission.title)
-      .indexOf("Manage all course permission") == -1 &&
-    checkUser
-      .map((item: { permission: { title: any } }) => item.permission.title)
-      .indexOf("Manage all program permission") == -1
-  ) {
-    module = await db.module.findMany({
-      // where: {
-      //   userId,
-      // },
-      include: {
-        ModuleInCourse: {
-          include: {
-            course: true,
-          },
+  module = await db.module.findMany({
+    include: {
+      ModuleInCourse: {
+        include: {
+          course: true,
         },
       },
-    });
-  } 
-  console.log(module)
+    },
+  });
+  
   return (
     <div className="p-6">
       <DataTable
