@@ -1,32 +1,57 @@
 import { auth } from "@clerk/nextjs";
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
 import {
-  CircleDollarSign,
-  File,
+  ArrowLeft,
+  Eye,
   LayoutDashboard,
-  ListChecks,
+  Video,
+  File,
+  BookOpen,
 } from "lucide-react";
 
 import { db } from "@/lib/db";
 import { IconBadge } from "@/components/icon-badge";
 import { Banner } from "@/components/banner";
 
-import { TitleForm } from "./_components/title-form";
-import { DescriptionForm } from "./_components/description-form";
-import { ImageForm } from "./_components/image-form";
-// import { CategoryForm } from "./_components/category-form";
-// import { ChaptersForm } from "./_components/chapters-form";
-import { Actions } from "./_components/actions";
-import { Prisma } from "@prisma/client";
-import CourseForm from "./_components/course-form";
-import { DepartmentForm } from "./_components/department-form";
+import { ChapterTitleForm } from "./_components/chapter-title-form";
+// import { ChapterDescriptionForm } from "./_components/chapter-description-form";
+import { ChapterAccessForm } from "./_components/chapter-access-form";
+import { ChapterVideoForm } from "./_components/chapter-video-form";
+import { ChapterActions } from "./_components/chapter-actions";
 
-const ProgramIdPage = async ({ params }: { params: { programId: string } }) => {
+import Exam from "./_components/chapter-exam-form";
+import { FileUpload } from "@/components/file-upload";
+import { z } from "zod";
+import Dropzone from "@/components/ui/dropzone";
+import router from "next/dist/client/router";
+import { ContentForm } from "./_components/chapter-content-form";
+import { AttacthmentForm } from "./_components/chapter-attachment-form";
+
+const ModuleIdPage = async ({
+  params,
+}: {
+  params: { courseId: string; chapterId: string };
+}) => {
   const { userId } = auth();
 
+  let contentType = "file";
   if (!userId) {
+    return redirect("/");
+  }
+  const formSchema = z.object({
+    url: z.string().min(1),
+  });
+  const chapter = await db.module.findUnique({
+    where: {
+      id: params.chapterId,
+    },
+    include: {      
+      Resource: true,
+    },
+  });
+
+  if (!chapter) {
     return redirect("/");
   }
   const checkUser = await db.userPermission.findMany({
@@ -40,38 +65,14 @@ const ProgramIdPage = async ({ params }: { params: { programId: string } }) => {
   if (
     checkUser
       .map((item: { permission: { title: any } }) => item.permission.title)
-      .indexOf("Edit program permission") == -1
+      .indexOf("Edit course permission") == -1
   ) {
     return redirect("/");
   }
-
-  // try {
-  const program: any = await db.program.findUnique({
-    where: {
-      id: params.programId,
-      // userId,
-    },
-    include: {
-      courseWithProgram: {},
-      ProgramOnDepartment: {},
-    },
-  });
-
-  const courses = await db.program.findMany({
-    orderBy: {
-      title: "asc",
-    },
-  });
-
-  if (!program) {
-    return redirect("/");
-  }
-
   const requiredFields = [
-    program.title,
-    program.imageUrl,
-    // program.startDate,
-    // Add more fields as needed for your program
+    chapter.title,
+    // chapter.description,
+    // chapter.videoUrl,
   ];
 
   const totalFields = requiredFields.length;
@@ -80,80 +81,85 @@ const ProgramIdPage = async ({ params }: { params: { programId: string } }) => {
   const completionText = `(${completedFields}/${totalFields})`;
 
   const isComplete = requiredFields.every(Boolean);
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    // try {
+    //   await axios.post(`/api/courses/${courseId}/attachments`, values);
+    //   toast.success("Course updated");
+    //   toggleEdit();
+    //   router.refresh();
+    // } catch {
+    //   toast.error("Something went wrong");
+    // }
+  };
 
   return (
     <>
-      {!program.isPublished && (
-        <Banner label="This program is unpublished. It will not be visible to the students." />
-      )}{" "}
+      {!chapter.isPublished && (
+        <Banner
+          variant="warning"
+          label="This chapter is unpublished. It will not be visible in the course"
+        />
+      )}
+
       <div className="p-6">
         <div className="flex items-center justify-between">
-          <div className="flex flex-col gap-y-2">
+          <div className="w-full">
             <Link
-              href={`/teacher/programs`}
+              href={`/teacher/module/${params.courseId}`}
               className="flex items-center text-sm hover:opacity-75 transition mb-6"
             >
               <ArrowLeft className="h-4 w-4 mr-2" />
-              Back to program
+              Back to course setup
             </Link>
-            <h1 className="text-2xl font-medium">Program setup</h1>
-            <span className="text-sm text-slate-700">
-              Complete all fields {completionText}
-            </span>
-          </div>
-          <Actions
-            disabled={!isComplete}
-            programId={params.programId}
-            isPublished={program.isPublished}
-          />
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-16">
-          <div>
-            <div className="flex items-center gap-x-2">
-              <IconBadge icon={LayoutDashboard} />
-              <h2 className="text-xl">Customize your program</h2>
+            <div className="flex items-center justify-between w-full">
+              <div className="flex flex-col gap-y-2">
+                <h1 className="text-2xl font-medium">Chapter Creation</h1>
+                <span className="text-sm text-slate-700">
+                  Complete all fields {completionText}
+                </span>
+              </div>
+              <ChapterActions
+                disabled={!isComplete}
+                courseId={params.courseId}
+                chapterId={params.chapterId}
+                isPublished={chapter.isPublished}
+              />
             </div>
-            <TitleForm initialData={program} programId={program.id} />
-            <DescriptionForm initialData={program} programId={program.id} />
-            <ImageForm initialData={program} programId={program.id} />
-            {/* <CategoryForm
-                initialData={program}
-                programId={program.id}
-                options={categories.map((category) => ({
-                  label: category.title,
-                  value: category.id,
-                }))}
-              /> */}
           </div>
-          <div className="space-y-6">
+        </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-16">
+            <div className="space-y-4">
+              <div>
+                <div className="flex items-center gap-x-2">
+                  <IconBadge icon={LayoutDashboard} />
+                  <h2 className="text-xl">Customize your chapter</h2>
+                </div>
+                <ChapterTitleForm
+                  initialData={chapter}
+                  courseId={params.courseId}
+                  chapterId={params.chapterId}
+                />
+              </div>
+            </div>
+            <AttacthmentForm
+              initialData={chapter}
+              courseId={params.courseId}
+              moduleId={params.chapterId}
+            ></AttacthmentForm>
             <div>
               <div className="flex items-center gap-x-2">
-                <IconBadge icon={ListChecks} />
-                <h2 className="text-xl">Program courses</h2>
+                <IconBadge icon={BookOpen} />
+                <h2 className="text-xl">Customize your content</h2>
               </div>
-              <CourseForm programId={program.id} />
-            </div>
-
-            {/* <div>
-              <div className="flex items-center gap-x-2">
-                <IconBadge icon={ListChecks} />
-                <h2 className="text-xl">Assign department</h2>
-              </div>
-              <DepartmentForm
-                initialData={program}
-                programId={program.id}
-                department={department}
+              <ContentForm
+                courseId={params.courseId}
+                moduleId={params.chapterId}
               />
-            </div> */}
+            </div>
           </div>
-        </div>
       </div>
     </>
   );
-  // } catch (error) {
-  //   console.error("Error fetching program:", error);
-  //   return redirect("/");
-  // }
 };
 
-export default ProgramIdPage;
+export default ModuleIdPage;
