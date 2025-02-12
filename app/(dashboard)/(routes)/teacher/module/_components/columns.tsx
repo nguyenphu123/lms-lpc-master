@@ -1,13 +1,13 @@
 "use client";
 
-import { Course } from "@prisma/client";
+import { Module } from "@prisma/client";
 import { ColumnDef } from "@tanstack/react-table";
 import {
   ArrowUpDown,
   MoreHorizontal,
   Pencil,
   ClipboardList,
-} from "lucide-react"
+} from "lucide-react";
 import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
@@ -19,62 +19,25 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
-import { ProgramActionCell } from "@/components/ui/program-action-cell";
-import { ProgramTitleCell } from "@/components/ui/program-title-cell";
+import { ModuleActionCell } from "@/components/ui/module-action-cell";
+import { ModuleTitleCell } from "@/components/ui/module-title-cell";
 
-export const columns: ColumnDef<Course>[] = [
+export const columns: ColumnDef<Module>[] = [
   {
-    id: "title",
     accessorKey: "title",
-    header: ({ column }) => {
-      return (
-        <span
-          className="flex items-center cursor-pointer"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          <span className="mr-2">Title</span>
-          <ArrowUpDown className="h-4 w-4" />
-        </span>
-      );
-    },
-    cell: ProgramTitleCell,
+    header: ({ column }) => (
+      <span
+        className="flex items-center cursor-pointer"
+        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+      >
+        <span className="mr-2">Title</span>
+        <ArrowUpDown className="h-4 w-4" />
+      </span>
+    ),
   },
   {
-    accessorKey: "user",
-    header: ({ column }) => {
-      return (
-        <span
-          className="flex items-center cursor-pointer"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          <span className="mr-2">Created By</span>
-          <ArrowUpDown className="h-4 w-4" />
-        </span>
-      );
-    },
-    cell: ({ row }: any) => {
-      const { user } = row.original;
-      return <div>{user.username}</div>;
-    },
-  },
-  {
-    accessorKey: "updatedUser",
-    header: ({ column }) => {
-      return (
-        <span
-          className="flex items-center cursor-pointer"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          <span className="mr-2">Updated By</span>
-          <ArrowUpDown className="h-4 w-4" />
-        </span>
-      );
-    },
-    cell: ({ row }: any) => {
-      const { updatedUser } = row.original;
-
-      return <div>{updatedUser?.username} </div>;
-    },
+    accessorKey: "type",
+    header: "Type",
   },
   {
     accessorKey: "isPublished",
@@ -84,7 +47,7 @@ export const columns: ColumnDef<Course>[] = [
           className="flex items-center cursor-pointer"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          <span className="mr-2">Publish</span>
+          <span className="mr-2">Published</span>
           <ArrowUpDown className="h-4 w-4" />
         </span>
       );
@@ -100,8 +63,16 @@ export const columns: ColumnDef<Course>[] = [
     },
   },
   {
-    id: "actions",
-    accessorKey: "Action",
-    cell: ProgramActionCell,
+    accessorKey: "description",
+    header: "Description",
   },
+  {
+    accessorKey: "department_id",
+    header: "Department ID",
+  },
+  {
+      id: "actions",
+      accessorKey: "Action",
+      cell: ModuleActionCell,
+    },
 ];

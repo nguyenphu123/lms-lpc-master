@@ -6,7 +6,7 @@ import { db } from "@/lib/db";
 import { DataTable } from "./_components/data-table";
 import { columns } from "./_components/columns";
 
-const ModulePage = async () => {
+const ProgramsPage = async () => {
   const { userId } = auth();
 
   if (!userId) {
@@ -38,7 +38,7 @@ const ModulePage = async () => {
   ) {
     return redirect("/");
   }
-  let module: any;
+  let programs: any;
   if (
     userDepartment.title != "BOD" &&
     checkUser
@@ -48,24 +48,69 @@ const ModulePage = async () => {
       .map((item: { permission: { title: any } }) => item.permission.title)
       .indexOf("Manage all program permission") == -1
   ) {
-    module = await db.module.findMany({
+    programs = await db.program.findMany({
       // where: {
       //   userId,
       // },
+      where: {
+        OR: [
+          {
+            userId: userId,
+
+            updatedBy: userId,
+          },
+        ],
+        courseWithProgram: {
+          some: {
+            course: {
+              OR: [
+                {
+                  userId: userId,
+                  courseInstructedBy: userId,
+                  updatedBy: userId,
+                },
+              ],
+            },
+          },
+        },
+      },
+      orderBy: {
+        startDate: "desc",
+      },
       include: {
-        ModuleInCourse: {
+        user: true,
+        updatedUser: true,
+        courseWithProgram: {
           include: {
             course: true,
           },
         },
       },
     });
-  } 
+  } else {
+    programs = await db.program.findMany({
+      // where: {
+      //   userId,
+      // },
+      orderBy: {
+        startDate: "desc",
+      },
+      include: {
+        user: true,
+        updatedUser: true,
+        courseWithProgram: {
+          include: {
+            course: true,
+          },
+        },
+      },
+    });
+  }
   return (
     <div className="p-6">
       <DataTable
         columns={columns}
-        data={module}
+        data={programs}
         canCreate={
           checkUser
             .map(
@@ -85,4 +130,4 @@ const ModulePage = async () => {
   );
 };
 
-export default ModulePage;
+export default ProgramsPage;
