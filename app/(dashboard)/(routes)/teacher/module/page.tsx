@@ -38,7 +38,7 @@ const ModulePage = async () => {
   ) {
     return redirect("/");
   }
-  let module: any;
+  let module: any = [];
   if (
     userDepartment.title != "BOD" &&
     checkUser
@@ -61,6 +61,7 @@ const ModulePage = async () => {
       },
     });
   } 
+  console.log(module)
   return (
     <div className="p-6">
       <DataTable
