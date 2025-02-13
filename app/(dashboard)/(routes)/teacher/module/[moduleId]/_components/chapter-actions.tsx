@@ -11,15 +11,13 @@ import { ConfirmModal } from "@/components/modals/confirm-modal";
 
 interface ChapterActionsProps {
   disabled: boolean;
-  courseId: string;
-  chapterId: string;
+  moduleId: string;
   isPublished: boolean;
 }
 
 export const ChapterActions = ({
   disabled,
-  courseId,
-  chapterId,
+  moduleId,
   isPublished,
 }: ChapterActionsProps) => {
   const router = useRouter();
@@ -31,12 +29,12 @@ export const ChapterActions = ({
 
       if (isPublished) {
         await axios.patch(
-          `/api/courses/${courseId}/chapters/${chapterId}/unpublish`
+          `/api/resources/module/${moduleId}/unpublish`
         );
         toast.success("Chapter unpublished");
       } else {
         await axios.patch(
-          `/api/courses/${courseId}/chapters/${chapterId}/publish`
+          `/api/resources/module/${moduleId}/publish`
         );
         toast.success("Chapter published");
       }
@@ -53,10 +51,9 @@ export const ChapterActions = ({
     try {
       setIsLoading(true);
 
-      await axios.delete(`/api/courses/${courseId}/chapters/${chapterId}`);
+      await axios.delete(`/api/resources/module/${moduleId}`);
       toast.success("Chapter deleted");
       router.refresh();
-      router.push(`/teacher/courses/${courseId}`);
     } catch {
       toast.error("Something went wrong");
     } finally {
