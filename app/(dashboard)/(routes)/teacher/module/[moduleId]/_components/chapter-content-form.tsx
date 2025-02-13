@@ -10,11 +10,10 @@ import dynamic from "next/dynamic";
 const Link = dynamic(() => import("next/link"), { ssr: false });
 
 interface AttachmentFormProps {
-  courseId: string;
   moduleId: string;
 }
 
-export const ContentForm = ({ courseId, moduleId }: AttachmentFormProps) => {
+export const ContentForm = ({ moduleId }: AttachmentFormProps) => {
   const [contents, setContents] = useState<
     Array<{
       fileUrl: string;
@@ -57,7 +56,7 @@ export const ContentForm = ({ courseId, moduleId }: AttachmentFormProps) => {
   useEffect(() => {
     const loadData = async () => {
       const { data } = await axios.get(
-        `/api/courses/${courseId}/chapters/${moduleId}/slide`
+        `/api/resources/module/${moduleId}/slide`
       );
       if (data.length > 0) {
         setCurrentTab(data[0].id);
@@ -65,13 +64,13 @@ export const ContentForm = ({ courseId, moduleId }: AttachmentFormProps) => {
       }
     };
     loadData();
-  }, [courseId, moduleId]);
+  }, [moduleId]);
 
   const router = useRouter();
 
   const onSubmit = async () => {
     try {
-      await axios.post(`/api/courses/${courseId}/chapters/${moduleId}/slide`, {
+      await axios.post(`/api/resources/module/${moduleId}/slide`, {
         contents,
       });
       toast.success("Content created");
@@ -100,12 +99,11 @@ export const ContentForm = ({ courseId, moduleId }: AttachmentFormProps) => {
 
     try {
       const getToken = await axios.get("/api/getToken");
-      const { data: getCourse } = await axios.get(`/api/courses/${courseId}`);
       const { data: getChapter } = await axios.get(
-        `/api/courses/${courseId}/chapters/${moduleId}`
+        `/api/resources/module/${moduleId}`
       );
 
-      const uploadUrl = `${process.env.NEXT_PUBLIC_ACCOUNT_URL}/Course/${getCourse.title}/${getChapter.title}/${file.name}`;
+      const uploadUrl = `${process.env.NEXT_PUBLIC_ACCOUNT_URL}/Module/${getChapter.title}/${file.name}`;
 
       await axios.put(uploadUrl, file, {
         headers: {
@@ -127,7 +125,7 @@ export const ContentForm = ({ courseId, moduleId }: AttachmentFormProps) => {
     <div className="mt-6 border dark:text-white rounded-md p-4">
       <div className="font-medium flex items-center justify-between mb-4">
         <div className="flex items-center">
-          Course Content <Asterisk className="size-4" color="red" />
+          Module Content <Asterisk className="size-4" color="red" />
         </div>
         <button
           onClick={addContent}
