@@ -12,8 +12,7 @@ import { FileUpload } from "@/components/file-upload";
 
 interface ChapterVideoFormProps {
   initialData: Module;
-  courseId: string;
-  chapterId: string;
+  moduleId: string;
 }
 
 const formSchema = z.object({
@@ -22,8 +21,7 @@ const formSchema = z.object({
 
 export const ChapterVideoForm = ({
   initialData,
-  courseId,
-  chapterId,
+  moduleId,
 }: ChapterVideoFormProps) => {
   const [isEditing, setIsEditing] = useState(false);
 

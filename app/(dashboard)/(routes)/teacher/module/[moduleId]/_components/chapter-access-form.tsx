@@ -14,8 +14,7 @@ import { Button } from "@/components/ui/button";
 
 interface ChapterAccessFormProps {
   initialData: Module;
-  courseId: string;
-  chapterId: string;
+  moduleId: string;
 }
 
 const formSchema = z.object({
@@ -24,8 +23,7 @@ const formSchema = z.object({
 
 export const ChapterAccessForm = ({
   initialData,
-  courseId,
-  chapterId,
+  moduleId,
 }: ChapterAccessFormProps) => {
   const [isEditing, setIsEditing] = useState(false);
 
@@ -45,7 +43,7 @@ export const ChapterAccessForm = ({
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
       await axios.patch(
-        `/api/courses/${courseId}/chapters/${chapterId}`,
+        `/api/resources/module/${moduleId}`,
         values
       );
       toast.success("Chapter updated");

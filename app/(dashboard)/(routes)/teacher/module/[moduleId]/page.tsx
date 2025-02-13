@@ -31,7 +31,7 @@ import { AttacthmentForm } from "./_components/chapter-attachment-form";
 const ModuleIdPage = async ({
   params,
 }: {
-  params: { courseId: string; chapterId: string };
+  params: { moduleId: string };
 }) => {
   const { userId } = auth();
 
@@ -44,7 +44,7 @@ const ModuleIdPage = async ({
   });
   const chapter = await db.module.findUnique({
     where: {
-      id: params.chapterId,
+      id: params.moduleId,
     },
     include: {      
       Resource: true,
@@ -105,23 +105,22 @@ const ModuleIdPage = async ({
         <div className="flex items-center justify-between">
           <div className="w-full">
             <Link
-              href={`/teacher/module/${params.courseId}`}
+              href={`/teacher/module/${params.moduleId}`}
               className="flex items-center text-sm hover:opacity-75 transition mb-6"
             >
               <ArrowLeft className="h-4 w-4 mr-2" />
-              Back to course setup
+              Back to module setup
             </Link>
             <div className="flex items-center justify-between w-full">
               <div className="flex flex-col gap-y-2">
-                <h1 className="text-2xl font-medium">Chapter Creation</h1>
+                <h1 className="text-2xl font-medium">Module Creation</h1>
                 <span className="text-sm text-slate-700">
                   Complete all fields {completionText}
                 </span>
               </div>
               <ChapterActions
                 disabled={!isComplete}
-                courseId={params.courseId}
-                chapterId={params.chapterId}
+                moduleId={params.moduleId}
                 isPublished={chapter.isPublished}
               />
             </div>
@@ -132,28 +131,25 @@ const ModuleIdPage = async ({
               <div>
                 <div className="flex items-center gap-x-2">
                   <IconBadge icon={LayoutDashboard} />
-                  <h2 className="text-xl">Customize your chapter</h2>
+                  <h2 className="text-xl">Customize your module</h2>
                 </div>
                 <ChapterTitleForm
                   initialData={chapter}
-                  courseId={params.courseId}
-                  chapterId={params.chapterId}
+                  moduleId={params.moduleId}
                 />
               </div>
             </div>
-            <AttacthmentForm
+            {/* <AttacthmentForm
               initialData={chapter}
-              courseId={params.courseId}
-              moduleId={params.chapterId}
-            ></AttacthmentForm>
+              moduleId={params.moduleId}
+            ></AttacthmentForm> */}
             <div>
               <div className="flex items-center gap-x-2">
                 <IconBadge icon={BookOpen} />
                 <h2 className="text-xl">Customize your content</h2>
               </div>
               <ContentForm
-                courseId={params.courseId}
-                moduleId={params.chapterId}
+                moduleId={params.moduleId}
               />
             </div>
           </div>
