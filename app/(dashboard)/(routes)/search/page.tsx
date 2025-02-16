@@ -56,7 +56,6 @@ const SearchPage = async ({ searchParams }: SearchPageProps) => {
                   module:{
                     isPublished: true,
                   }
-                  
                 },
               },
               BookMark: true,
