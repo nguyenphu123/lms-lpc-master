@@ -46,9 +46,10 @@ export const ContentForm = ({ moduleId }: AttachmentFormProps) => {
   const removeContent = (id: string) => {
     setContents(contents.filter((content: { id: string; }) => content.id !== id));
   };
-
+  debugger
   useEffect(() => {
     const loadData = async () => {
+      
       const { data } = await axios.get(`/api/resources/module/${moduleId}`);
       setContents(data);
     };
@@ -109,7 +110,6 @@ export const ContentForm = ({ moduleId }: AttachmentFormProps) => {
       setIsLoading(false);
     }
   };
-
   return (
     <div className="mt-6 border dark:text-white rounded-md p-4">
       <div className="font-medium flex items-center justify-between mb-4">

@@ -6,7 +6,7 @@ import { db } from "@/lib/db";
 import { DataTable } from "./_components/data-table";
 import { columns } from "./_components/columns";
 
-const ProgramsPage = async () => {
+const ExamPage = async () => {
   const { userId } = auth();
 
   if (!userId) {
@@ -38,79 +38,22 @@ const ProgramsPage = async () => {
   ) {
     return redirect("/");
   }
-  let programs: any;
-  if (
-    userDepartment.title != "BOD" &&
-    checkUser
-      .map((item: { permission: { title: any } }) => item.permission.title)
-      .indexOf("Manage all course permission") == -1 &&
-    checkUser
-      .map((item: { permission: { title: any } }) => item.permission.title)
-      .indexOf("Manage all program permission") == -1
-  ) {
-    programs = await db.program.findMany({
-      // where: {
-      //   userId,
-      // },
-      where: {
-        OR: [
-          {
-            userId: userId,
-
-            updatedBy: userId,
-          },
-        ],
-        courseWithProgram: {
-          some: {
-            course: {
-              OR: [
-                {
-                  userId: userId,
-                  courseInstructedBy: userId,
-                  updatedBy: userId,
-                },
-              ],
-            },
-          },
+  let exam: any = [];
+  exam = await db.exam.findMany({
+    include: {
+      ExamInCourse: {
+        include: {
+          course: true,
         },
       },
-      orderBy: {
-        startDate: "desc",
-      },
-      include: {
-        user: true,
-        updatedUser: true,
-        courseWithProgram: {
-          include: {
-            course: true,
-          },
-        },
-      },
-    });
-  } else {
-    programs = await db.program.findMany({
-      // where: {
-      //   userId,
-      // },
-      orderBy: {
-        startDate: "desc",
-      },
-      include: {
-        user: true,
-        updatedUser: true,
-        courseWithProgram: {
-          include: {
-            course: true,
-          },
-        },
-      },
-    });
-  }
+    },
+  });
+  
   return (
     <div className="p-6">
       <DataTable
         columns={columns}
-        data={programs}
+        data={exam}
         canCreate={
           checkUser
             .map(
@@ -130,4 +73,4 @@ const ProgramsPage = async () => {
   );
 };
 
-export default ProgramsPage;
+export default ExamPage;
