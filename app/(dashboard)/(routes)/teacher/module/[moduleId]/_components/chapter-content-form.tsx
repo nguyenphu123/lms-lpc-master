@@ -117,16 +117,16 @@ export const ContentForm = ({ moduleId }: AttachmentFormProps) => {
           Module Content <Asterisk className="size-4" color="red" />
         </div>
       </div>
-      <div key={contents.id} className="mb-4">
+      <div key={contents?.id} className="mb-4">
         <div className="flex items-center mb-4">
           <input
             type="text"
-            value={contents.title}
+            value={contents?.title}
             onChange={(e) => handleChange("title", e.target.value, contents.id)}
             className="border p-2 rounded-md w-full"
           />
           <select
-            value={contents.contentType}
+            value={contents?.contentType}
             onChange={(e) =>
               handleChange("contentType", e.target.value, contents.id)
             }
@@ -142,9 +142,9 @@ export const ContentForm = ({ moduleId }: AttachmentFormProps) => {
           >
             <Trash className="h-4 w-4" />
           </button>
-        </div>
+        </div> 
 
-        {contents.contentType === "video" ? (
+        {contents?.contentType === "video" ? (
           <div className="mb-4">
             <div className="font-medium mb-2">
               {contents.videoUrl ? "Update Video" : "Add a Video"}
@@ -185,7 +185,7 @@ export const ContentForm = ({ moduleId }: AttachmentFormProps) => {
               placeholder="Description"
             ></textarea>
           </div>
-        ) : contents.contentType === "text" ? (
+        ) : contents?.contentType === "text" ? (
           <div className="mb-4">
             <Editor
               apiKey="8jo1uligpkc7y1v598qze63nfgfvcflmy7ifyfqt9ah17l7m"
@@ -221,10 +221,10 @@ export const ContentForm = ({ moduleId }: AttachmentFormProps) => {
         ) : (
           <div className="mb-4">
             <div className="font-medium mb-2">
-              {contents.fileUrl ? "Update File" : "Add a File"}
+              {contents?.fileUrl ? "Update File" : "Add a File"}
             </div>
             <div className="mb-2">
-              {contents.fileUrl && !edit ? (
+              {contents?.fileUrl && !edit ? (
                 <Link
                   href={contents.fileUrl}
                   target="_blank"
@@ -240,7 +240,7 @@ export const ContentForm = ({ moduleId }: AttachmentFormProps) => {
                   className="file-input"
                 />
               )}
-              {contents.fileUrl && (
+              {contents?.fileUrl && (
                 <button
                   type="button"
                   onClick={() => setEdit(!edit)}
@@ -251,7 +251,7 @@ export const ContentForm = ({ moduleId }: AttachmentFormProps) => {
               )}
             </div>
             <textarea
-              value={contents.description}
+              value={contents?.description}
               onChange={(e) =>
                 handleChange("description", e.target.value, contents.id)
               }
