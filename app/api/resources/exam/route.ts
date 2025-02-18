@@ -16,7 +16,6 @@ export async function POST(
     const newExam = await db.exam.create({
       data: {
         title: title,
-        isPublished: false,
       },
     });
 
