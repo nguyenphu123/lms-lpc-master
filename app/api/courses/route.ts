@@ -16,7 +16,7 @@ export async function POST(req: Request) {
       data: {
         userId,
         title,
-        startDate: date,
+        createdDate: date,
         isPublished: false,
       },
     });

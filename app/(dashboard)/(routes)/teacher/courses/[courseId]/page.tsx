@@ -22,7 +22,7 @@ import { ImageForm } from "./_components/image-form";
 
 // import { PriceForm } from "./_components/price-form";
 // import { AttachmentForm } from "./_components/attachment-form";
-import { ChaptersForm } from "./_components/chapters-form";
+import { ResourcesForm } from "./_components/resources-form";
 import { Actions } from "./_components/actions";
 import { Prisma } from "@prisma/client";
 import { CreditForm } from "./_components/credit-form";
@@ -55,7 +55,7 @@ const CourseIdPage = async ({ params }: { params: { courseId: string } }) => {
       // userId,
     },
     include: {
-      Module: {
+      ModuleInCourse: {
         orderBy: {
           position: "asc",
         },
@@ -121,7 +121,7 @@ const CourseIdPage = async ({ params }: { params: { courseId: string } }) => {
     // course.price,
     // course.programId,
     // course.courseInstructedBy,
-    course.Module.some((chapter: { isPublished: any }) => chapter.isPublished),
+    course.ModuleInCourse.some((chapter: { isPublished: any }) => chapter.isPublished),
   ];
 
   const totalFields = requiredFields.length;
@@ -196,10 +196,10 @@ const CourseIdPage = async ({ params }: { params: { courseId: string } }) => {
             <div>
               <div className="flex items-center gap-x-2">
                 <IconBadge icon={ListChecks} />
-                <h2 className="text-xl">Course chapters</h2>
+                <h2 className="text-xl">Course resource</h2>
               </div>
               <div className="mt-4">
-                <ChaptersForm initialData={course} courseId={course.id} />
+                <ResourcesForm initialData={course} courseId={course.id} />
               </div>
             </div>
             <div>

@@ -56,16 +56,13 @@ const CoursesPage = async () => {
         ],
       },
       orderBy: {
-        startDate: "desc",
+        createdDate: "desc",
       },
       include: {
         user: true,
         updatedUser: true,
         courseInstructor: true,
-        Module: {
-          include: {
-            UserProgress: true,
-          },
+        ModuleInCourse: {
         },
       },
     });
@@ -75,16 +72,13 @@ const CoursesPage = async () => {
       //   userId,
       // },
       orderBy: {
-        startDate: "desc",
+        createdDate: "desc",
       },
       include: {
         user: true,
         updatedUser: true,
         courseInstructor: true,
-        Module: {
-          include: {
-            UserProgress: true,
-          },
+        ModuleInCourse: {
           orderBy: {
             position: "asc",
           },

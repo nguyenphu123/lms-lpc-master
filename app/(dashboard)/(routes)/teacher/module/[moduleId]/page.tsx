@@ -14,19 +14,19 @@ import { db } from "@/lib/db";
 import { IconBadge } from "@/components/icon-badge";
 import { Banner } from "@/components/banner";
 
-import { ChapterTitleForm } from "./_components/chapter-title-form";
+import { ModuleTitleForm } from "./_components/module-title-form";
 // import { ChapterDescriptionForm } from "./_components/chapter-description-form";
-import { ChapterAccessForm } from "./_components/chapter-access-form";
-import { ChapterVideoForm } from "./_components/chapter-video-form";
-import { ChapterActions } from "./_components/chapter-actions";
+// import { ChapterAccessForm } from "./_components/chapter-access-form";
+// import { ChapterVideoForm } from "./_components/chapter-video-form";
+import { ModuleActions } from "./_components/module-actions";
 
-import Exam from "./_components/chapter-exam-form";
+// import Exam from "./_components/chapter-exam-form";
 import { FileUpload } from "@/components/file-upload";
 import { z } from "zod";
 import Dropzone from "@/components/ui/dropzone";
 import router from "next/dist/client/router";
-import { ContentForm } from "./_components/chapter-content-form";
-import { AttacthmentForm } from "./_components/chapter-attachment-form";
+import { ContentForm } from "./_components/module-content-form";
+// import { AttacthmentForm } from "./_components/chapter-attachment-form";
 
 const ModuleIdPage = async ({
   params,
@@ -40,18 +40,20 @@ const ModuleIdPage = async ({
     return redirect("/");
   }
   const formSchema = z.object({
+    title: z.string().min(1, "Title is required"),
+    content: z.string().min(1, "Content is required"),
     url: z.string().min(1),
   });
-  const chapter = await db.module.findUnique({
+  const module = await db.module.findUnique({
     where: {
       id: params.moduleId,
     },
-    include: {      
+    include: {
       Resource: true,
     },
   });
 
-  if (!chapter) {
+  if (!module) {
     return redirect("/");
   }
   const checkUser = await db.userPermission.findMany({
@@ -70,7 +72,7 @@ const ModuleIdPage = async ({
     return redirect("/");
   }
   const requiredFields = [
-    chapter.title,
+    module.title,
     // chapter.description,
     // chapter.videoUrl,
   ];
@@ -82,22 +84,31 @@ const ModuleIdPage = async ({
 
   const isComplete = requiredFields.every(Boolean);
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    // try {
-    //   await axios.post(`/api/courses/${courseId}/attachments`, values);
-    //   toast.success("Course updated");
-    //   toggleEdit();
-    //   router.refresh();
-    // } catch {
-    //   toast.error("Something went wrong");
-    // }
+    try {
+      // Sending the updated values to the backend API to update the module
+      await fetch(`/api/resources/module/${params.moduleId}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(values), // Send the updated data
+      });
+  
+      // Use router.replace() to reload the current page
+      router.replace(router.asPath); // This will reload the current page and reflect the changes
+    } catch (error) {
+      console.error("Error updating module:", error);
+      alert("Something went wrong while updating the module");
+    }
   };
+  
 
   return (
     <>
-      {!chapter.isPublished && (
+      {!module.isPublished && (
         <Banner
           variant="warning"
-          label="This chapter is unpublished. It will not be visible in the course"
+          label="This module is unpublished. It will not be visible in the course"
         />
       )}
 
@@ -105,7 +116,7 @@ const ModuleIdPage = async ({
         <div className="flex items-center justify-between">
           <div className="w-full">
             <Link
-              href={`/teacher/module/${params.moduleId}`}
+              href={`/teacher/module`}
               className="flex items-center text-sm hover:opacity-75 transition mb-6"
             >
               <ArrowLeft className="h-4 w-4 mr-2" />
@@ -118,41 +129,41 @@ const ModuleIdPage = async ({
                   Complete all fields {completionText}
                 </span>
               </div>
-              <ChapterActions
+              <ModuleActions
                 disabled={!isComplete}
                 moduleId={params.moduleId}
-                isPublished={chapter.isPublished}
+                isPublished={module.isPublished}
               />
             </div>
           </div>
         </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-16">
-            <div className="space-y-4">
-              <div>
-                <div className="flex items-center gap-x-2">
-                  <IconBadge icon={LayoutDashboard} />
-                  <h2 className="text-xl">Customize your module</h2>
-                </div>
-                <ChapterTitleForm
-                  initialData={chapter}
-                  moduleId={params.moduleId}
-                />
-              </div>
-            </div>
-            {/* <AttacthmentForm
-              initialData={chapter}
-              moduleId={params.moduleId}
-            ></AttacthmentForm> */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-16">
+          <div className="space-y-4">
             <div>
               <div className="flex items-center gap-x-2">
-                <IconBadge icon={BookOpen} />
-                <h2 className="text-xl">Customize your content</h2>
+                <IconBadge icon={LayoutDashboard} />
+                <h2 className="text-xl">Customize your module</h2>
               </div>
-              <ContentForm
+              <ModuleTitleForm
+                initialData={module}
                 moduleId={params.moduleId}
               />
             </div>
           </div>
+          {/* <AttacthmentForm
+              initialData={chapter}
+              moduleId={params.moduleId}
+            ></AttacthmentForm> */}
+          <div>
+            <div className="flex items-center gap-x-2">
+              <IconBadge icon={BookOpen} />
+              <h2 className="text-xl">Customize your content</h2>
+            </div>
+            <ContentForm
+              moduleId={params.moduleId}
+            />
+          </div>
+        </div>
       </div>
     </>
   );
