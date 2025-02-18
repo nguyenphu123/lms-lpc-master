@@ -86,6 +86,14 @@ export async function GET(
       where: {
         id: courseId,
       },
+      include:{
+        ModuleInCourse:{
+          include:{
+            module: {}
+          }
+        }
+    
+      }
     });
 
     return NextResponse.json(course);

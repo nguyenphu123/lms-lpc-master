@@ -63,9 +63,6 @@ const CoursesPage = async () => {
         updatedUser: true,
         courseInstructor: true,
         ModuleInCourse: {
-          include: {
-            progress: true,
-          },
         },
       },
     });
@@ -82,9 +79,6 @@ const CoursesPage = async () => {
         updatedUser: true,
         courseInstructor: true,
         ModuleInCourse: {
-          include: {
-            progress: true,
-          },
           orderBy: {
             position: "asc",
           },

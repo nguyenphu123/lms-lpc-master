@@ -8,19 +8,21 @@ export async function POST(
   { params }: { params: { courseId: string; examId: string } }
 ) {
   try {
-    const { userId, value }: any = auth();
+    const { userId }: any = auth();
+    const { title } = await req.json();
     if (!userId) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
-    const newExam = await db.question.create({
+    const newExam = await db.exam.create({
       data: {
-        ...value,
+        title: title,
+        isPublished: false,
       },
     });
 
     return NextResponse.json(newExam);
   } catch (error) {
-    console.log("[CHAPTER_PUBLISH]", error);
+    console.log("[EXAM_PUBLISH]", error);
     return new NextResponse("Internal Error", { status: 500 });
   }
 }
@@ -37,7 +39,7 @@ export async function GET(
     const questionsList: any = await db.exam.findMany({});
     return NextResponse.json(questionsList);
   } catch (error) {
-    console.log("[CHAPTER_PUBLISH]", error);
+    console.log("[EXAM_PUBLISH]", error);
     return new NextResponse("Internal Error", { status: 500 });
   }
 }
