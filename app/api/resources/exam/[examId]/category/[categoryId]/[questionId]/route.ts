@@ -5,22 +5,20 @@ import { db } from "@/lib/db";
 
 export async function POST(
   req: Request,
-  { params }: { params: { courseId: string; examId: string } }
+  { params }: { params: { categoryId: string; questionId: string } }
 ) {
   try {
-    const { userId, questionsList }: any = auth();
+    const { userId, question }: any = auth();
     if (!userId) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
-    for (let i = 0; i < questionsList.length; i++) {
-      const newQuestion = await db.question.create({
-        data: {
-          ...questionsList[i],
-        },
-      });
-    }
+    const newQuestion = await db.question.create({
+      data: {
+        ...question,
+      },
+    });
 
-    return NextResponse.json("success");
+    return NextResponse.json(newQuestion);
   } catch (error) {
     console.log("[CHAPTER_PUBLISH]", error);
     return new NextResponse("Internal Error", { status: 500 });
@@ -38,6 +36,30 @@ export async function GET(
     }
     const questionsList: any = await db.question.findMany({});
     return NextResponse.json(questionsList);
+  } catch (error) {
+    console.log("[CHAPTER_PUBLISH]", error);
+    return new NextResponse("Internal Error", { status: 500 });
+  }
+}
+export async function PATCH(
+  req: Request,
+  { params }: { params: { categoryId: string; questionId: string } }
+) {
+  try {
+    const { userId, questions }: any = auth();
+    if (!userId) {
+      return new NextResponse("Unauthorized", { status: 401 });
+    }
+    const newQuestion = await db.question.update({
+      where:{
+        id: params.questionId,
+      },
+      data: {
+        ...questions,
+      },
+    });
+
+    return NextResponse.json(newQuestion);
   } catch (error) {
     console.log("[CHAPTER_PUBLISH]", error);
     return new NextResponse("Internal Error", { status: 500 });
