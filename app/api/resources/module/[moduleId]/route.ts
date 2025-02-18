@@ -9,7 +9,7 @@ export async function PATCH(
 ) {
   try {
     const { userId }: any = auth();
-    const { contents } = await req.json();
+    const { title, contents } = await req.json();
     if (!userId) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
@@ -18,13 +18,14 @@ export async function PATCH(
         id: params.moduleId,
       },
       data: {
+        title,
         ...contents,
       },
     });
 
     return NextResponse.json(updateModule);
   } catch (error) {
-    console.log("[CHAPTER_PUBLISH]", error);
+    console.log("[MODULE_PUBLISH]", error);
     return new NextResponse("Internal Error", { status: 500 });
   }
 }
@@ -45,7 +46,32 @@ export async function GET(
     });
     return NextResponse.json(module);
   } catch (error) {
-    console.log("[CHAPTER_PUBLISH]", error);
+    console.log("[MODULE_PUBLISH]", error);
+    return new NextResponse("Internal Error", { status: 500 });
+  }
+}
+
+export async function DELETE(
+  req: Request,
+  { params }: { params: { moduleId: string } }
+) {
+  try {
+    const { userId } = auth();
+    if (!userId) {
+      return new NextResponse("Unauthorized", { status: 401 });
+    }
+
+    // Delete the module by its ID
+    const deletedModule = await db.module.delete({
+      where: {
+        id: params.moduleId,
+      },
+    });
+
+    // Return a success response
+    return NextResponse.json({ message: "Module deleted successfully", deletedModule });
+  } catch (error) {
+    console.log("[MODULE_DELETE]", error);
     return new NextResponse("Internal Error", { status: 500 });
   }
 }

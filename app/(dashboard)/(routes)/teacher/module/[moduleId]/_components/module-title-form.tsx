@@ -19,7 +19,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
-interface ChapterTitleFormProps {
+interface ModuleTitleFormProps {
   initialData: {
     title: string;
   };
@@ -30,10 +30,10 @@ const formSchema = z.object({
   title: z.string().min(1),
 });
 
-export const ChapterTitleForm = ({
+export const ModuleTitleForm = ({
   initialData,
   moduleId,
-}: ChapterTitleFormProps) => {
+}: ModuleTitleFormProps) => {
   const [isEditing, setIsEditing] = useState(false);
 
   const toggleEdit = () => setIsEditing((current) => !current);
@@ -53,7 +53,7 @@ export const ChapterTitleForm = ({
         `/api/resources/module/${moduleId}`,
         values
       );
-      toast.success("Chapter updated");
+      toast.success("Module updated");
       toggleEdit();
       router.refresh();
     } catch {
@@ -65,7 +65,7 @@ export const ChapterTitleForm = ({
     <div className="mt-6 border dark:text-white rounded-md p-4">
       <div className="font-medium flex items-center justify-between">
         <div className="flex items-center">
-          Chapter title <Asterisk className="size-4" color="red" />
+          Module title <Asterisk className="size-4" color="red" />
         </div>
 
         <Button onClick={toggleEdit} variant="ghost">

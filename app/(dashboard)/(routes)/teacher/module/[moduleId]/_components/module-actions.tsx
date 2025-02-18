@@ -9,17 +9,17 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { ConfirmModal } from "@/components/modals/confirm-modal";
 
-interface ChapterActionsProps {
+interface ModuleActionsProps {
   disabled: boolean;
   moduleId: string;
   isPublished: boolean;
 }
 
-export const ChapterActions = ({
+export const ModuleActions = ({
   disabled,
   moduleId,
   isPublished,
-}: ChapterActionsProps) => {
+}: ModuleActionsProps) => {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
 
@@ -31,12 +31,12 @@ export const ChapterActions = ({
         await axios.patch(
           `/api/resources/module/${moduleId}/unpublish`
         );
-        toast.success("Chapter unpublished");
+        toast.success("Module unpublished");
       } else {
         await axios.patch(
           `/api/resources/module/${moduleId}/publish`
         );
-        toast.success("Chapter published");
+        toast.success("Module published");
       }
 
       router.refresh();
@@ -52,7 +52,7 @@ export const ChapterActions = ({
       setIsLoading(true);
 
       await axios.delete(`/api/resources/module/${moduleId}`);
-      toast.success("Chapter deleted");
+      toast.success("Module deleted");
       router.refresh();
     } catch {
       toast.error("Something went wrong");

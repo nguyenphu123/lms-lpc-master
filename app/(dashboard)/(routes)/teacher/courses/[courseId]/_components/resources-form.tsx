@@ -8,7 +8,7 @@ import { Asterisk, Loader2, PlusCircle } from "lucide-react";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
-import { Module, Course } from "@prisma/client";
+import { ModuleInCourse, Course, Exam } from "@prisma/client";
 
 import {
   Form,
@@ -23,8 +23,8 @@ import { Input } from "@/components/ui/input";
 
 import { ChaptersList } from "./chapters-list";
 
-interface ChaptersFormProps {
-  initialData: Course & { Module: Module[] };
+interface ResourcesFormProps {
+  initialData: Course & { ModuleInCourse: ModuleInCourse[] };
   courseId: string;
 }
 
@@ -33,7 +33,7 @@ const formSchema = z.object({
   type: z.string().optional(),
 });
 
-export const ChaptersForm = ({ initialData, courseId }: ChaptersFormProps) => {
+export const ResourcesForm = ({ initialData, courseId }: ResourcesFormProps) => {
   const [isCreating, setIsCreating] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
   const [type, setType] = useState("slide");
@@ -142,14 +142,14 @@ export const ChaptersForm = ({ initialData, courseId }: ChaptersFormProps) => {
         <div
           className={cn(
             "text-sm mt-2",
-            !initialData.Module.length && "text-slate-500 italic"
+            !initialData.ModuleInCourse.length && "text-slate-500 italic"
           )}
         >
-          {!initialData.Module.length && "No chapters"}
+          {!initialData.ModuleInCourse.length && "No chapters"}
           <ChaptersList
             onEdit={onEdit}
             onReorder={onReorder}
-            items={initialData.Module || []}
+            items={initialData.ModuleInCourse || []}
           />
         </div>
       )}

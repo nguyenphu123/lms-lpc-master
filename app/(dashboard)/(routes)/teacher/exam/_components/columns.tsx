@@ -63,12 +63,12 @@ export const columns: ColumnDef<Exam>[] = [
     },
   },
   {
-    accessorKey: "description",
-    header: "Description",
+    accessorKey: "timelimit",
+    header: "Time Limit",
   },
   {
-    accessorKey: "department_id",
-    header: "Department ID",
+    accessorKey: "scorelimit",
+    header: "Score Limit",
   },
   {
       id: "actions",
