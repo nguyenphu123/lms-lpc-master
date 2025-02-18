@@ -19,7 +19,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
-import { ExamActionCell } from "@/components/ui/exam-action-cell";
+import { ExamActionCellEdit } from "@/components/ui/exam-action-cell-edit";
 import { ModuleTitleCell } from "@/components/ui/module-title-cell";
 
 export const columns: ColumnDef<Exam>[] = [
@@ -73,6 +73,6 @@ export const columns: ColumnDef<Exam>[] = [
   {
       id: "actions",
       accessorKey: "Action",
-      cell: ExamActionCell,
+      cell: ExamActionCellEdit,
     },
 ];

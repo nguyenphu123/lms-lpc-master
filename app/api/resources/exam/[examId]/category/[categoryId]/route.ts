@@ -15,7 +15,7 @@ export async function GET(
     const categoryList: any = await db.category.findMany({});
     return NextResponse.json(categoryList);
   } catch (error) {
-    console.log("[CHAPTER_PUBLISH]", error);
+    console.log("[EXAM_PUBLISH]", error);
     return new NextResponse("Internal Error", { status: 500 });
   }
 }
