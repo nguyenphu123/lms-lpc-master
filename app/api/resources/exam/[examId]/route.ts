@@ -1,6 +1,5 @@
 import { auth } from "@clerk/nextjs";
 import { NextResponse } from "next/server";
-
 import { db } from "@/lib/db";
 
 export async function PATCH(
@@ -9,22 +8,20 @@ export async function PATCH(
 ) {
   try {
     const { userId }: any = auth();
-    const { contents } = await req.json();
+    const { contents } = await req.json();  // expects the exam details to be sent in the "contents"
     if (!userId) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
+
+    // Update exam details in the database
     const updateModule = await db.exam.update({
-      where: {
-        id: params.examId,
-      },
-      data: {
-        ...contents,
-      },
+      where: { id: params.examId },
+      data: { ...contents },
     });
 
     return NextResponse.json(updateModule);
   } catch (error) {
-    console.log("[CHAPTER_PUBLISH]", error);
+    console.log("[EXAM_PUBLISH]", error);
     return new NextResponse("Internal Error", { status: 500 });
   }
 }
@@ -38,14 +35,15 @@ export async function GET(
     if (!userId) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
-    const exam: any = await db.exam.findUnique({
-      where: {
-        id: params.examId,
-      },
+
+    // Fetch exam data based on the examId
+    const exam = await db.exam.findUnique({
+      where: { id: params.examId },
     });
+
     return NextResponse.json(exam);
   } catch (error) {
-    console.log("[CHAPTER_PUBLISH]", error);
+    console.log("[EXAM_PUBLISH]", error);
     return new NextResponse("Internal Error", { status: 500 });
   }
 }

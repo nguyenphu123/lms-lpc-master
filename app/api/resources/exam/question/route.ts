@@ -5,7 +5,7 @@ import { db } from "@/lib/db";
 
 export async function POST(
   req: Request,
-  { params }: { params: { courseId: string; examId: string } }
+  { params }: { params: { questionId: string } }
 ) {
   try {
     const { userId, questionsList }: any = auth();
@@ -22,14 +22,14 @@ export async function POST(
 
     return NextResponse.json("success");
   } catch (error) {
-    console.log("[CHAPTER_PUBLISH]", error);
+    console.log("[EXAM_PUBLISH]", error);
     return new NextResponse("Internal Error", { status: 500 });
   }
 }
 
 export async function GET(
   req: Request,
-  { params }: { params: { courseId: string; chapterId: string } }
+  { params }: { params: { questionId: string } }
 ) {
   try {
     const { userId } = auth();
@@ -39,7 +39,7 @@ export async function GET(
     const questionsList: any = await db.question.findMany({});
     return NextResponse.json(questionsList);
   } catch (error) {
-    console.log("[CHAPTER_PUBLISH]", error);
+    console.log("[EXAM_PUBLISH]", error);
     return new NextResponse("Internal Error", { status: 500 });
   }
 }
