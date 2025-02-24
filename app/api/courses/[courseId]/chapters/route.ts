@@ -2,6 +2,7 @@ import { auth } from "@clerk/nextjs";
 import { NextResponse } from "next/server";
 
 import { db } from "@/lib/db";
+import { connect } from "http2";
 
 export async function POST(
   req: Request,
@@ -51,6 +52,7 @@ export async function POST(
           courseId: params.courseId,
           position: newPosition,
           moduleId: modules[i].moduleId,
+         
         },
       });
     }

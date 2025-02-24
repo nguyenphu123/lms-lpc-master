@@ -1,162 +1,100 @@
 "use client";
 
-import * as z from "zod";
+import { useState, useEffect } from "react";
 import axios from "axios";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import { Asterisk, Loader2, PlusCircle } from "lucide-react";
-import { useState } from "react";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
-import { ModuleInCourse, Course, Exam } from "@prisma/client";
-
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormMessage,
-} from "@/components/ui/form";
+import { Asterisk } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
-import { Input } from "@/components/ui/input";
-
-import { ChaptersList } from "./chapters-list";
 
 interface ResourcesFormProps {
-  initialData: Course & { ModuleInCourse: ModuleInCourse[] };
+  initialData: any;  // Assuming you have `initialData` here
   courseId: string;
 }
 
-const formSchema = z.object({
-  title: z.string().min(1),
-  type: z.string().optional(),
-});
-
 export const ResourcesForm = ({ initialData, courseId }: ResourcesFormProps) => {
-  const [isCreating, setIsCreating] = useState(false);
-  const [isUpdating, setIsUpdating] = useState(false);
-  const [type, setType] = useState("slide");
-  const toggleCreating = () => {
-    setIsCreating((current) => !current);
-  };
-
+  const [modules, setModules] = useState([]);
+  const [selectedModules, setSelectedModules] = useState<string[]>([]);
   const router = useRouter();
 
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      title: "",
-    },
-  });
-
-  const { isSubmitting, isValid } = form.formState;
-
-  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+  // Fetch modules
+  const fetchModules = async () => {
     try {
-      values["type"] = type;
-      await axios.post(`/api/courses/${courseId}/chapters`, values);
-      toast.success("Module created");
-      toggleCreating();
-      router.refresh();
-    } catch {
-      toast.error("Something went wrong");
+      const response = await axios.get(`/api/resources/module`);
+      setModules(response.data);
+    } catch (error) {
+      console.error("Error fetching modules", error);
     }
   };
 
-  const onReorder = async (updateData: { id: string; position: number }[]) => {
-    try {
-      setIsUpdating(true);
+  // Handle module selection
+  const handleModuleSelect = (moduleId: string) => {
+    setSelectedModules((prev) =>
+      prev.includes(moduleId)
+        ? prev.filter((id) => id !== moduleId)
+        : [...prev, moduleId]
+    );
+  };
 
-      await axios.put(`/api/courses/${courseId}/chapters/reorder`, {
-        list: updateData,
+  // Handle form submission (add selected modules to the course)
+  const onSubmit = async () => {
+    if (selectedModules.length === 0) {
+      toast.error("Please select at least one module.");
+      return;
+    }
+
+    try {
+      await axios.post(`/api/courses/${courseId}/chapters`, {
+        modules: selectedModules,
       });
-      toast.success("Chapters reordered");
-      router.refresh();
-    } catch {
+      toast.success("Modules added to the course");
+      router.refresh(); // Refresh the page to reflect changes
+    } catch (error) {
       toast.error("Something went wrong");
-    } finally {
-      setIsUpdating(false);
+      console.error("Error submitting modules:", error);
     }
   };
 
-  const onEdit = (id: string) => {
-    router.push(`/teacher/courses/${courseId}/chapters/${id}`);
-  };
+  useEffect(() => {
+    fetchModules();
+  }, []);
 
   return (
-    <div className="relative mt-6 border bg-slate-100 rounded-md p-4 dark:bg-slate-950 ">
-      {isUpdating && (
-        <div className="absolute h-full w-full bg-slate-500/20 top-0 right-0 rounded-m flex items-center justify-center">
-          <Loader2 className="animate-spin h-6 w-6 text-sky-700" />
-        </div>
-      )}
+    <div className="relative mt-6 border bg-slate-100 rounded-md p-4 dark:bg-slate-950">
       <div className="font-medium flex items-center justify-between text-black dark:text-slate-50">
         <div className="flex items-center">
-          Course chapters <Asterisk className="size-4" color="red" />
+          Course modules <Asterisk className="size-4" color="red" />
         </div>
-        <Button onClick={toggleCreating} variant="ghost">
-          {isCreating ? (
-            <>Cancel</>
-          ) : (
-            <>
-              <PlusCircle className="h-4 w-4 mr-2" />
-              Add a chapter
-            </>
-          )}
-        </Button>
       </div>
-      {isCreating && (
-        <Form {...form}>
-          <form
-            onSubmit={form.handleSubmit(onSubmit)}
-            className="space-y-4 mt-4"
-          >
-            <select onChange={(e) => setType(e.target.value)} name={"type"}>
-              <option value="Slide">Slide</option>
-              <option value="Exam">Exam</option>
-            </select>
-            <FormField
-              control={form.control}
-              name="title"
-              render={({ field }) => (
-                <FormItem>
-                  <FormControl>
-                    <Input
-                      disabled={isSubmitting}
-                      placeholder="e.g. 'Introduction to the course'"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <Button disabled={!isValid || isSubmitting} type="submit">
-              Create
-            </Button>
-          </form>
-        </Form>
-      )}
-      {!isCreating && (
-        <div
-          className={cn(
-            "text-sm mt-2",
-            !initialData.ModuleInCourse.length && "text-slate-500 italic"
-          )}
-        >
-          {!initialData.ModuleInCourse.length && "No chapters"}
-          <ChaptersList
-            onEdit={onEdit}
-            onReorder={onReorder}
-            items={initialData.ModuleInCourse || []}
-          />
+
+      {/* Modules list */}
+      <div>
+        <label>Select Modules:</label>
+        <div>
+          {modules.map((module: { id: string; title: string }) => (
+            <div key={module.id} className="flex items-center">
+              <input
+                type="checkbox"
+                id={module.id}
+                checked={selectedModules.includes(module.id)}
+                onChange={() => handleModuleSelect(module.id)}
+              />
+              <label htmlFor={module.id} className="ml-2">
+                {module.title}
+              </label>
+            </div>
+          ))}
         </div>
-      )}
-      {!isCreating && (
-        <p className="text-xs text-muted-foreground mt-4">
-          Drag and drop to reorder the chapters
-        </p>
+      </div>
+
+      {/* Submit Button */}
+      <Button type="button" onClick={onSubmit}>
+        Add to Course
+      </Button>
+
+      {/* Display if no modules are added */}
+      {!initialData.ModuleInCourse.length && (
+        <div className="text-sm mt-2 text-slate-500 italic">No modules added</div>
       )}
     </div>
   );
