@@ -51,8 +51,7 @@ export async function POST(
         data: {
           courseId: params.courseId,
           position: newPosition,
-          moduleId: modules[i].moduleId,
-         
+          moduleId: modules[i],
         },
       });
     }
