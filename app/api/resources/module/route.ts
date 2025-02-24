@@ -37,7 +37,9 @@ export async function GET(
     if (!userId) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
-    const moduleList: any = await db.module.findMany({});
+    const moduleList: any = await db.module.findMany({
+      
+    });
     return NextResponse.json(moduleList);
   } catch (error) {
     console.log("[CHAPTER_PUBLISH]", error);
