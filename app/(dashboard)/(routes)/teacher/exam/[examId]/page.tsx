@@ -20,24 +20,36 @@ const Link = dynamic(() => import("next/link"), {
 });
 export default function Exam({ exam }: any) {
   const [quizList, setQuizList]: any = useState([]);
-  const [textTitle, setTextTitle] = useState(exam.title);
+  const [textTitle, setTextTitle] = useState<string>(exam?.title || "");
   const [timeLimit, setTimeLimit]: any = useState(60);
   const [passPercentage, setPassPercentage] = useState(80);
   const [retakeTime, setRetakeTime] = useState(1);
+  
   useEffect(() => {
-    async function loadQuestion() {
-      let questionList = await axios.get(
-        `/api/resources/exam/question/${exam?.id}`
-      );
-
-      setQuizList(questionList.data.Category);
-      setPassPercentage(exam.scoreLimit == null ? 80 : exam.scoreLimit);
-      setRetakeTime(exam.maxAttempt == null ? 1 : exam.maxAttempt);
-
-      setTimeLimit(exam.timeLimit == null ? 60 : exam.timeLimit);
+    async function loadExamData() {
+      debugger
+      if (exam?.id) {
+        try {
+          // Get exam details from API
+          const response = await axios.get(`/api/resources/exam/${exam?.id}`);
+          if (response?.data?.title) {
+            setTextTitle(response.data.title); // Update title from API response
+          }
+          console.log(response)
+          // Other processing (quizList, timeLimit, etc.)
+          setTimeLimit(response.data?.timeLimit ?? 60); // Set default timeLimit if not present
+          setPassPercentage(response.data?.scoreLimit ?? 80); // Set default passPercentage if not present
+          //setRetakeTime(response.data?.maxAttempt ?? 1); // Set default retakeTime if not present
+          setQuizList(response.data?.Category ?? []); // Set quiz list
+        } catch (error) {
+          console.error("Error loading exam data:", error);
+        }
+      }
     }
-    loadQuestion();
-  }, []);
+
+    loadExamData();
+  }, [exam]);
+  
   function getRandomInt(max: number) {
     return Math.floor(Math.random() * max);
   }
@@ -275,7 +287,7 @@ export default function Exam({ exam }: any) {
       values
     );
     await axios.post(
-      `/api/resources/exam/${exam?.id}`,
+      `/api/resources/exam/${exam?.id}/category`,
       quizList
     );
     toast.success("Exam updated");
@@ -284,7 +296,7 @@ export default function Exam({ exam }: any) {
     );
     router.refresh();
     let questionList = await axios.get(
-      `/api/resources/exam/question/${exam?.id}`
+      `/api/resources/exam/${exam?.id}`
     );
 
     setQuizList(questionList.data.Category);
