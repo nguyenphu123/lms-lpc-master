@@ -11,32 +11,36 @@ export async function POST(
   try {
     const { userId } = auth();
     const { modules }: any = await req.json();
-    let chapter: any = [];
     if (!userId) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
-    for (let i = 0; i < modules.length; i++) {
-      const getModuleCount = await db.moduleInCourse.count({
-        where: {
-          courseId: params.courseId,
+
+    // Lấy tất cả các module hiện có trong khóa học
+    const existingModules = await db.moduleInCourse.findMany({
+      where: {
+        courseId: params.courseId,
+      },
+    });
+
+    // Xóa các module không còn được chọn
+    const modulesToRemove = existingModules.filter(
+      (module: any) => !modules.includes(module.moduleId)
+    );
+    await db.moduleInCourse.deleteMany({
+      where: {
+        id: {
+          in: modulesToRemove.map((module: any) => module.id),
         },
-      });
-      const getModuleCountAll = await db.moduleInCourse.count({
-        where: {
-          courseId: params.courseId,
-        },
-      });
-      const updateCourse = await db.classSessionRecord.updateMany({
-        where: {
-          courseId: params.courseId,
-          status: "finished",
-          progress: "100%",
-        },
-        data: {
-          status: "studying",
-          progress: (getModuleCount / getModuleCountAll + 1) * 100 + "%",
-        },
-      });
+      },
+    });
+
+    // Thêm các module mới nếu chưa có trong database
+    const newModules = modules.filter(
+      (module: string) => !existingModules.some((m: any) => m.moduleId === module)
+    );
+
+    let chapter: any = [];
+    for (let i = 0; i < newModules.length; i++) {
       const lastChapter = await db.moduleInCourse.findFirst({
         where: {
           courseId: params.courseId,
@@ -51,23 +55,35 @@ export async function POST(
         data: {
           courseId: params.courseId,
           position: newPosition,
-          moduleId: modules[i],
+          moduleId: newModules[i],
         },
       });
     }
 
-    await db.course.update({
-      where: {
-        id: params.courseId,
-      },
-      data: {
-        updateDate: new Date(),
-        updatedBy: userId,
-      },
-    });
     return NextResponse.json(chapter);
   } catch (error) {
     console.log("[CHAPTERS]", error);
     return new NextResponse("Internal Error", { status: 500 });
   }
 }
+
+export async function GET(
+  req: Request,
+  { params }: { params: { courseId: string } }
+) {
+  try {
+    const modules = await db.moduleInCourse.findMany({
+      where: {
+        courseId: params.courseId,
+      },
+      select: {
+        moduleId: true,
+      },
+    });
+    return NextResponse.json(modules);
+  } catch (error) {
+    console.log("[GET MODULES]", error);
+    return new NextResponse("Internal Error", { status: 500 });
+  }
+}
+

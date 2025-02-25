@@ -67,7 +67,7 @@ export const columns: ColumnDef<Module>[] = [
     header: "Description",
   },
   {
-    accessorKey: "department_id",
+    accessorKey: "departmentId",
     header: "Department ID",
   },
   {
