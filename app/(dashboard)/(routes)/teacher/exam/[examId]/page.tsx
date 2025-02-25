@@ -27,7 +27,7 @@ export default function Exam({ exam }: any) {
   useEffect(() => {
     async function loadQuestion() {
       let questionList = await axios.get(
-        `/api/resources/exam/question/${exam?.id}`
+        `/api/resources/exam/${exam?.id}`
       );
 
       setQuizList(questionList.data.Category);
@@ -261,7 +261,7 @@ export default function Exam({ exam }: any) {
         title: textTitle,
       };
       await axios.patch(
-        `/api/resources/exam/${exam?.id}`,
+        `/api/courses/${exam?.courseId}/chapters/${exam?.id}`,
         values
       );
     }
@@ -271,20 +271,20 @@ export default function Exam({ exam }: any) {
       maxAttempt: parseInt(retakeTime + ""),
     };
     await axios.patch(
-      `/api/resources/exam/${exam?.id}`,
+      `/api/courses/${exam?.courseId}/chapters/${exam?.id}`,
       values
     );
     await axios.post(
-      `/api/resources/exam/${exam?.id}`,
+      `/api/courses/${exam?.courseId}/chapters/${exam?.id}/category/exam`,
       quizList
     );
     toast.success("Exam updated");
     router.push(
-      `/api/resources/exam/${exam?.id}`
+      `/teacher/courses/${exam?.courseId}/chapters/${exam?.id}`
     );
     router.refresh();
     let questionList = await axios.get(
-      `/api/resources/exam/question/${exam?.id}`
+      `/api/courses/${exam.courseId}/chapters/${exam.id}/category/exam`
     );
 
     setQuizList(questionList.data.Category);
