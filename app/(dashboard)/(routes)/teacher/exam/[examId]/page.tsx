@@ -28,6 +28,11 @@ export default function Exam() {
   const [retakeTime, setRetakeTime] = useState(1);
 
   useEffect(() => {
+    console.log("Updated quizList: ", quizList);
+  }, [quizList]);  // useEffect sẽ chạy khi quizList thay đổi
+  
+
+  useEffect(() => {
     async function loadExamData() {
       if (params.examId) {
         try {
@@ -277,7 +282,10 @@ export default function Exam() {
       maxAttempt: parseInt(retakeTime + ""),
     };
     await axios.patch(`/api/resources/exam/${params.examId}`, values);
-    await axios.post(`/api/resources/exam/${params.examId}/category`, quizList);
+    for (let i = 0; i < quizList.length; i++) {
+     
+    await axios.post(`/api/resources/exam/${params.examId}/category`, quizList[i]);
+    }
     toast.success("Exam updated");
     router.push(`/api/resources/exam/${params.examId}`);
     router.refresh();
