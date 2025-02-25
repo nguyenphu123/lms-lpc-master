@@ -13,9 +13,17 @@ export async function POST(
     if (!userId) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
+
+    // Giá trị mặc định cho exam
+    const defaultTimeLimit = 60; // Giới hạn thời gian mặc định
+    const defaultPassPercentage = 80; // % để đỗ mặc định
+
+    // Tạo mới exam với các giá trị mặc định
     const newExam = await db.exam.create({
       data: {
         title: title,
+        timeLimit: defaultTimeLimit, // Giới hạn thời gian mặc định
+        scoreLimit: defaultPassPercentage, // % để đỗ mặc định
       },
     });
 
@@ -25,6 +33,7 @@ export async function POST(
     return new NextResponse("Internal Error", { status: 500 });
   }
 }
+
 
 export async function GET(
   req: Request,

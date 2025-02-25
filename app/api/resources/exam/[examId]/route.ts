@@ -8,18 +8,18 @@ export async function PATCH(
 ) {
   try {
     const { userId }: any = auth();
-    const { contents } = await req.json(); // expects the exam details to be sent in the "contents"
+    const { contents, title } = await req.json();  // expects the exam details to be sent in the "contents"
     if (!userId) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
     // Update exam details in the database
-    const updateModule = await db.exam.update({
+    const updateExam = await db.exam.update({
       where: { id: params.examId },
-      data: { ...contents },
+      data: { title, ...contents },
     });
 
-    return NextResponse.json(updateModule);
+    return NextResponse.json(updateExam);
   } catch (error) {
     console.log("[EXAM_PUBLISH]", error);
     return new NextResponse("Internal Error", { status: 500 });
