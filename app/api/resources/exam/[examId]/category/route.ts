@@ -54,10 +54,12 @@ export async function POST(
   { params }: { params: { categoryId: string } }
 ) {
   try {
-    const { userId, contents }: any = auth();
+    const { userId }: any = auth();
+    const  contents  = await req.json();
     if (!userId) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
+    
     const createCategory = await db.category.create({
       data: {
         ...contents,
