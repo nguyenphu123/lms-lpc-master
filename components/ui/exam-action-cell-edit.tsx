@@ -22,6 +22,7 @@ import { useQuery } from "react-query";
 import axios from "axios";
 
 export const ExamActionCellEdit = ({ row }: any) => {
+  console.log(row.original)
   const { id, status } = row.original;
 
   const { userId }: any = useAuth();
