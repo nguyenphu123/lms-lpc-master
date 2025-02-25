@@ -26,6 +26,7 @@ import { z } from "zod";
 import Dropzone from "@/components/ui/dropzone";
 import router from "next/dist/client/router";
 import { ContentForm } from "./_components/module-content-form";
+import { ModuleDepartment } from "./_components/module-department";
 // import { AttacthmentForm } from "./_components/chapter-attachment-form";
 
 const ModuleIdPage = async ({
@@ -93,7 +94,7 @@ const ModuleIdPage = async ({
         },
         body: JSON.stringify(values), // Send the updated data
       });
-  
+
       // Use router.replace() to reload the current page
       router.replace(router.asPath); // This will reload the current page and reflect the changes
     } catch (error) {
@@ -101,7 +102,7 @@ const ModuleIdPage = async ({
       alert("Something went wrong while updating the module");
     }
   };
-  
+
 
   return (
     <>
@@ -149,7 +150,12 @@ const ModuleIdPage = async ({
                 moduleId={params.moduleId}
               />
             </div>
+            <ModuleDepartment
+            moduleId={params.moduleId}
+            initialDepartmentId={module.departmentId}
+          />
           </div>
+          
           {/* <AttacthmentForm
               initialData={chapter}
               moduleId={params.moduleId}

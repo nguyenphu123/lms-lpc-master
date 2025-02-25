@@ -1,5 +1,4 @@
 "use client";
-
 import { useState, useEffect } from "react";
 import axios from "axios";
 import toast from "react-hot-toast";
@@ -21,9 +20,21 @@ export const ResourcesForm = ({ initialData, courseId }: ResourcesFormProps) => 
   const fetchModules = async () => {
     try {
       const response = await axios.get(`/api/resources/module`);
-      setModules(response.data);
+      const publishedModules = response.data.filter((module: { isPublished: boolean }) => module.isPublished);
+      setModules(publishedModules);
     } catch (error) {
       console.error("Error fetching modules", error);
+    }
+  };
+
+  // Fetch selected modules for the course
+  const fetchSelectedModules = async () => {
+    try {
+      const response = await axios.get(`/api/courses/${courseId}/chapters`);
+      const selectedModules = response.data.map((module: { moduleId: string }) => module.moduleId);
+      setSelectedModules(selectedModules);
+    } catch (error) {
+      console.error("Error fetching selected modules", error);
     }
   };
 
@@ -31,8 +42,8 @@ export const ResourcesForm = ({ initialData, courseId }: ResourcesFormProps) => 
   const handleModuleSelect = (moduleId: string) => {
     setSelectedModules((prev) =>
       prev.includes(moduleId)
-        ? prev.filter((id) => id !== moduleId)
-        : [...prev, moduleId]
+        ? prev.filter((id) => id !== moduleId) // Xóa module nếu bỏ chọn
+        : [...prev, moduleId] // Thêm module nếu chọn
     );
   };
 
@@ -57,13 +68,14 @@ export const ResourcesForm = ({ initialData, courseId }: ResourcesFormProps) => 
 
   useEffect(() => {
     fetchModules();
-  }, []);
+    fetchSelectedModules(); // Get the initial selected modules when the component is mounted
+  }, [courseId]); // Re-fetch when courseId changes
 
   return (
     <div className="relative mt-6 border bg-slate-100 rounded-md p-4 dark:bg-slate-950">
       <div className="font-medium flex items-center justify-between text-black dark:text-slate-50">
         <div className="flex items-center">
-          Course modules <Asterisk className="size-4" color="red" />
+          Course resources <Asterisk className="size-4" color="red" />
         </div>
       </div>
 
