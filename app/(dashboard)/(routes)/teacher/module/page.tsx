@@ -41,6 +41,7 @@ const ModulePage = async () => {
   let module: any = [];
   module = await db.module.findMany({
     include: {
+      department: {},
       ModuleInCourse: {
         include: {
           course: true,
