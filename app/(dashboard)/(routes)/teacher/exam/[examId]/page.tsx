@@ -14,28 +14,29 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
 import * as XLSX from "xlsx";
 import dynamic from "next/dynamic";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 const Link = dynamic(() => import("next/link"), {
   ssr: false,
 });
-export default function Exam({ exam }: any) {
+export default function Exam() {
+  const params = useParams();
+  
   const [quizList, setQuizList]: any = useState([]);
-  const [textTitle, setTextTitle] = useState<string>(exam?.title || "");
+  const [textTitle, setTextTitle] = useState<string>("");
   const [timeLimit, setTimeLimit]: any = useState(60);
   const [passPercentage, setPassPercentage] = useState(80);
   const [retakeTime, setRetakeTime] = useState(1);
-  
+
   useEffect(() => {
     async function loadExamData() {
-      debugger
-      if (exam?.id) {
+      if (params.examId) {
         try {
           // Get exam details from API
-          const response = await axios.get(`/api/resources/exam/${exam?.id}`);
+          const response = await axios.get(`/api/resources/exam/${params.examId}`);
           if (response?.data?.title) {
             setTextTitle(response.data.title); // Update title from API response
           }
-          console.log(response)
+
           // Other processing (quizList, timeLimit, etc.)
           setTimeLimit(response.data?.timeLimit ?? 60); // Set default timeLimit if not present
           setPassPercentage(response.data?.scoreLimit ?? 80); // Set default passPercentage if not present
@@ -48,8 +49,8 @@ export default function Exam({ exam }: any) {
     }
 
     loadExamData();
-  }, [exam]);
-  
+  }, [params.examId]);
+
   function getRandomInt(max: number) {
     return Math.floor(Math.random() * max);
   }
@@ -268,36 +269,19 @@ export default function Exam({ exam }: any) {
         }
       }
     }
-    if (textTitle != exam.title) {
-      let values = {
-        title: textTitle,
-      };
-      await axios.patch(
-        `/api/resources/exam/${exam?.id}`,
-        values
-      );
-    }
+   
     let values = {
+      title: textTitle,
       timeLimit: parseFloat(timeLimit),
       scoreLimit: passPercentage,
       maxAttempt: parseInt(retakeTime + ""),
     };
-    await axios.patch(
-      `/api/resources/exam/${exam?.id}`,
-      values
-    );
-    await axios.post(
-      `/api/resources/exam/${exam?.id}/category`,
-      quizList
-    );
+    await axios.patch(`/api/resources/exam/${params.examId}`, values);
+    await axios.post(`/api/resources/exam/${params.examId}/category`, quizList);
     toast.success("Exam updated");
-    router.push(
-      `/api/resources/exam/${exam?.id}`
-    );
+    router.push(`/api/resources/exam/${params.examId}`);
     router.refresh();
-    let questionList = await axios.get(
-      `/api/resources/exam/${exam?.id}`
-    );
+    let questionList = await axios.get(`/api/resources/exam/${params.examId}`);
 
     setQuizList(questionList.data.Category);
   }
