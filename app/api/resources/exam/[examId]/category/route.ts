@@ -2,6 +2,10 @@ import { auth } from "@clerk/nextjs";
 import { NextResponse } from "next/server";
 
 import { db } from "@/lib/db";
+import { link } from "fs";
+import Exam from "@/app/(dashboard)/(routes)/teacher/exam/[examId]/page";
+import { connect } from "http2";
+import { title } from "process";
 
 export async function PATCH(
   req: Request,
@@ -31,7 +35,7 @@ export async function PATCH(
 
 export async function GET(
   req: Request,
-  { params }: { params: { categoryId: string } }
+  { params }: { params: { examId: string } }
 ) {
   try {
     const { userId } = auth();
@@ -40,7 +44,7 @@ export async function GET(
     }
     const category: any = await db.exam.findUnique({
       where: {
-        id: params.categoryId,
+        id: params.examId,
       },
     });
     return NextResponse.json(category);
@@ -51,26 +55,56 @@ export async function GET(
 }
 export async function POST(
   req: Request,
-  { params }: { params: { categoryId: string } }
+  { params }: { params: { examId: string } }
 ) {
   try {
     const { userId }: any = auth();
-    const  contents  = await req.json();
+    const contents = await req.json();
     if (!userId) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
-    
+
     const createCategory = await db.category.create({
       data: {
-        ...contents,
+        title: contents.title,
+        numOfAppearance: contents.numOfAppearance,
+        Exam: {
+          connect: {
+            id: params.examId,
+          },
+        },
       },
     });
-    for (let i = 0; i < contents.questionsList.length; i++) {
+
+    for (let i = 0; i < contents.question.length; i++) {
       const newQuestion = await db.question.create({
         data: {
-          ...contents.questionsList[i],
+          question: contents.question[i].question,
+          type: contents.question[i].type,
+          compulsory: contents.question[i].compulsory == true ? true : false,
+          score: contents.question[i].score,
+
+          category: {
+            connect: {
+              id: createCategory.id,
+            },
+          },
         },
       });
+      for (let k = 0; k < contents.question[i].answer.length; k++) {
+        const newAnwser = await db.answer.create({
+          data: {
+            text: contents.question[i].answer[k].text,
+            isCorrect:
+              contents.question[i].answer[k].isCorrect == true ? true : false,
+            question: {
+              connect: {
+                id: newQuestion.id,
+              },
+            },
+          },
+        });
+      }
     }
 
     return NextResponse.json(createCategory);
