@@ -8,7 +8,7 @@ export async function PATCH(
 ) {
   try {
     const { userId }: any = auth();
-    const { contents } = await req.json();  // expects the exam details to be sent in the "contents"
+    const { contents } = await req.json(); // expects the exam details to be sent in the "contents"
     if (!userId) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
@@ -39,6 +39,13 @@ export async function GET(
     // Fetch exam data based on the examId
     const exam = await db.exam.findUnique({
       where: { id: params.examId },
+      include: {
+        category: {
+          include: {
+            question: {},
+          },
+        },
+      },
     });
 
     return NextResponse.json(exam);
