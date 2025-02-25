@@ -67,12 +67,16 @@ export const columns: ColumnDef<Module>[] = [
     header: "Description",
   },
   {
-    accessorKey: "departmentId",
-    header: "Department ID",
+    accessorKey: "department",
+    header: "Department",
+    cell: ({ row }: any) => {
+      
+      return <div>{row.original.department.title}</div>;
+    },
   },
   {
-      id: "actions",
-      accessorKey: "Action",
-      cell: ModuleActionCell,
-    },
+    id: "actions",
+    accessorKey: "Action",
+    cell: ModuleActionCell,
+  },
 ];

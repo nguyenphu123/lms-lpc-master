@@ -38,7 +38,9 @@ export async function GET(
       return new NextResponse("Unauthorized", { status: 401 });
     }
     const moduleList: any = await db.module.findMany({
-      
+      include: {
+        department: {},
+      },
     });
     return NextResponse.json(moduleList);
   } catch (error) {
