@@ -8,15 +8,15 @@ export async function PATCH(
 ) {
   try {
     const { userId }: any = auth();
-    const { contents, title } = await req.json(); // expects the exam details to be sent in the "contents"
+    const contents = await req.json(); // expects the exam details to be sent in the "contents"
     if (!userId) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
-
+    console.log(contents);
     // Update exam details in the database
     const updateExam = await db.exam.update({
       where: { id: params.examId },
-      data: { title, ...contents },
+      data: { ...contents },
     });
 
     return NextResponse.json(updateExam);

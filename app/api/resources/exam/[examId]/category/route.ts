@@ -64,8 +64,15 @@ export async function POST(
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
-    const createCategory = await db.category.create({
-      data: {
+    const createCategory = await db.category.upsert({
+      where: {
+        id: contents.id.toString(),
+      },
+      update: {
+        title: contents.title,
+        numOfAppearance: contents.numOfAppearance,
+      },
+      create: {
         title: contents.title,
         numOfAppearance: contents.numOfAppearance,
         Exam: {
@@ -77,8 +84,15 @@ export async function POST(
     });
 
     for (let i = 0; i < contents.question.length; i++) {
-      const newQuestion = await db.question.create({
-        data: {
+      const newQuestion = await db.question.upsert({
+        where: { id: contents.question[i].id.toString() },
+        update: {
+          question: contents.question[i].question,
+          type: contents.question[i].type,
+          compulsory: contents.question[i].compulsory == true ? true : false,
+          score: contents.question[i].score,
+        },
+        create: {
           question: contents.question[i].question,
           type: contents.question[i].type,
           compulsory: contents.question[i].compulsory == true ? true : false,
@@ -92,8 +106,14 @@ export async function POST(
         },
       });
       for (let k = 0; k < contents.question[i].answer.length; k++) {
-        const newAnwser = await db.answer.create({
-          data: {
+        const newAnwser = await db.answer.upsert({
+          where: { id: contents.question[i].answer[k].id.toString() },
+          update: {
+            text: contents.question[i].answer[k].text,
+            isCorrect:
+              contents.question[i].answer[k].isCorrect == true ? true : false,
+          },
+          create: {
             text: contents.question[i].answer[k].text,
             isCorrect:
               contents.question[i].answer[k].isCorrect == true ? true : false,
