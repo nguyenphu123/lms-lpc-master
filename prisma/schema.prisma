@@ -155,16 +155,17 @@ model Course {
 }
 
 model ClassSessionRecord {
-  id        String    @id @default(uuid())
-  course    Course    @relation(fields: [courseId], references: [id], onDelete: Cascade)
-  courseId  String
-  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId    String
-  progress  String?   @db.Text
-  status    String?
-  startDate DateTime?
-  endDate   DateTime?
-  score     Int?
+  id         String    @id @default(uuid())
+  course     Course    @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  courseId   String
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId     String
+  progress   String?   @db.Text
+  status     String?
+  startDate  DateTime?
+  endDate    DateTime?
+  score      Int?
+  maxAttempt Int       @default(1)
 
   @@unique([courseId, userId])
   @@index([courseId])
@@ -225,12 +226,12 @@ model Resource {
 }
 
 model ExamInCourse {
-  id             String           @id @default(uuid())
-  course         Course           @relation(fields: [courseId], references: [id], onDelete: Cascade)
-  courseId       String
-  exam           Exam             @relation(fields: [examId], references: [id], onDelete: Cascade)
-  examId         String
-  maxAttempt     Int              @default(1)
+  id       String @id @default(uuid())
+  course   Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  courseId String
+  exam     Exam   @relation(fields: [examId], references: [id], onDelete: Cascade)
+  examId   String
+
   userExamReport userExamReport[]
   examRecord     examRecord[]
 
