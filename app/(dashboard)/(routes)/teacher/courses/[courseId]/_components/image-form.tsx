@@ -147,4 +147,4 @@ export const ImageForm = ({ initialData, courseId }: ImageFormProps) => {
       )}
     </div>
   );
-};
+}; 
