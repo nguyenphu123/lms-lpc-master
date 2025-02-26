@@ -20,24 +20,25 @@ const Link = dynamic(() => import("next/link"), {
 });
 export default function Exam() {
   const params = useParams();
-  
+
   const [quizList, setQuizList]: any = useState([]);
   const [textTitle, setTextTitle] = useState<string>("");
   const [timeLimit, setTimeLimit]: any = useState(60);
   const [passPercentage, setPassPercentage] = useState(80);
   const [retakeTime, setRetakeTime] = useState(1);
 
-  useEffect(() => {
-    console.log("Updated quizList: ", quizList);
-  }, [quizList]);  // useEffect sẽ chạy khi quizList thay đổi
-  
+  // useEffect(() => {
+  //   console.log("Updated quizList: ", quizList);
+  // }, [quizList]); // useEffect sẽ chạy khi quizList thay đổi
 
   useEffect(() => {
     async function loadExamData() {
       if (params.examId) {
         try {
           // Get exam details from API
-          const response = await axios.get(`/api/resources/exam/${params.examId}`);
+          const response = await axios.get(
+            `/api/resources/exam/${params.examId}`
+          );
           if (response?.data?.title) {
             setTextTitle(response.data.title); // Update title from API response
           }
@@ -46,7 +47,8 @@ export default function Exam() {
           setTimeLimit(response.data?.timeLimit ?? 60); // Set default timeLimit if not present
           setPassPercentage(response.data?.scoreLimit ?? 80); // Set default passPercentage if not present
           //setRetakeTime(response.data?.maxAttempt ?? 1); // Set default retakeTime if not present
-          setQuizList(response.data?.Category ?? []); // Set quiz list
+          setQuizList(response.data?.category ?? []); // Set quiz list
+          console.log(response.data?.category)
         } catch (error) {
           console.error("Error loading exam data:", error);
         }
@@ -274,7 +276,7 @@ export default function Exam() {
         }
       }
     }
-   
+
     let values = {
       title: textTitle,
       timeLimit: parseFloat(timeLimit),
@@ -283,8 +285,10 @@ export default function Exam() {
     };
     await axios.patch(`/api/resources/exam/${params.examId}`, values);
     for (let i = 0; i < quizList.length; i++) {
-     
-    await axios.post(`/api/resources/exam/${params.examId}/category`, quizList[i]);
+      await axios.post(
+        `/api/resources/exam/${params.examId}/category`,
+        quizList[i]
+      );
     }
     toast.success("Exam updated");
     router.push(`/api/resources/exam/${params.examId}`);
