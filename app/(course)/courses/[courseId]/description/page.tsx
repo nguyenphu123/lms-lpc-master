@@ -22,12 +22,22 @@ const CourseDescriptionPage = async ({
       id: params.courseId,
     },
     include: {
-      Module: {
+      ModuleInCourse: {
         where: {
-          isPublished: true,
+          module: {
+            isPublished: true,  // Apply isPublished filter on module relation
+          },
         },
         orderBy: {
           position: "asc",
+        },
+        include: {
+          module: {
+            select: {
+              id: true,
+              description: true,
+            },
+          },
         },
       },
     },

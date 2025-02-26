@@ -1,7 +1,7 @@
 import { auth } from "@clerk/nextjs";
 import { redirect } from "next/navigation";
 import { db } from "@/lib/db";
-import { getProgress } from "@/actions/get-progress";
+// import { getProgress } from "@/actions/get-progress";
 import { CourseSidebar } from "./_components/course-sidebar";
 import { CourseNavbar } from "./_components/course-navbar";
 const CourseLayout = async ({
@@ -17,26 +17,22 @@ const CourseLayout = async ({
     return redirect("/");
   }
 
-  const course: any = await db.course.findUnique({
+  const course = await db.course.findUnique({
     where: {
       id: params.courseId,
     },
     include: {
       ModuleInCourse: {
         where: {
-        
-      module:{
-          isPublished: true,
-        },},
-        // include: {
-        //   UserProgress: {
-        //     where: {
-        //       userId,
-        //     },
-        //   },
-        // },
+          module: {
+            isPublished: true, // Ensure modules are published
+          },
+        },
+        include: {
+          module: true, // Include module details like title, description, etc.
+        },
         orderBy: {
-          position: "asc",
+          position: "asc", // Ensure modules are ordered correctly
         },
       },
       ClassSessionRecord: true,
@@ -47,35 +43,35 @@ const CourseLayout = async ({
     return redirect("/");
   }
 
-  const progressCount = await getProgress(userId, course.id);
+  // const progressCount = await getProgress(userId, course.id);
 
   return (
     <div className="h-full pl-1">
       <div className="h-[80px] md:pl-80 fixed inset-y-0 w-full z-50">
         <CourseNavbar
-          progressCount={progressCount}
+          // progressCount={progressCount}
           course={course}
           userId={userId}
-          isLocked={
-            course.ClassSessionRecord.map(
-              (item: { userId: any }) => item.userId
-            ).indexOf(userId) == -1
-              ? true
-              : false
-          }
+          // isLocked={
+          //   course.ClassSessionRecord.map(
+          //     (item: { userId: any }) => item.userId
+          //   ).indexOf(userId) == -1
+          //     ? true
+          //     : false
+          // }
         />
       </div>
       <div className="hidden md:flex h-full w-64 flex-col fixed inset-y-0 z-50">
         <CourseSidebar
-          progressCount={progressCount}
+          // progressCount={progressCount}
           course={course}
-          isLocked={
-            course.ClassSessionRecord.map(
-              (item: { userId: any }) => item.userId
-            ).indexOf(userId) == -1
-              ? true
-              : false
-          }
+          // isLocked={
+          //   course.ClassSessionRecord.map(
+          //     (item: { userId: any }) => item.userId
+          //   ).indexOf(userId) == -1
+          //     ? true
+          //     : false
+          // }
         />
       </div>
       <main className="md:pl-80 pt-[80px] h-full overflow-x-hidden">

@@ -23,7 +23,7 @@ export const CourseSidebarItem = ({
   const onClick = () => {
     router.push(`/courses/${courseId}/chapters/${id}`);
   };
-
+console.log("Module ID:",id)
   return (
     <button
       onClick={onClick}
