@@ -58,7 +58,7 @@ export const DepartmentForm = ({ initialData, courseId, department }: any) => {
     }
     setAssignList(newAssignList);
   }, [departmentList]);
-
+  console.log(assignList);
   const onChangeDepartmentList = (index: any) => {
     let newList = [...departmentList];
     let newAssignList: any = [...assignList];
@@ -188,16 +188,31 @@ export const DepartmentForm = ({ initialData, courseId, department }: any) => {
 
   return (
     <div className="mt-6 border bg-slate-100 rounded-md p-6 text-black dark:bg-slate-950">
-      <AlertDialog open={triggerAlert} onOpenChange={() => { setTimeout(() => (document.body.style.pointerEvents = ""), 100); }}>
+      <AlertDialog
+        open={triggerAlert}
+        onOpenChange={() => {
+          setTimeout(() => (document.body.style.pointerEvents = ""), 100);
+        }}
+      >
         <AlertDialogContent className="AlertDialogContent">
-          <AlertDialogTitle className="AlertDialogTitle">Submit list of staff assigned to course</AlertDialogTitle>
+          <AlertDialogTitle className="AlertDialogTitle">
+            Submit list of staff assigned to course
+          </AlertDialogTitle>
           <AlertDialogDescription className="AlertDialogDescription">
-            Are you sure you want to add these attendees to this course? (Note that after submit, you cannot undo the assignment of staff due to our policy) (Staff that has already been assigned will not be affected)
+            Are you sure you want to add these attendees to this course? (Note
+            that after submit, you cannot undo the assignment of staff due to
+            our policy) (Staff that has already been assigned will not be
+            affected)
             <br />
             <div className="grid grid-cols-2 gap-0 mt-2">
-              {assignList.filter((item: any) => item.isEnrolled == true && item.canUndo == true)
+              {assignList
+                .filter(
+                  (item: any) => item.isEnrolled == true && item.canUndo == true
+                )
                 .map((item: { id: any; username: any }, index: any) => (
-                  <div key={item.id}>_{index + 1} {item.username}</div>
+                  <div key={item.id}>
+                    _{index + 1} {item.username}
+                  </div>
                 ))}
             </div>
           </AlertDialogDescription>
@@ -227,54 +242,91 @@ export const DepartmentForm = ({ initialData, courseId, department }: any) => {
 
       {isEditing && (
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 mt-4">
+          <form
+            onSubmit={form.handleSubmit(onSubmit)}
+            className="space-y-6 mt-4"
+          >
             {departmentList.map((item: any, i: any) => {
               return (
                 <div key={item.id} className="mb-4">
                   <Accordion>
-                    <AccordionItem key={item.id} aria-label={item.title} startContent={<><input className="h-6 w-6" id={"department " + item.id} onChange={(e) => onChangeDepartmentList(i)} disabled={isEditing ? false : true} value={item.title} type="checkbox" checked={item.isEnrolled} /> <span className="ml-2 text-lg">{item.title}</span></>}>
+                    <AccordionItem
+                      key={item.id}
+                      aria-label={item.title}
+                      startContent={
+                        <>
+                          <input
+                            className="h-6 w-6"
+                            id={"department " + item.id}
+                            onChange={(e) => onChangeDepartmentList(i)}
+                            disabled={isEditing ? false : true}
+                            value={item.title}
+                            type="checkbox"
+                            checked={item.isEnrolled}
+                          />{" "}
+                          <span className="ml-2 text-lg">{item.title}</span>
+                        </>
+                      }
+                    >
                       <div className="grid grid-cols-2 gap-4 mt-2 w-full">
                         {item.User.length == 0
                           ? "No users"
                           : item.User.map((user: any, j: any) => {
-                            return (
-                              <div key={user.id} className="flex items-center space-x-2 p-2 bg-white dark:bg-gray-800 rounded-lg shadow flex-col">
-                                <div className="flex items-center space-x-2">
+                              return (
+                                <div
+                                  key={user.id}
+                                  className="flex items-center space-x-2 p-2 bg-white dark:bg-gray-800 rounded-lg shadow flex-col"
+                                >
+                                  <div className="flex items-center space-x-2">
+                                    <input
+                                      id={"user " + user.id}
+                                      onChange={(e) =>
+                                        onChangeStudentList(i, j)
+                                      }
+                                      disabled={isEditing ? false : true}
+                                      value={user.title}
+                                      type="checkbox"
+                                      className="form-checkbox h-6 w-6 text-blue-600 dark:text-blue-400"
+                                      checked={user.isEnrolled}
+                                    />
+                                    <span>{user.username}</span>
+                                  </div>
                                   <input
-                                    id={"user " + user.id}
-                                    onChange={(e) => onChangeStudentList(i, j)}
-                                    disabled={isEditing ? false : true}
-                                    value={user.title}
-                                    type="checkbox"
-                                    className="form-checkbox h-6 w-6 text-blue-600 dark:text-blue-400"
-                                    checked={user.isEnrolled}
+                                    type="date"
+                                    value={
+                                      user.ClassSessionRecord[0].endDate ||
+                                      ""
+                                    }
+                                    className="mt-2 border p-2 rounded-md"
+                                    placeholder="End Date"
+                                    onChange={(e) => {
+                                      const endDate = e.target.value;
+                                      assignList[
+                                        j
+                                      ].ClassSessionRecord[0].endDate = endDate;
+                                    }}
                                   />
-                                  <span>{user.username}</span>
-                                </div>
-                                <input
-                                  type="date"
-                                  className="mt-2 border p-2 rounded-md"
-                                  placeholder="End Date"
-                                  onChange={(e) => {
-                                    const endDate = e.target.value;
-                                    assignList[j].endDate = endDate;
-                                  }}
-                                />
-                                <Input
-                                  type="number"
-                                  className="w-32"
-                                  value={user.maxAttempt || ""}
-                                  min={1}
-                                  onChange={(e) => {
-                                    let updatedList = [...assignList];
-                                    updatedList[i].maxAttempt = parseInt(e.target.value, 10);
-                                    setAssignList(updatedList);
-                                  }}
-                                />
-                              </div>
-                            );
+                                  <Input
+                                    type="number"
+                                    className="w-32"
+                                    value={
+                                      user.ClassSessionRecord[0].maxAttempt ||
+                                      ""
+                                    }
+                                    min={1}
+                                    onChange={(e) => {
+                                      let updatedList = [...assignList];
 
-                          })}
+                                      updatedList[j].maxAttempt = parseInt(
+                                        e.target.value,
+                                        10
+                                      );
+                                      setAssignList(updatedList);
+                                    }}
+                                  />
+                                </div>
+                              );
+                            })}
                       </div>
                     </AccordionItem>
                   </Accordion>
@@ -289,7 +341,11 @@ export const DepartmentForm = ({ initialData, courseId, department }: any) => {
               >
                 Save Changes
               </Button>
-              <Button variant="ghost" onClick={cancel} className="px-6 py-2 rounded-md">
+              <Button
+                variant="ghost"
+                onClick={cancel}
+                className="px-6 py-2 rounded-md"
+              >
                 Cancel
               </Button>
             </div>
