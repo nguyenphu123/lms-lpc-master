@@ -5,17 +5,7 @@ import axios from "axios";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { Loader, Pencil } from "lucide-react";
-import {
-  JSXElementConstructor,
-  Key,
-  PromiseLikeOfReactNode,
-  ReactElement,
-  ReactNode,
-  ReactPortal,
-  useCallback,
-  useEffect,
-  useState,
-} from "react";
+import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import { Accordion, AccordionItem } from "@nextui-org/react";
@@ -36,15 +26,7 @@ import {
   AlertDialogDescription,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-interface DepartmentProps {
-  id: string;
-  title: string;
-}
-interface DepartmentFormProps {
-  initialData: { Department: DepartmentProps[] };
-  courseId: string;
-  department: DepartmentProps[];
-}
+
 const Department = z.object({
   id: z.string(),
   title: z.string(),
@@ -56,8 +38,8 @@ export const DepartmentForm = ({ initialData, courseId, department }: any) => {
   const [departmentList, setDepartmentList] = useState([...department]);
   const [assignList, setAssignList]: any = useState([]);
   const [triggerAlert, setTriggerAlert] = useState(false);
-
   const [loading, setLoading] = useState(false);
+
   const toggleEdit = () => setIsEditing((current) => !current);
   const router = useRouter();
 
@@ -65,8 +47,9 @@ export const DepartmentForm = ({ initialData, courseId, department }: any) => {
     resolver: zodResolver(formSchema),
     defaultValues: initialData.Department,
   });
+
   useEffect(() => {
-    let newAssignList: any = [...assignList];
+    let newAssignList: any = [];
     for (let i = 0; i < departmentList.length; i++) {
       let users = departmentList[i].User;
       for (let j = 0; j < users.length; j++) {
@@ -74,10 +57,9 @@ export const DepartmentForm = ({ initialData, courseId, department }: any) => {
       }
     }
     setAssignList(newAssignList);
-  }, []);
-  const onChangeDepartmentList = (index: any) => {
-    // e.preventDefault();
+  }, [departmentList]);
 
+  const onChangeDepartmentList = (index: any) => {
     let newList = [...departmentList];
     let newAssignList: any = [...assignList];
 
@@ -118,10 +100,11 @@ export const DepartmentForm = ({ initialData, courseId, department }: any) => {
         ].canUndo = true;
       }
     }
-    setAssignList([...newAssignList]);
 
-    setDepartmentList([...newList]);
+    setAssignList(newAssignList);
+    setDepartmentList(newList);
   };
+
   const onChangeStudentList = async (i: any, j: any) => {
     let newList = [...departmentList];
     let newAssignList: any = [...assignList];
@@ -153,6 +136,7 @@ export const DepartmentForm = ({ initialData, courseId, department }: any) => {
       ].canUndo = true;
     }
     setAssignList(newAssignList);
+
     if (
       newList[i].User.map((item: any) => item.isEnrolled).indexOf(false) == -1
     ) {
@@ -161,19 +145,22 @@ export const DepartmentForm = ({ initialData, courseId, department }: any) => {
     }
     setDepartmentList(newList);
   };
-  // const { isSubmitting, isValid } = form.formState;
-  function cancel() {
-    setTriggerAlert(false);
 
+  const cancel = () => {
+    setTriggerAlert(false);
     router.refresh();
-  }
+  };
+
   const onSubmit = async () => {
     try {
       setLoading(true);
+
+      // Send departmentList and assignList to the API, including endDate for each user
       await axios.patch(`/api/courses/${courseId}/department`, {
         departmentList,
         assignList,
       });
+
       toast.success("Course updated");
       setLoading(false);
       setTriggerAlert(false);
@@ -183,6 +170,7 @@ export const DepartmentForm = ({ initialData, courseId, department }: any) => {
       toast.error("Something went wrong");
     }
   };
+
   const onConfirm = () => {
     let canSubmit = false;
     for (let i = 0; i < assignList.length; i++) {
@@ -199,34 +187,18 @@ export const DepartmentForm = ({ initialData, courseId, department }: any) => {
   };
 
   return (
-    <div className="mt-6 border bg-slate-100 rounded-md p-4 text-black dark:bg-slate-950">
-      <AlertDialog
-        open={triggerAlert}
-        onOpenChange={() => {
-          setTimeout(() => (document.body.style.pointerEvents = ""), 100);
-        }}
-      >
+    <div className="mt-6 border bg-slate-100 rounded-md p-6 text-black dark:bg-slate-950">
+      <AlertDialog open={triggerAlert} onOpenChange={() => { setTimeout(() => (document.body.style.pointerEvents = ""), 100); }}>
         <AlertDialogContent className="AlertDialogContent">
-          <AlertDialogTitle className="AlertDialogTitle">
-            Submit list of staff assigned to course
-          </AlertDialogTitle>
+          <AlertDialogTitle className="AlertDialogTitle">Submit list of staff assigned to course</AlertDialogTitle>
           <AlertDialogDescription className="AlertDialogDescription">
-            Are you sure you want to add these attendees to this course?(Note
-            that after submit, you cannot undo the assign of staffs due to our
-            policy)(Staff that has been assigned already will not be effected)
+            Are you sure you want to add these attendees to this course? (Note that after submit, you cannot undo the assignment of staff due to our policy) (Staff that has already been assigned will not be affected)
             <br />
-            <div className="grid grid-cols-2 gap-0">
-              {assignList
-                .filter(
-                  (item: any) => item.isEnrolled == true && item.canUndo == true
-                )
-                .map((item: { id: any; username: any }, index: any) => {
-                  return (
-                    <div key={item.id}>
-                      _{index + 1} {item.username}
-                    </div>
-                  );
-                })}
+            <div className="grid grid-cols-2 gap-0 mt-2">
+              {assignList.filter((item: any) => item.isEnrolled == true && item.canUndo == true)
+                .map((item: { id: any; username: any }, index: any) => (
+                  <div key={item.id}>_{index + 1} {item.username}</div>
+                ))}
             </div>
           </AlertDialogDescription>
 
@@ -238,8 +210,9 @@ export const DepartmentForm = ({ initialData, courseId, department }: any) => {
           </AlertDialogAction>
         </AlertDialogContent>
       </AlertDialog>
-      <div className="font-medium flex items-center justify-between dark:text-slate-50">
-        Department
+
+      <div className="font-medium flex items-center justify-between dark:text-slate-50 mb-4">
+        <h2 className="text-xl">Department</h2>
         <Button onClick={toggleEdit} variant="ghost">
           {isEditing ? (
             <>Cancel</>
@@ -251,62 +224,57 @@ export const DepartmentForm = ({ initialData, courseId, department }: any) => {
           )}
         </Button>
       </div>
+
       {isEditing && (
         <Form {...form}>
-          <form
-            onSubmit={form.handleSubmit(onSubmit)}
-            className="space-y-4 mt-4"
-          >
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 mt-4">
             {departmentList.map((item: any, i: any) => {
               return (
-                <div key={item.id} className=" justify-between">
+                <div key={item.id} className="mb-4">
                   <Accordion>
-                    <AccordionItem
-                      className=" dark:text-slate-50"
-                      key={item.id}
-                      aria-label={item.title}
-                      startContent={
-                        <>
-                          <input
-                            className="h-6 w-6"
-                            id={"department " + item.id}
-                            onChange={(e) => onChangeDepartmentList(i)}
-                            disabled={isEditing ? false : true}
-                            value={item.title}
-                            type="checkbox"
-                            checked={item.isEnrolled}
-                            defaultChecked={item.isEnrolled}
-                          />{" "}
-                          {item.title}
-                        </>
-                      }
-                    >
-                      <div
-                        key={"department-user " + item.id}
-                        className="grid grid-cols-2 gap-2 w-full"
-                      >
+                    <AccordionItem key={item.id} aria-label={item.title} startContent={<><input className="h-6 w-6" id={"department " + item.id} onChange={(e) => onChangeDepartmentList(i)} disabled={isEditing ? false : true} value={item.title} type="checkbox" checked={item.isEnrolled} /> <span className="ml-2 text-lg">{item.title}</span></>}>
+                      <div className="grid grid-cols-2 gap-4 mt-2 w-full">
                         {item.User.length == 0
-                          ? "NO USER"
-                          : item.User.map((item: any, j: any) => {
-                              return (
-                                <div
-                                  key={item.id}
-                                  className="flex items-center space-x-2 p-2 dark:text-slate-50 bg-white dark:bg-gray-800 rounded-lg shadow"
-                                >
+                          ? "No users"
+                          : item.User.map((user: any, j: any) => {
+                            return (
+                              <div key={user.id} className="flex items-center space-x-2 p-2 bg-white dark:bg-gray-800 rounded-lg shadow flex-col">
+                                <div className="flex items-center space-x-2">
                                   <input
-                                    id={"user " + item.id}
+                                    id={"user " + user.id}
                                     onChange={(e) => onChangeStudentList(i, j)}
                                     disabled={isEditing ? false : true}
-                                    value={item.title}
+                                    value={user.title}
                                     type="checkbox"
-                                    className="form-checkbox h-6 w-6 text-blue-600 dark:text-blue-400 "
-                                    checked={item.isEnrolled}
-                                    defaultChecked={item.isEnrolled}
+                                    className="form-checkbox h-6 w-6 text-blue-600 dark:text-blue-400"
+                                    checked={user.isEnrolled}
                                   />
-                                  <span>{item.username}</span>
+                                  <span>{user.username}</span>
                                 </div>
-                              );
-                            })}
+                                <input
+                                  type="date"
+                                  className="mt-2 border p-2 rounded-md"
+                                  placeholder="End Date"
+                                  onChange={(e) => {
+                                    const endDate = e.target.value;
+                                    assignList[j].endDate = endDate;
+                                  }}
+                                />
+                                <Input
+                                  type="number"
+                                  className="w-32"
+                                  value={user.maxAttempt || ""}
+                                  min={1}
+                                  onChange={(e) => {
+                                    let updatedList = [...assignList];
+                                    updatedList[i].maxAttempt = parseInt(e.target.value, 10);
+                                    setAssignList(updatedList);
+                                  }}
+                                />
+                              </div>
+                            );
+
+                          })}
                       </div>
                     </AccordionItem>
                   </Accordion>
@@ -314,8 +282,16 @@ export const DepartmentForm = ({ initialData, courseId, department }: any) => {
               );
             })}
 
-            <div className="flex items-center gap-x-2">
-              <Button onClick={() => onConfirm()}>Save</Button>
+            <div className="flex items-center justify-between mt-4">
+              <Button
+                onClick={() => onConfirm()}
+                className="px-6 py-2 rounded-md text-white bg-blue-600 hover:bg-blue-700"
+              >
+                Save Changes
+              </Button>
+              <Button variant="ghost" onClick={cancel} className="px-6 py-2 rounded-md">
+                Cancel
+              </Button>
             </div>
           </form>
         </Form>
