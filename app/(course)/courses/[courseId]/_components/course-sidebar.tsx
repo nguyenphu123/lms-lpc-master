@@ -8,60 +8,35 @@ interface CourseSidebarProps {
   course: Course & {
     ModuleInCourse: any[];
   };
-  progressCount: number;
-  isLocked: boolean;
 }
 
 export const CourseSidebar = async (
-  { course, progressCount, isLocked }: CourseSidebarProps,
-
+  { course }: CourseSidebarProps, // Removed progressCount and isLocked
   params: {
     chapterId: any;
     params?: { chapterId: string };
   }
 ) => {
   const { userId } = auth();
-  // const searchParams = useParams();
 
   if (!userId) {
     return redirect("/");
   }
 
-  // const purchase = await db.purchase.findUnique({
-  //   where: {
-  //     userId_courseId: {
-  //       userId,
-  //       courseId: course.id,
-  //     }
-  //   }
-  // });
   return (
     <div className="h-full w-80 border-r flex flex-col overflow-y-auto bg-white dark:bg-slate-950 shadow-sm">
       <div className="p-7 flex flex-col border-b">
         <h1 className="font-semibold">{course.title}</h1>
       </div>
       <div className="flex flex-col w-full dark:text-gray-50">
-        {isLocked ? (
-          <></>
-        ) : (
-          course.ModuleInCourse.map((module: any, index: any) => (
-            <CourseSidebarItem
-              key={module.id}
-              id={module.id}
-              label={module.title}
-              isCompleted={module.UserProgress[0]?.status}
-              courseId={course.id}
-              isLocked={
-                (course.ModuleInCourse[index - 1]?.UserProgress[0]?.status !=
-                  "finished" &&
-                  index > 0) ||
-                module.id == params?.chapterId
-                  ? true
-                  : false
-              }
-            />
-          ))
-        )}
+        {course.ModuleInCourse.map((module: any, index: any) => (
+          <CourseSidebarItem
+            key={module.id}
+            id={module.id}
+            label={module.title}
+            courseId={course.id}
+          />
+        ))}
       </div>
     </div>
   );
