@@ -6,7 +6,7 @@ import { db } from "@/lib/db";
 
 interface CourseSidebarProps {
   course: Course & {
-    Module: any[];
+    ModuleInCourse: any[];
   };
   progressCount: number;
   isLocked: boolean;
@@ -44,7 +44,7 @@ export const CourseSidebar = async (
         {isLocked ? (
           <></>
         ) : (
-          course.Module.map((module: any, index: any) => (
+          course.ModuleInCourse.map((module: any, index: any) => (
             <CourseSidebarItem
               key={module.id}
               id={module.id}
@@ -52,7 +52,7 @@ export const CourseSidebar = async (
               isCompleted={module.UserProgress[0]?.status}
               courseId={course.id}
               isLocked={
-                (course.Module[index - 1]?.UserProgress[0]?.status !=
+                (course.ModuleInCourse[index - 1]?.UserProgress[0]?.status !=
                   "finished" &&
                   index > 0) ||
                 module.id == params?.chapterId

@@ -28,6 +28,7 @@ import { Prisma } from "@prisma/client";
 import { CreditForm } from "./_components/credit-form";
 import { DepartmentForm } from "./_components/department-form";
 import { InstructorAssignForm } from "./_components/instructor-assign";
+import { ExamForm } from "./_components/exam-form";
 const CourseIdPage = async ({ params }: { params: { courseId: string } }) => {
   const { userId } = auth();
 
@@ -121,7 +122,7 @@ const CourseIdPage = async ({ params }: { params: { courseId: string } }) => {
     // course.price,
     // course.programId,
     // course.courseInstructedBy,
-    course.ModuleInCourse.some((chapter: { isPublished: any }) => chapter.isPublished),
+    // course.ModuleInCourse.some((chapter: { isPublished: any }) => chapter.isPublished),
   ];
 
   const totalFields = requiredFields.length;
@@ -200,6 +201,9 @@ const CourseIdPage = async ({ params }: { params: { courseId: string } }) => {
               </div>
               <div className="mt-4">
                 <ResourcesForm initialData={course} courseId={course.id} />
+              </div>
+              <div className="mt-4">
+                <ExamForm initialData={course} courseId={course.id} />
               </div>
             </div>
             <div>

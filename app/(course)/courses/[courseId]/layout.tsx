@@ -22,17 +22,19 @@ const CourseLayout = async ({
       id: params.courseId,
     },
     include: {
-      Module: {
+      ModuleInCourse: {
         where: {
+        
+      module:{
           isPublished: true,
-        },
-        include: {
-          UserProgress: {
-            where: {
-              userId,
-            },
-          },
-        },
+        },},
+        // include: {
+        //   UserProgress: {
+        //     where: {
+        //       userId,
+        //     },
+        //   },
+        // },
         orderBy: {
           position: "asc",
         },
