@@ -26,10 +26,17 @@ export const getChapter = async ({
           },
         },
 
-        Module: {
+        ModuleInCourse: {
+          include: {
+            module: {
+
+            }
+          },
           where: {
             courseId: courseId,
-            isPublished: true,
+            module: {
+              isPublished: true
+            }
           },
           orderBy: {
             position: "asc",
@@ -38,30 +45,21 @@ export const getChapter = async ({
       },
     });
 
-    const chapter: any = await db.module.findUnique({
+    const chapter: any = await db.moduleInCourse.findUnique({
       where: {
-        id: moduleId,
-        courseId: courseId,
-        isPublished: true,
+        courseId_moduleId: {
+          moduleId: moduleId,
+          courseId: courseId,
+        },
+        module:{
+          isPublished: true
+        }
+
       },
       include: {
-        Slide: {
-          where: {
-            moduleId: moduleId,
-          },
-          orderBy: {
-            position: "asc",
-          },
-        },
-        Category: {
-          where: {
-            moduleId: moduleId,
-          },
-          include: {
-            Exam: true,
-          },
-        },
-        Resource: true,
+        module: {}
+
+
         // Exam: {
         //   where: {
         //     moduleId: moduleId,
@@ -69,33 +67,26 @@ export const getChapter = async ({
         // },
       },
     });
-    const currentChapterPos = course.Module.map(
+    const currentChapterPos = course.ModuleInCourse.map(
       (item: { id: any }) => item.id
     ).indexOf(moduleId);
-    const nextChapter = course.Module.map((item: { id: any }) => item.id)[
+    const nextChapter = course.ModuleInCourse.map((item: { id: any }) => item.id)[
       currentChapterPos + 1
     ];
-    const preChapter: any = course.Module.map((item: { id: any }) => item.id)[
+    const preChapter: any = course.ModuleInCourse.map((item: { id: any }) => item.id)[
       currentChapterPos > 0 ? currentChapterPos - 1 : -1
     ];
     if (!chapter || !course) {
       throw new Error("Chapter or course not found");
     }
 
-    const userProgress = await db.userProgress.findUnique({
-      where: {
-        moduleId_userId: {
-          userId,
-          moduleId,
-        },
-      },
-    });
+
 
     return {
       chapter,
       course,
       nextChapter,
-      userProgress,
+
       preChapter,
     };
   } catch (error) {
@@ -106,7 +97,7 @@ export const getChapter = async ({
       preChapter: null,
       attachments: [],
       nextChapter: null,
-      userProgress: null,
+
       purchase: null,
     };
   }

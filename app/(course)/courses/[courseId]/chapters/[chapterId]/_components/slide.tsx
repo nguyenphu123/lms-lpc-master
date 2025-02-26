@@ -1,8 +1,5 @@
 "use client";
-import DocViewer, {
-  MSDocRenderer,
-  PDFRenderer,
-} from "@cyntler/react-doc-viewer";
+import DocViewer, { MSDocRenderer, PDFRenderer } from "@cyntler/react-doc-viewer";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
@@ -51,7 +48,6 @@ const Slide = ({
   preChapter,
   nextChapterId,
   courseId,
-  isCompleted,
   chapter,
   course,
 }: any) => {
@@ -59,12 +55,6 @@ const Slide = ({
   const router = useRouter();
   const [onFinish, setOnFinish] = useState(false);
   const [doc, setDoc] = useState(slide[currentSlide]?.fileUrl);
-  const [hasCompleted, setHasCompleted] = useState(
-    isCompleted == "finished" &&
-      course.ClassSessionRecord[0].status == "finished"
-      ? "finished"
-      : "studying"
-  );
 
   const confetti = useConfettiStore();
   const supportedFileTypes = ["pdf", "pptx", "docx"];
@@ -75,112 +65,52 @@ const Slide = ({
   };
 
   const onClickNextSlide = async () => {
-    if (hasCompleted == "finished") {
-      setCurrentSlide(currentSlide + 1);
-      setDoc(slide[currentSlide].fileUrl);
-    } else {
-      const date = new Date();
-
-      await axios.put(
-        `/api/courses/${courseId}/chapters/${chapter.id}/progress`,
-        {
-          status: "studying",
-          progress: (currentSlide / (slide.length - 1)) * 100 + "%",
-          endDate: date,
-        }
-      );
-      setCurrentSlide(currentSlide + 1);
-      setDoc(slide[currentSlide].fileUrl);
-    }
+    const date = new Date();
+    await axios.put(
+      `/api/courses/${courseId}/chapters/${chapter.id}/progress`,
+      {
+        status: "studying",
+        progress: (currentSlide / (slide.length - 1)) * 100 + "%",
+        endDate: date,
+      }
+    );
+    setCurrentSlide(currentSlide + 1);
+    setDoc(slide[currentSlide].fileUrl);
     router.refresh();
   };
+
   const onClickPre = async () => {
     router.push(`/courses/${courseId}/chapters/${preChapter}`);
   };
+
   const onClick = async () => {
-    if (hasCompleted == "finished") {
-      if (nextChapterId != null) {
-        router.push(`/courses/${courseId}/chapters/${nextChapterId}`);
-      } else {
-        router.push(`/`);
-      }
+    const date = new Date();
+    if (chapter.title == "intro") {
     } else {
-      const date = new Date();
-      if (chapter.title == "intro") {
-      } else {
-        await axios.put(
-          `/api/courses/${courseId}/chapters/${chapter.id}/progress`,
-          {
-            status: "finished",
-            progress: "100%",
-            endDate: date,
-          }
-        );
-      }
-
-      if (nextChapterId != null) {
-        let checkIfNextChapterIsFinished = await axios.get(
-          `/api/courses/${courseId}/chapters/${nextChapterId}/progress`
-        );
-
-        if (checkIfNextChapterIsFinished?.data?.status == "finished") {
-          if (checkIfNextChapterIsFinished.data.nextChapterId != undefined) {
-          } else {
-            await axios.put(`/api/courses/${courseId}/progress`, {
-              status: "finished",
-              progress: "100%",
-              endDate: date,
-            });
-          }
-        } else {
-          await axios.put(
-            `/api/courses/${courseId}/chapters/${nextChapterId}/progress`,
-            {
-              status: "studying",
-              progress: "0%",
-              startDate: date,
-            }
-          );
-          await axios.put(`/api/courses/${courseId}/progress`, {
-            status: "studying",
-            progress:
-              (course.Module.map((item: { id: any }) => item.id).indexOf(
-                nextChapterId
-              ) /
-                course.Module.length) *
-                100 +
-              "%",
-            startDate: date,
-          });
-        }
-
-        router.push(`/courses/${courseId}/chapters/${nextChapterId}`);
-        router.refresh();
-      } else {
-        await axios.put(`/api/courses/${courseId}/progress`, {
-          status: "finished",
-          progress: "100%",
-          endDate: date,
-        });
-        confetti.onOpen();
-        let currentUser = await axios.get(`/api/user`);
-        await axios.patch(`/api/user/${currentUser.data.id}/score`, {
-          star: parseInt(currentUser.data.star) + parseInt(course.credit),
-        });
-        setOnFinish(true);
-        setHasCompleted("finished");
-        // router.push(`/`);
-
-        setTimeout(function () {
-          // function code goes here
-        }, 10000);
-        if (onFinish) {
-          router.push(`/`);
-          router.refresh();
-        }
-      }
+      await axios.put(`/api/courses/${courseId}/chapters/${chapter.id}/progress`, {
+        status: "finished",
+        progress: "100%",
+        endDate: date,
+      });
     }
+
+    if (nextChapterId != null) {
+      await axios.put(`/api/courses/${courseId}/chapters/${nextChapterId}/progress`, {
+        status: "studying",
+        progress: "0%",
+        startDate: date,
+      });
+      await axios.put(`/api/courses/${courseId}/progress`, {
+        status: "studying",
+        progress: "0%",
+        startDate: date,
+      });
+    }
+
+    router.push(`/courses/${courseId}/chapters/${nextChapterId}`);
+    router.refresh();
   };
+
   const accept = () => {
     setOnFinish(false);
     router.push(`/`);
@@ -197,7 +127,7 @@ const Slide = ({
         exit={{ y: -10, opacity: 0 }}
         transition={{ duration: 0.2 }}
       >
-        <AlertDialog open={onFinish && hasCompleted != "finished"}>
+        <AlertDialog open={onFinish}>
           <AlertDialogContent className="AlertDialogContent">
             <AlertDialogTitle className="AlertDialogTitle">
               Congratulation on finishing this Course, Would you like to find
@@ -251,12 +181,10 @@ const Slide = ({
           ) : getFileType(slide[currentSlide].fileUrl) != "pdf" ? (
             <DocViewer
               prefetchMethod="GET"
-              documents={[
-                {
-                  uri: slide[currentSlide].fileUrl,
-                  fileType: getFileType(slide[currentSlide].fileUrl),
-                },
-              ]}
+              documents={[{
+                uri: slide[currentSlide].fileUrl,
+                fileType: getFileType(slide[currentSlide].fileUrl),
+              }]}
               pluginRenderers={[MSDocRenderer]}
               style={{ width: 1080, height: 650 }}
               theme={{ disableThemeScrollbar: false }}
@@ -267,29 +195,6 @@ const Slide = ({
               src={slide[currentSlide].fileUrl}
               style={{ width: 1080, height: 650 }}
             />
-            // <DocViewer
-            //   key={slide[currentSlide].fileUrl}
-            //   prefetchMethod="GET"
-            //   config={{
-            //     header: {
-            //       disableHeader: true,
-            //       disableFileName: true,
-            //     },
-            //     loadingRenderer: {
-            //       showLoadingTimeout: 5000,
-            //     },
-            //     pdfVerticalScrollByDefault: true,
-            //   }}
-            //   documents={[
-            //     {
-            //       uri: slide[currentSlide].fileUrl,
-            //       fileType: getFileType(slide[currentSlide].fileUrl),
-            //     },
-            //   ]}
-            //   pluginRenderers={[PDFRenderer]}
-            //   style={{ width: 1080, height: 650 }}
-            //   theme={{ disableThemeScrollbar: false }}
-            // />
           )}
 
           <div className="items-end">
@@ -321,7 +226,7 @@ const Slide = ({
                       onClick={() => onClickPre()}
                       className="bg-gray-500 hover:bg-gray-700 text-white py-2 px-4 rounded mt-4 ml-4"
                     >
-                      Previsous Module
+                      Previous Module
                     </button>
                   )}
 
@@ -329,9 +234,7 @@ const Slide = ({
                     onClick={() => onClick()}
                     className="bg-gray-500 hover:bg-gray-700 text-white py-2 px-4 rounded mt-4 ml-4"
                   >
-                    {hasCompleted != "finished"
-                      ? "Finish Course"
-                      : "Return to Home"}
+                    Finish Course
                   </button>
                 </div>
               )
@@ -349,4 +252,5 @@ const Slide = ({
     </AnimatePresence>
   );
 };
+
 export default Slide;

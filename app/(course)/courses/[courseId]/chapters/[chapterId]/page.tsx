@@ -8,6 +8,7 @@ import Slide from "./_components/slide";
 import Link from "next/link";
 import { db } from "@/lib/db";
 import { AlertInExam } from "@/components/ui/alert-in-exam";
+
 const ChapterIdPage = async ({
   params,
 }: {
@@ -18,18 +19,19 @@ const ChapterIdPage = async ({
   if (!userId) {
     return redirect("/");
   }
+
   let userInfo: any = await db.user.findUnique({
     where: { id: userId },
     include: {
       userExamReport: {},
     },
   });
+
   const {
     chapter,
     course,
     preChapter,
     nextChapter,
-    userProgress,
     purchase,
   }: any = await getChapter({
     userId,
@@ -40,7 +42,7 @@ const ChapterIdPage = async ({
   if (!chapter || !course) {
     return redirect("/");
   }
-
+  console.log(chapter)
   return chapter.type == "Exam" ? (
     <>
       <Exam
@@ -48,9 +50,6 @@ const ChapterIdPage = async ({
         nextChapterId={nextChapter}
         courseId={params.courseId}
         course={course}
-        isCompleted={
-          userProgress?.status != undefined ? userProgress?.status : "studying"
-        }
       />
     </>
   ) : (userInfo.userExamReport[0]?.isInExam && chapter.type != "Exam") ||
@@ -60,34 +59,19 @@ const ChapterIdPage = async ({
     <AlertInExam
       courseId={userInfo.userExamReport[0]?.courseId}
       moduleId={userInfo.userExamReport[0]?.moduleId}
-    ></AlertInExam>
+    />
   ) : (
     <div className="pl-6 pt-3">
-      {userProgress?.status == "finished" && (
-        <Banner variant="success" label="You already completed this Module." />
-      )}
-
       <div className="flex flex-col pb-20 overflow-x-hidden">
         <div>
-          <Slide
+          {/* <Slide
             slide={chapter.Slide}
             chapter={chapter}
             nextChapterId={nextChapter}
             preChapter={preChapter}
             courseId={params.courseId}
             course={course}
-            isCompleted={userProgress?.status}
-          ></Slide>
-          Extra resources:{" "}
-          <ul className="list-decimal">
-            {chapter.Resource.map((item: any) => (
-              <li key={item.attachment}>
-                <Link key={item.attachment} href={item.attachment} className="text-blue-600 hover:underline">
-                  {item.attachment.split("/").pop() as string}
-                </Link>
-              </li>
-            ))}
-          </ul>
+          /> */}
         </div>
         <div>
           <div>

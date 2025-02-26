@@ -1,8 +1,10 @@
 import { db } from "@/lib/db";
 import { auth } from "@clerk/nextjs";
 import { redirect } from "next/navigation";
+
 const CourseIdPage = async ({ params }: { params: { courseId: string } }) => {
   const { userId }: any = auth();
+
   const checkUser = await db.userPermission.findMany({
     where: {
       userId: userId,
@@ -11,6 +13,7 @@ const CourseIdPage = async ({ params }: { params: { courseId: string } }) => {
       permission: true,
     },
   });
+
   // if (
   //   checkUser
   //     .map((item: { permission: { title: any } }) => item.permission.title)
@@ -18,22 +21,26 @@ const CourseIdPage = async ({ params }: { params: { courseId: string } }) => {
   // ) {
   //   return redirect("/");
   // }
+
   const course: any = await db.course.findUnique({
     where: {
       id: params.courseId,
     },
     include: {
-      Module: {
+      ModuleInCourse: {
         where: {
-          isPublished: true,
+          module: {
+            isPublished: true,  // Apply isPublished filter on module relation
+          },
         },
         orderBy: {
           position: "asc",
         },
         include: {
-          UserProgress: {
-            where: {
-              userId,
+          module: {
+            select: {
+              id: true,
+              title: true,
             },
           },
         },
@@ -42,47 +49,29 @@ const CourseIdPage = async ({ params }: { params: { courseId: string } }) => {
       CourseOnDepartment: true,
     },
   });
-
+  console.log(course)
   if (!course) {
     return redirect("/");
   }
+  
+  // Check if the user is part of the class session
   if (
     course.ClassSessionRecord.map(
       (item: { userId: any }) => item.userId
-    ).indexOf(userId) == -1
+    ).indexOf(userId) === -1
   ) {
     return redirect(`/courses/${course.id}/description`);
   }
 
+  // Determine the current position of the user
   let currentPos = 0;
-  for (let i = 0; i < course.Module.length; i++) {
-    if (
-      course.Module[i].UserProgress.map((item: any) => item.userId).indexOf(
-        userId
-      ) != -1 &&
-      course.Module[i].UserProgress[
-        course.Module[i].UserProgress.map((item: any) => item.userId).indexOf(
-          userId
-        )
-      ].status == "studying"
-    ) {
-      currentPos = i;
-      break;
-    } else if (
-      course.Module[i].UserProgress.map((item: any) => item.userId).indexOf(
-        userId
-      ) != -1 &&
-      course.Module[i].UserProgress[
-        course.Module[i].UserProgress.map((item: any) => item.userId).indexOf(
-          userId
-        )
-      ].status == "finished"
-    ) {
-      currentPos = i;
-    }
+  for (let i = 0; i < course.ModuleInCourse.length; i++) {
+    // Simply set the current position to the last available module if needed
+    currentPos = i; 
   }
+
   return redirect(
-    `/courses/${course.id}/chapters/${course.Module[currentPos].id}`
+    `/courses/${course.id}/chapters/${course.ModuleInCourse[currentPos].module.id}`
   );
 };
 
