@@ -36,6 +36,14 @@ const CourseIdPage = async ({ params }: { params: { courseId: string } }) => {
   if (!userId) {
     return redirect("/");
   }
+  const userInfo: any = await db.user.findMany({
+    where: {
+      id: userId,
+    },
+    include: {
+      Department: {},
+    },
+  });
   const checkUser = await db.userPermission.findMany({
     where: {
       userId: userId,
@@ -75,12 +83,33 @@ const CourseIdPage = async ({ params }: { params: { courseId: string } }) => {
       // },
     },
   });
+  let department: any = [];
+  if (
+    userInfo.Department.title == "BOD" ||
+    checkUser
+      .map((item: { permission: { title: any } }) => item.permission.title)
+      .indexOf("Manage permission permission") == -1
+  ) {
+    department = await db.department.findMany({
+      include: {
+        User: true,
+      },
+    });
+  } else {
+    department = await db.department.findMany({
+      where: {
+        User: {
+          some: {
+            id: userId,
+          },
+        },
+      },
+      include: {
+        User: true,
+      },
+    });
+  }
 
-  const department: any = await db.department.findMany({
-    include: {
-      User: true,
-    },
-  });
   for (let i = 0; i < department.length; i++) {
     // if (
     //   course.CourseOnDepartment.map((item: any) => item.departmentId).indexOf(
@@ -116,7 +145,6 @@ const CourseIdPage = async ({ params }: { params: { courseId: string } }) => {
   }
 
   // const isModulePublished = course.ModuleInCourse.some((module: { isPublished: boolean }) => module.isPublished);
-
 
   const requiredFields = [
     course.title,
@@ -211,8 +239,6 @@ const CourseIdPage = async ({ params }: { params: { courseId: string } }) => {
                 <ExamForm initialData={course} courseId={course.id} />
               </div>
             </div>
-
-
 
             <div>
               <div className="flex items-center gap-x-2">
