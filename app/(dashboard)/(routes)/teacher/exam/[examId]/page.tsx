@@ -48,7 +48,6 @@ export default function Exam() {
           setPassPercentage(response.data?.scoreLimit ?? 80); // Set default passPercentage if not present
           //setRetakeTime(response.data?.maxAttempt ?? 1); // Set default retakeTime if not present
           setQuizList(response.data?.category ?? []); // Set quiz list
-          console.log(response.data?.category)
         } catch (error) {
           console.error("Error loading exam data:", error);
         }
@@ -56,7 +55,7 @@ export default function Exam() {
     }
 
     loadExamData();
-  }, [params.examId]);
+  }, []);
 
   function getRandomInt(max: number) {
     return Math.floor(Math.random() * max);
@@ -283,6 +282,7 @@ export default function Exam() {
       scoreLimit: passPercentage,
       // maxAttempt: parseInt(retakeTime + ""),
     };
+    //console.log(values)
     await axios.patch(`/api/resources/exam/${params.examId}`, values);
     for (let i = 0; i < quizList.length; i++) {
       await axios.post(
@@ -291,11 +291,11 @@ export default function Exam() {
       );
     }
     toast.success("Exam updated");
-    router.push(`/api/resources/exam/${params.examId}`);
+    router.push(`/teacher/exam/${params.examId}`);
     router.refresh();
     let questionList = await axios.get(`/api/resources/exam/${params.examId}`);
 
-    setQuizList(questionList.data.Category);
+    setQuizList(questionList.data.category);
   }
 
   const fileRef: any = useRef();
@@ -424,13 +424,13 @@ export default function Exam() {
     <main className="min-h-full items-center" suppressHydrationWarning={true}>
       <div className="w-full p-8 " suppressHydrationWarning={true}>
         <div className="pb-3">
-        <Link
-              href={`/teacher/exam`}
-              className="flex items-center text-sm hover:opacity-75 transition mb-6"
-            >
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Back to exam setup
-            </Link>
+          <Link
+            href={`/teacher/exam`}
+            className="flex items-center text-sm hover:opacity-75 transition mb-6"
+          >
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Back to exam setup
+          </Link>
           <label className="block text-3xl font-bold mb-2 text-center">
             Create Exam
           </label>

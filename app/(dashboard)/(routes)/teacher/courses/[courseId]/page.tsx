@@ -85,7 +85,7 @@ const CourseIdPage = async ({ params }: { params: { courseId: string } }) => {
   });
   let department: any = [];
   if (
-    userInfo.Department && userInfo.Department.title == "BOD" ||
+    (userInfo.Department && userInfo.Department.title == "BOD") ||
     checkUser
       .map((item: { permission: { title: any } }) => item.permission.title)
       .indexOf("Manage permission permission") == -1
@@ -105,7 +105,15 @@ const CourseIdPage = async ({ params }: { params: { courseId: string } }) => {
         },
       },
       include: {
-        User: true,
+        User: {
+          include: {
+            ClassSessionRecord: {
+              where: {
+                courseId: params.courseId,
+              },
+            },
+          },
+        },
       },
     });
   }
