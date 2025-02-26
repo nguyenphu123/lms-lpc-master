@@ -25,7 +25,7 @@ export default function Exam() {
   const [textTitle, setTextTitle] = useState<string>("");
   const [timeLimit, setTimeLimit]: any = useState(60);
   const [passPercentage, setPassPercentage] = useState(80);
-  const [retakeTime, setRetakeTime] = useState(1);
+  // const [retakeTime, setRetakeTime] = useState(1);
 
   // useEffect(() => {
   //   console.log("Updated quizList: ", quizList);
@@ -281,7 +281,7 @@ export default function Exam() {
       title: textTitle,
       timeLimit: parseFloat(timeLimit),
       scoreLimit: passPercentage,
-      maxAttempt: parseInt(retakeTime + ""),
+      // maxAttempt: parseInt(retakeTime + ""),
     };
     await axios.patch(`/api/resources/exam/${params.examId}`, values);
     for (let i = 0; i < quizList.length; i++) {
@@ -424,6 +424,13 @@ export default function Exam() {
     <main className="min-h-full items-center" suppressHydrationWarning={true}>
       <div className="w-full p-8 " suppressHydrationWarning={true}>
         <div className="pb-3">
+        <Link
+              href={`/teacher/exam`}
+              className="flex items-center text-sm hover:opacity-75 transition mb-6"
+            >
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Back to exam setup
+            </Link>
           <label className="block text-3xl font-bold mb-2 text-center">
             Create Exam
           </label>
@@ -499,7 +506,7 @@ export default function Exam() {
             />
             <span className="px-4">minutes</span>
           </div>
-          <div className="grow-0 mr-2">
+          {/* <div className="grow-0 mr-2">
             <label
               className="block text-sm font-medium text-gray-700 mb-1"
               htmlFor="retakeTime"
@@ -514,9 +521,9 @@ export default function Exam() {
             >
               <option value="1">1</option>
               <option value="3">3</option>
-              {/* <option value="5">5</option> */}
+            
             </select>
-          </div>
+          </div> */}
         </div>
         <span>
           <strong>Option 1:</strong>
