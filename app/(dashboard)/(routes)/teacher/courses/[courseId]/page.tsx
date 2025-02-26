@@ -29,6 +29,7 @@ import { CreditForm } from "./_components/credit-form";
 import { DepartmentForm } from "./_components/department-form";
 import { InstructorAssignForm } from "./_components/instructor-assign";
 import { ExamForm } from "./_components/exam-form";
+import { EndDateForm } from "./_components/enddate-form";
 const CourseIdPage = async ({ params }: { params: { courseId: string } }) => {
   const { userId } = auth();
 
@@ -114,6 +115,9 @@ const CourseIdPage = async ({ params }: { params: { courseId: string } }) => {
     return redirect("/");
   }
 
+  // const isModulePublished = course.ModuleInCourse.some((module: { isPublished: boolean }) => module.isPublished);
+
+
   const requiredFields = [
     course.title,
     // course.description,
@@ -122,7 +126,8 @@ const CourseIdPage = async ({ params }: { params: { courseId: string } }) => {
     // course.price,
     // course.programId,
     // course.courseInstructedBy,
-    // course.ModuleInCourse.some((chapter: { isPublished: any }) => chapter.isPublished),
+    // course.ModuleInCourse.some((module: { isPublished: any }) => module.isPublished),
+    // isModulePublished
   ];
 
   const totalFields = requiredFields.length;
@@ -206,6 +211,9 @@ const CourseIdPage = async ({ params }: { params: { courseId: string } }) => {
                 <ExamForm initialData={course} courseId={course.id} />
               </div>
             </div>
+
+
+
             <div>
               <div className="flex items-center gap-x-2">
                 <IconBadge icon={SquareDashedBottomCode} />
@@ -218,6 +226,11 @@ const CourseIdPage = async ({ params }: { params: { courseId: string } }) => {
                   department={department}
                 />
               </div>
+              {/* <div className="mt-4">
+              <EndDateForm
+                courseId={params.courseId}
+                initialEndDate={course?.endDate || null} />
+                </div> */}
             </div>
             <div>
               <div className="flex items-center gap-x-2">

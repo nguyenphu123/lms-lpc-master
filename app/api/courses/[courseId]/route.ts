@@ -19,6 +19,22 @@ export async function DELETE(
         id: params.courseId,
         userId: userId,
       },
+      include: {
+        ModuleInCourse: {
+          orderBy: {
+            position: "asc",
+          },
+          include: {
+            module: true, // Include the related Module data
+          },
+        },
+        ClassSessionRecord: { include: { user: true } },
+        CourseOnDepartment: {
+          include: {
+            Department: true,
+          },
+        },
+      },
     });
 
     if (!course) {
