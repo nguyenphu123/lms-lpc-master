@@ -8,7 +8,7 @@ export async function PATCH(
 ) {
   try {
     const { userId }: any = auth();
-    const { contents, title } = await req.json();  // expects the exam details to be sent in the "contents"
+    const { contents, title } = await req.json(); // expects the exam details to be sent in the "contents"
     if (!userId) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
@@ -42,7 +42,11 @@ export async function GET(
       include: {
         category: {
           include: {
-            question: {},
+            question: {
+              include: {
+                answer: {},
+              },
+            },
           },
         },
       },
