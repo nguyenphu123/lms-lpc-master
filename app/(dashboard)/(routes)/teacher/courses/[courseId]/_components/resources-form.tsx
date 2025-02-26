@@ -105,7 +105,7 @@ export const ResourcesForm = ({ initialData, courseId }: ResourcesFormProps) => 
       </Button>
 
       {/* Display if no modules are added */}
-      {!initialData.ModuleInCourse.length && (
+      {(!initialData?.ModuleInCourse|| initialData.ModuleInCourse.length === 0) && (
         <div className="text-sm mt-2 text-slate-500 italic">No modules added</div>
       )}
     </div>
