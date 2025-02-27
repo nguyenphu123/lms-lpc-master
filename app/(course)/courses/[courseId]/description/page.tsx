@@ -35,6 +35,7 @@ const CourseDescriptionPage = async ({
           module: {
             select: {
               id: true,
+              title: true,
               description: true,
             },
           },
@@ -46,7 +47,6 @@ const CourseDescriptionPage = async ({
   if (!course) {
     return redirect("/");
   }
-
   return (
     <div className="p-10">
       <Link
@@ -69,12 +69,14 @@ const CourseDescriptionPage = async ({
       <div className="border border-blue-800 border-l-8 shadow-lg rounded-lg mt-8 mb-8">
         <h5 className="text-2xl font-bold p-5">Modules</h5>
         <ul className="list-disc ml-5 mr-5 mb-8">
-          {course.Module.map((module: any) => (
+
+
+          {course.ModuleInCourse.map((module: any) => (
             <li
-              key={module.id}
+              key={module.module.id}
               className="text-gray-700 text-base ml-3 dark:text-white mb-2"
             >
-              {module.title}
+              {module.module.title}
             </li>
           ))}
         </ul>
