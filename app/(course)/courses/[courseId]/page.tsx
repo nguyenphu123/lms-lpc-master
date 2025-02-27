@@ -4,7 +4,14 @@ import { redirect } from "next/navigation";
 
 const CourseIdPage = async ({ params }: { params: { courseId: string } }) => {
   const { userId }: any = auth();
-
+  const userInfo: any = await db.user.findUnique({
+    where: {
+      id: userId,
+    },
+    include: {
+      Department: {},
+    },
+  });
   const checkUser = await db.userPermission.findMany({
     where: {
       userId: userId,
@@ -30,7 +37,7 @@ const CourseIdPage = async ({ params }: { params: { courseId: string } }) => {
       ModuleInCourse: {
         where: {
           module: {
-            isPublished: true,  // Apply isPublished filter on module relation
+            isPublished: true, // Apply isPublished filter on module relation
           },
         },
         orderBy: {
@@ -49,11 +56,18 @@ const CourseIdPage = async ({ params }: { params: { courseId: string } }) => {
       CourseOnDepartment: true,
     },
   });
-  console.log(course)
+
+  const checkAcess = course.CourseOnDepartment.find(
+    (item: { departmentId: any }) => item.departmentId == userInfo.departmentId
+  );
+  console.log(checkAcess);
+  if (checkAcess) {
+    return redirect("/");
+  }
   if (!course) {
     return redirect("/");
   }
-  
+
   // Check if the user is part of the class session
   if (
     course.ClassSessionRecord.map(
@@ -67,7 +81,7 @@ const CourseIdPage = async ({ params }: { params: { courseId: string } }) => {
   let currentPos = 0;
   for (let i = 0; i < course.ModuleInCourse.length; i++) {
     // Simply set the current position to the last available module if needed
-    currentPos = i; 
+    currentPos = i;
   }
 
   return redirect(
