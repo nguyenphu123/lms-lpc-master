@@ -35,6 +35,11 @@ const CourseLayout = async ({
           position: "asc", // Ensure modules are ordered correctly
         },
       },
+      ExamInCourse: {
+        include: {
+          exam: true, 
+        },
+      },
       ClassSessionRecord: true,
     },
   });

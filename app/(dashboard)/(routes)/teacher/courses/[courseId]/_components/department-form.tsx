@@ -33,6 +33,7 @@ const Department = z.object({
 });
 const formSchema = z.array(Department);
 
+
 export const DepartmentForm = ({ initialData, courseId, department }: any) => {
   const [isEditing, setIsEditing] = useState(false);
   const [departmentList, setDepartmentList] = useState([...department]);
@@ -272,68 +273,85 @@ export const DepartmentForm = ({ initialData, courseId, department }: any) => {
                         {item.User.length == 0
                           ? "No users"
                           : item.User.map((user: any, j: any) => {
-                              console.log("us", user); // Log the entire user object
-                              console.log("usclass", user.ClassSessionRecord); // Log the ClassSessionRecord array
-                              return (
-                                <div
-                                  key={user.id}
-                                  className="flex items-center space-x-2 p-2 bg-white dark:bg-gray-800 rounded-lg shadow flex-col"
-                                >
-                                  <div className="flex items-center space-x-2">
-                                    <input
-                                      id={"user " + user.id}
-                                      onChange={(e) =>
-                                        onChangeStudentList(i, j)
-                                      }
-                                      disabled={isEditing ? false : true}
-                                      value={user.title}
-                                      type="checkbox"
-                                      className="form-checkbox h-6 w-6 text-blue-600 dark:text-blue-400"
-                                      checked={user.isEnrolled}
-                                    />
-                                    <span>{user.username}</span>
-                                  </div>
+                            console.log("us", user); // Log the entire user object
+                            console.log("usclass", user.ClassSessionRecord); // Log the ClassSessionRecord array
+                            return (
+                              <div
+                                key={user.id}
+                                className="flex items-center space-x-2 p-2 bg-white dark:bg-gray-800 rounded-lg shadow flex-col"
+                              >
+                                <div className="flex items-center space-x-2">
                                   <input
-                                    type="date"
-                                    value={
-                                      user.ClassSessionRecord[0]
-                                        ? new Date(
-                                            user.ClassSessionRecord[0]?.endDate
-                                          )
-                                            .toISOString()
-                                            .split("T")[0]
-                                        : ""
+                                    id={"user " + user.id}
+                                    onChange={(e) =>
+                                      onChangeStudentList(i, j)
                                     }
-                                    className="mt-2 border p-2 rounded-md"
-                                    placeholder="End Date"
-                                    onChange={(e) => {
-                                      const endDate = e.target.value;
-                                      assignList[
-                                        j
-                                      ].ClassSessionRecord[0].endDate = endDate;
-                                    }}
+                                    disabled={isEditing ? false : true}
+                                    value={user.title}
+                                    type="checkbox"
+                                    className="form-checkbox h-6 w-6 text-blue-600 dark:text-blue-400"
+                                    checked={user.isEnrolled}
                                   />
-                                  <Input
-                                    type="number"
-                                    className="w-32"
-                                    value={
-                                      user.ClassSessionRecord[0]?.maxAttempt ||
-                                      ""
-                                    }
-                                    min={1}
-                                    onChange={(e) => {
-                                      let updatedList = [...assignList];
-
-                                      updatedList[j].maxAttempt = parseInt(
-                                        e.target.value,
-                                        10
-                                      );
-                                      setAssignList(updatedList);
-                                    }}
-                                  />
+                                  <span>{user.username}</span>
                                 </div>
-                              );
-                            })}
+                                <input
+
+                                  type="date"
+                                  value={
+                                    user.ClassSessionRecord[0]
+                                      ? new Date(
+                                        user.ClassSessionRecord[0]?.endDate
+                                      )
+                                        .toISOString()
+                                        .split("T")[0]
+                                      : ""
+                                  }
+                                  className="mt-2 border p-2 rounded-md"
+                                  placeholder="End Date"
+                                  onChange={(e) => {
+                                    const endDate = e.target.value;
+                                    const maxAttempt = user.ClassSessionRecord[0]?.maxAttempt;
+                                    let checkClassSession = user.ClassSessionRecord.find((item: { courseId: any; }) => item.courseId == courseId)
+                                    if (checkClassSession) {
+                                      checkClassSession.endDate = endDate;
+                                    } else {
+                                      let newClassSession = {
+                                        courseId: courseId,
+                                        userId: user.id,
+                                        status: "studying",
+                                        endDate: endDate,
+                                        score: 0,
+                                        maxAttempt: maxAttempt,
+                                      }
+                                      user.ClassSessionRecord.push(newClassSession);
+                                    }
+                                    // Cập nhật lại assignList sau khi thay đổi
+                                    const updatedList = [...assignList];
+                                    updatedList[j] = user; // Cập nhật thông tin của user vào danh sách assignList
+                                    setAssignList(updatedList);
+                                  }}
+                                />
+                                <Input
+                                  type="number"
+                                  className="w-32"
+                                  value={
+                                    user.ClassSessionRecord[0]?.maxAttempt ||
+                                    ""
+                                  }
+                                  min={1}
+                                  onChange={(e) => {
+                                    let updatedList = [...assignList];
+
+                                    updatedList[j].maxAttempt = parseInt(
+                                      e.target.value,
+                                      10
+                                    );
+                                    setAssignList(updatedList);
+                                  }}
+                                />
+                              </div>
+                            );
+                          })}
                       </div>
                     </AccordionItem>
                   </Accordion>

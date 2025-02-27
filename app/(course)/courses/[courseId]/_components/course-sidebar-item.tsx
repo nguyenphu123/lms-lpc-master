@@ -1,5 +1,4 @@
 "use client";
-
 import { PlayCircle } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
@@ -21,9 +20,16 @@ export const CourseSidebarItem = ({
   const searchParams = useParams();
 
   const onClick = () => {
-    router.push(`/courses/${courseId}/chapters/${id}`);
+    // Điều hướng đến bài kiểm tra nếu id là của bài kiểm tra
+    if (id && id.includes("exam")) {
+      // Điều hướng đến trang bài kiểm tra (dựa trên id của bài kiểm tra)
+      router.push(`/courses/${courseId}/exam/${id}`);
+    } else {
+      // Điều hướng đến module bình thường
+      router.push(`/courses/${courseId}/chapters/${id}`);
+    }
   };
-console.log("Module ID:",id)
+
   return (
     <button
       onClick={onClick}
