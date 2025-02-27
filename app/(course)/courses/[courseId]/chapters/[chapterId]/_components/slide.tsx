@@ -44,7 +44,7 @@ CustomFileRenderer.fileTypes = [
 CustomFileRenderer.weight = 10;
 
 const Slide = ({
-  slide,
+  // slide,
   preChapter,
   nextChapterId,
   courseId,
@@ -54,7 +54,8 @@ const Slide = ({
   const [currentSlide, setCurrentSlide] = useState(0);
   const router = useRouter();
   const [onFinish, setOnFinish] = useState(false);
-  const [doc, setDoc] = useState(slide[currentSlide]?.fileUrl);
+  const module = chapter;
+  const [doc, setDoc] = useState(module?.fileUrl);
 
   const confetti = useConfettiStore();
   const supportedFileTypes = ["pdf", "pptx", "docx"];
@@ -65,17 +66,8 @@ const Slide = ({
   };
 
   const onClickNextSlide = async () => {
-    const date = new Date();
-    await axios.put(
-      `/api/courses/${courseId}/chapters/${chapter.id}/progress`,
-      {
-        status: "studying",
-        progress: (currentSlide / (slide.length - 1)) * 100 + "%",
-        endDate: date,
-      }
-    );
     setCurrentSlide(currentSlide + 1);
-    setDoc(slide[currentSlide].fileUrl);
+    setDoc(module.fileUrl);
     router.refresh();
   };
 
@@ -84,31 +76,12 @@ const Slide = ({
   };
 
   const onClick = async () => {
-    const date = new Date();
-    if (chapter.title == "intro") {
-    } else {
-      await axios.put(`/api/courses/${courseId}/chapters/${chapter.id}/progress`, {
-        status: "finished",
-        progress: "100%",
-        endDate: date,
-      });
-    }
-
-    if (nextChapterId != null) {
-      await axios.put(`/api/courses/${courseId}/chapters/${nextChapterId}/progress`, {
-        status: "studying",
-        progress: "0%",
-        startDate: date,
-      });
-      await axios.put(`/api/courses/${courseId}/progress`, {
-        status: "studying",
-        progress: "0%",
-        startDate: date,
-      });
-    }
-
-    router.push(`/courses/${courseId}/chapters/${nextChapterId}`);
-    router.refresh();
+    const onClick = () => {
+      if (nextChapterId != null) {
+        router.push(`/courses/${courseId}/chapters/${nextChapterId}`);
+        router.refresh();
+      }
+    };
   };
 
   const accept = () => {
@@ -117,9 +90,11 @@ const Slide = ({
     router.refresh();
   };
 
-  return slide.length < 1 ? (
-    <>This module is updating.</>
-  ) : (
+  if (!module) {
+    return <>This module is updating.</>;
+  }
+
+  return (
     <AnimatePresence mode="wait">
       <motion.div
         initial={{ y: 10, opacity: 0 }}
@@ -161,44 +136,46 @@ const Slide = ({
         </AlertDialog>
 
         <div>
-          {slide[currentSlide].contentType == "video" ? (
+          {module.contentType === "video" ? (
             <div className="ml-4 mt-4">
               <video width="1080" height="720" controls autoPlay>
-                <source src={slide[currentSlide].videoUrl} type="video/mp4" />
+                <source src={module.videoUrl} type="video/mp4" />
                 Your browser does not support the video tag.
               </video>
-              <div>{slide[currentSlide].description}</div>
+              <div>{module.description}</div>
             </div>
-          ) : slide[currentSlide].contentType == "text" ? (
-            <div key={slide[currentSlide].id}>
-              <div>{slide[currentSlide].title}</div>
+          ) : module.contentType === "text" ? (
+            <div key={module.id}>
+              <div>{module.title}</div>
               <div
                 dangerouslySetInnerHTML={{
-                  __html: slide[currentSlide].content,
+                  __html: module.content,
                 }}
               ></div>
             </div>
-          ) : getFileType(slide[currentSlide].fileUrl) != "pdf" ? (
+          ) : getFileType(module.fileUrl) !== "pdf" ? (
             <DocViewer
               prefetchMethod="GET"
-              documents={[{
-                uri: slide[currentSlide].fileUrl,
-                fileType: getFileType(slide[currentSlide].fileUrl),
-              }]}
+              documents={[
+                {
+                  uri: module.fileUrl,
+                  fileType: getFileType(module.fileUrl),
+                },
+              ]}
               pluginRenderers={[MSDocRenderer]}
               style={{ width: 1080, height: 650 }}
               theme={{ disableThemeScrollbar: false }}
             />
           ) : (
             <iframe
-              key={slide[currentSlide].fileUrl}
-              src={slide[currentSlide].fileUrl}
+              key={module.fileUrl}
+              src={module.fileUrl}
               style={{ width: 1080, height: 650 }}
             />
           )}
 
           <div className="items-end">
-            {currentSlide == 0 ? (
+            {currentSlide === 0 ? (
               <></>
             ) : (
               <button
@@ -209,7 +186,7 @@ const Slide = ({
               </button>
             )}
 
-            {currentSlide === slide.length - 1 ? (
+            {currentSlide === module.length - 1 ? (
               nextChapterId !== undefined ? (
                 <div>
                   <button
