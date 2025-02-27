@@ -28,16 +28,21 @@ export const CourseSidebar = async (
       <div className="p-7 flex flex-col border-b">
         <h1 className="font-semibold">{course.title}</h1>
       </div>
+
       <div className="flex flex-col w-full dark:text-gray-50">
-        {course.ModuleInCourse.map((module: any, index: any) => (
+        {course.ModuleInCourse.map((moduleItem) => (
           <CourseSidebarItem
-            key={module.id}
-            id={module.id}
-            label={module.title}
+            key={moduleItem.id}
+            id={moduleItem.module?.id}
+            label={moduleItem.module?.title || "Untitled Module"}  // Make sure to access module.title correctly
             courseId={course.id}
           />
         ))}
       </div>
+
+
     </div>
   );
+
 };
+

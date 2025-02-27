@@ -1,6 +1,7 @@
 import { auth } from "@clerk/nextjs";
 import { redirect } from "next/navigation";
 import { getChapter } from "@/actions/get-chapter";
+import { getExam } from "@/actions/get-exam";
 import { Banner } from "@/components/banner";
 import { Preview } from "@/components/preview";
 import Exam from "./_components/exam";
@@ -39,14 +40,20 @@ const ChapterIdPage = async ({
     courseId: params.courseId,
   });
 
+  const { exam }: any = await getExam({
+    userId,
+    examId: params.chapterId,
+    courseId: params.courseId,
+  });
+
   if (!chapter || !course) {
     return redirect("/");
   }
-  console.log(chapter)
+  console.log("chapter abc:",chapter)
   return chapter.type == "Exam" ? (
     <>
       <Exam
-        chapter={chapter}
+        chapter={chapter.exam}
         nextChapterId={nextChapter}
         courseId={params.courseId}
         course={course}
@@ -64,18 +71,18 @@ const ChapterIdPage = async ({
     <div className="pl-6 pt-3">
       <div className="flex flex-col pb-20 overflow-x-hidden">
         <div>
-          {/* <Slide
+          <Slide
             slide={chapter.Slide}
-            chapter={chapter}
+            chapter={chapter.module}
             nextChapterId={nextChapter}
             preChapter={preChapter}
             courseId={params.courseId}
             course={course}
-          /> */}
+          />
         </div>
         <div>
           <div>
-            <Preview value={chapter.description!} />
+            <Preview value={chapter.module.description} />
           </div>
         </div>
       </div>
