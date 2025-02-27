@@ -65,7 +65,7 @@ export async function PATCH(
               progress: "0%",
               status: "studying",
               startDate: date,
-              endDate: assignList[i].endDate ? new Date(assignList[i].endDate) : null, // Update with endDate if provided
+              endDate: new Date(assignList[i].endDate), // Update with endDate if provided
               maxAttempt: assignList[i].maxAttempt || 1,
             },
             skipDuplicates: true,
